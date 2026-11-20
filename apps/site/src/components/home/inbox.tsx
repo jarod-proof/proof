@@ -1,4 +1,4 @@
-import { Badge } from "@starter/ui/components/ui/badge"
+import { Badge } from "@proof/ui/components/ui/badge"
 import type { ReactNode } from "react"
 
 import { CheckList } from "../check-list"

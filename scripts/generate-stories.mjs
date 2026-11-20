@@ -61,14 +61,14 @@ const SKIP = new Set(["message", "message-scroller"])
 const IMPORT_SWAPS = [
   [
     'import Image from "next/image"',
-    'import { Image } from "@starter/ui/components/examples/example-compat"',
+    'import { Image } from "@proof/ui/components/examples/example-compat"',
   ],
   [
     'import Link from "next/link"',
-    'import { Link } from "@starter/ui/components/examples/example-compat"',
+    'import { Link } from "@proof/ui/components/examples/example-compat"',
   ],
   // shadcn imports its wrapper from the components alias; ours lives in examples/.
-  ['"@starter/ui/components/example"', '"@starter/ui/components/examples/example"'],
+  ['"@proof/ui/components/example"', '"@proof/ui/components/examples/example"'],
 ]
 
 // Exact-string fixes for strict-mode errors in upstream demos (noUncheckedIndexedAccess).

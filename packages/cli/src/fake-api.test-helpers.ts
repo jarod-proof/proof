@@ -1,4 +1,4 @@
-// A stand-in for the Starter API for CLI tests: the OAuth endpoints the device grant uses, the
+// A stand-in for the Proof API for CLI tests: the OAuth endpoints the device grant uses, the
 // real openapi.json, and a few operations. Requests are recorded so tests can assert on them.
 import { readFileSync } from "node:fs"
 

@@ -3,8 +3,8 @@ import { useForm } from "@tanstack/react-form"
 import { useEffect, useState } from "react"
 import { z } from "zod"
 
-import { Button } from "@starter/ui/components/ui/button"
-import { FieldDescription } from "@starter/ui/components/ui/field"
+import { Button } from "@proof/ui/components/ui/button"
+import { FieldDescription } from "@proof/ui/components/ui/field"
 
 import { AuthCard, ErrorAlert } from "../components/auth-card"
 import { useReauthGuard } from "../components/reauth-dialog"

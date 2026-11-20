@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { expectNoA11yViolations } from "@starter/ui/a11y"
+import { expectNoA11yViolations } from "@proof/ui/a11y"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeAll, describe, expect, it, vi } from "vitest"

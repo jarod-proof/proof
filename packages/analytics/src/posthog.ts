@@ -1,7 +1,7 @@
 // PostHog over its capture API (POST /batch/), with no SDK. Each organization is a PostHog group of
 // type "organization", so usage rolls up per tenant. API keys get their own distinct id
 // (`api_key:<id>`); people are their user id.
-import { AppError } from "@starter/errors"
+import { AppError } from "@proof/errors"
 
 import type { AnalyticsProvider, CapturedEvent } from "./index"
 

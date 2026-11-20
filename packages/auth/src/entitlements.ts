@@ -1,5 +1,5 @@
 // Plan entitlements (@byo-oss/entitlements), mounted in createAuth (index.ts) after organization().
-// The plans are the product catalog (@starter/plans): what each plan includes, the one copy the API,
+// The plans are the product catalog (@proof/plans): what each plan includes, the one copy the API,
 // the web app and the pricing page share. Billing state comes from the stripe plugin when it is
 // mounted with plans; without it every organization is on Free (plus staff overrides).
 //
@@ -11,7 +11,7 @@
 //     provisional signups) gets the lower daily request limit.
 //   - seat checks: viewers are free, every other role takes a seat (takesSeat). Checked on invite,
 //     add, accept, SCIM provisioning and a role change from viewer to a paid role.
-import { allowed, type PermissionSet } from "@starter/api"
+import { allowed, type PermissionSet } from "@proof/api"
 import {
   type BillingSource,
   type Entitlements,
@@ -19,7 +19,7 @@ import {
   entitlements,
 } from "@byo-oss/entitlements"
 import { fromBetterAuthStripe } from "@byo-oss/entitlements/stripe"
-import { catalog, type PlanCatalog, planDisplay, takesSeat } from "@starter/plans"
+import { catalog, type PlanCatalog, planDisplay, takesSeat } from "@proof/plans"
 import { APIError } from "better-auth/api"
 
 import { isImpersonated } from "./guards"

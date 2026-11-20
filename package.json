@@ -1,5 +1,5 @@
 {
-  "name": "starter",
+  "name": "proof",
   "private": true,
   "packageManager": "pnpm@12.15.0",
   "scripts": {
@@ -11,14 +11,13 @@
     "e2e": "e2e run",
     "baseline": "baseline scan .",
     "format": "biome format --write .",
-    "init-project": "node scripts/init-project.mjs",
     "test:coverage": "turbo run test:coverage",
     "format:check": "biome format .",
     "prepare": "lefthook install",
-    "storybook": "pnpm --filter @starter/ui storybook",
+    "storybook": "pnpm --filter @proof/ui storybook",
     "stories": "node scripts/generate-stories.mjs",
     "wt": "node scripts/worktree.mjs",
-    "flags": "pnpm --filter @starter/api-app exec tsx ../../scripts/flags.mjs"
+    "flags": "pnpm --filter @proof/api-app exec tsx ../../scripts/flags.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",

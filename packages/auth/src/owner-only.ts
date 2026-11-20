@@ -2,7 +2,7 @@
 // (access.ts) grants them to the owner role only, and the check runs here, before the plugin's own:
 // the sso plugin also lets admins register and edit providers, which the catalog does not allow.
 // Billing (the subscription) is the owner's and the admins': see canManageBilling.
-import { allowed } from "@starter/api"
+import { allowed } from "@proof/api"
 import type { BetterAuthPlugin } from "better-auth"
 import { APIError, createAuthMiddleware, getSessionFromCtx } from "better-auth/api"
 import { memberGrants } from "./membership"
@@ -41,7 +41,7 @@ async function organizationOf(ctx: {
 }
 
 export const ownerOnlyGuard = {
-  id: "starter-owner-only",
+  id: "proof-owner-only",
   hooks: {
     before: [
       {

@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
 import {
   Item,
   ItemActions,
@@ -8,9 +8,9 @@ import {
   ItemGroup,
   ItemMedia,
   ItemTitle,
-} from "@starter/ui/components/ui/item"
-import { Progress, ProgressLabel, ProgressValue } from "@starter/ui/components/ui/progress"
-import { Slider } from "@starter/ui/components/ui/slider"
+} from "@proof/ui/components/ui/item"
+import { Progress, ProgressLabel, ProgressValue } from "@proof/ui/components/ui/progress"
+import { Slider } from "@proof/ui/components/ui/slider"
 import { FileIcon } from "lucide-react"
 
 export default function ProgressExample() {

@@ -3,8 +3,8 @@
 // in; the passkey is then added under that session by passkey()'s own defaults. The attack case: a
 // stranger who starts sign-up for someone else's address can't register a passkey for it.
 import { passkey } from "@better-auth/passkey"
-import * as schema from "@starter/db/schema"
-import { createTestDb } from "@starter/db/testing"
+import * as schema from "@proof/db/schema"
+import { createTestDb } from "@proof/db/testing"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { organization } from "better-auth/plugins"

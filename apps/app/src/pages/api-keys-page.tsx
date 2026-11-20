@@ -4,9 +4,9 @@ import { createColumnHelper, tableFeatures, useTable } from "@tanstack/react-tab
 import { useId, useMemo, useRef, useState } from "react"
 import { z } from "zod"
 
-import { Badge } from "@starter/ui/components/ui/badge"
-import { Button } from "@starter/ui/components/ui/button"
-import { Checkbox } from "@starter/ui/components/ui/checkbox"
+import { Badge } from "@proof/ui/components/ui/badge"
+import { Button } from "@proof/ui/components/ui/button"
+import { Checkbox } from "@proof/ui/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -14,10 +14,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@starter/ui/components/ui/native-select"
+} from "@proof/ui/components/ui/dialog"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { NativeSelect, NativeSelectOption } from "@proof/ui/components/ui/native-select"
 import {
   Table,
   TableBody,
@@ -25,12 +25,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@starter/ui/components/ui/table"
-import { CopyField } from "@starter/ui/dplus/shell/copy-field"
-import { type RenderLink, anchorLink } from "@starter/ui/dplus/shell/link"
-import { PageBody } from "@starter/ui/dplus/shell/page-header"
-import { SettingsHeader } from "@starter/ui/dplus/shell/settings-header"
-import { ViewOnlyNotice } from "@starter/ui/dplus/shell/view-only-notice"
+} from "@proof/ui/components/ui/table"
+import { CopyField } from "@proof/ui/dplus/shell/copy-field"
+import { type RenderLink, anchorLink } from "@proof/ui/dplus/shell/link"
+import { PageBody } from "@proof/ui/dplus/shell/page-header"
+import { SettingsHeader } from "@proof/ui/dplus/shell/settings-header"
+import { ViewOnlyNotice } from "@proof/ui/dplus/shell/view-only-notice"
 
 import {
   EXPIRY_OPTIONS,

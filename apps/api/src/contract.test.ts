@@ -3,7 +3,7 @@
 // spec (or fail with the error the example documents), REST and MCP must agree, and any change to
 // the spec shows up as a diff of openapi.json. Examples run as an organization owner.
 import { Validator } from "@seriousme/openapi-schema-validator"
-import { type AnyOperation, openApiPath } from "@starter/api"
+import { type AnyOperation, openApiPath } from "@proof/api"
 import { Ajv2020 } from "ajv/dist/2020.js"
 import addFormats from "ajv-formats"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"

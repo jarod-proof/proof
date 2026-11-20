@@ -81,7 +81,7 @@ export function isFresh(
 }
 
 export const freshSessionGuard = {
-  id: "starter-fresh-session",
+  id: "proof-fresh-session",
   hooks: {
     before: [
       {

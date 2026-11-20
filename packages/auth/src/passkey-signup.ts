@@ -9,7 +9,7 @@
 // Someone who never opens the mail holds no credential and no session for that address.
 import { randomBytes } from "node:crypto"
 
-import type { Database } from "@starter/db"
+import type { Database } from "@proof/db"
 import type { BetterAuthPlugin } from "better-auth"
 import { APIError, createAuthEndpoint, getIP } from "better-auth/api"
 import { setSessionCookie } from "better-auth/cookies"
@@ -74,7 +74,7 @@ function parseStart(body: unknown): { email: string; name: string } {
  */
 export function passkeySignupPlugin(deps: PasskeySignupDeps) {
   return {
-    id: "starter-passkey-signup",
+    id: "proof-passkey-signup",
     endpoints: {
       passkeySignupStart: createAuthEndpoint(
         PASSKEY_SIGNUP_START_PATH,

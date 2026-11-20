@@ -1,4 +1,4 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
 import {
   Avatar,
   AvatarBadge,
@@ -6,8 +6,8 @@ import {
   AvatarGroup,
   AvatarGroupCount,
   AvatarImage,
-} from "@starter/ui/components/ui/avatar"
-import { Button } from "@starter/ui/components/ui/button"
+} from "@proof/ui/components/ui/avatar"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Empty,
   EmptyContent,
@@ -15,7 +15,7 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@starter/ui/components/ui/empty"
+} from "@proof/ui/components/ui/empty"
 import { PlusIcon, CheckIcon } from "lucide-react"
 
 export default function AvatarExample() {

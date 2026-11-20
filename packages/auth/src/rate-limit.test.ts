@@ -127,7 +127,7 @@ describe("authRateLimit", () => {
 describe("authIpAddress", () => {
   it("reads the client address only from the header apps/api sets", () => {
     expect(authIpAddress).toEqual({ ipAddressHeaders: [CLIENT_IP_HEADER] })
-    expect(CLIENT_IP_HEADER).toBe("x-starter-client-ip")
+    expect(CLIENT_IP_HEADER).toBe("x-proof-client-ip")
   })
 })
 

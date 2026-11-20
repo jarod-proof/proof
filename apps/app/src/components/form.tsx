@@ -1,7 +1,7 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form"
 import { type ComponentProps, type ReactNode, useId } from "react"
 
-import { Alert, AlertDescription, AlertTitle } from "@starter/ui/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@proof/ui/components/ui/alert"
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -10,8 +10,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@starter/ui/components/ui/alert-dialog"
-import { Button } from "@starter/ui/components/ui/button"
+} from "@proof/ui/components/ui/alert-dialog"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -20,9 +20,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
-import { Field, FieldDescription, FieldError, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
+} from "@proof/ui/components/ui/dialog"
+import { Field, FieldDescription, FieldError, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
 
 import { fieldMessage } from "../lib/messages"
 

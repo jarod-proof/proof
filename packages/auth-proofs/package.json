@@ -1,5 +1,5 @@
 {
-  "name": "@starter/auth-proofs",
+  "name": "@proof/auth-proofs",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "@gdp-ts/core": "catalog:",
-    "@starter/api": "workspace:*",
-    "@starter/db": "workspace:*",
+    "@proof/api": "workspace:*",
+    "@proof/db": "workspace:*",
     "drizzle-orm": "catalog:"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@vitest/coverage-v8": "catalog:",
     "oxlint": "catalog:",
     "vitest": "catalog:"

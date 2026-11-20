@@ -1,5 +1,5 @@
 {
-  "name": "@starter/db",
+  "name": "@proof/db",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "drizzle-kit": "^0.31.11",

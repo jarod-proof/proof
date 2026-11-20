@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { type SupportFetchClient, SupportInbox } from "@byo-oss/support/react"
 
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
 
 import { adminTabs } from "../lib/admin-nav"
 import {

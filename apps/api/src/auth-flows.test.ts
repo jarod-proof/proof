@@ -6,7 +6,7 @@ import { createHash, createHmac, randomBytes } from "node:crypto"
 import { afterAll, beforeAll, describe, expect, it, onTestFinished, vi } from "vitest"
 import { and, eq } from "drizzle-orm"
 import { SignJWT } from "jose"
-import { personalSlug } from "@starter/auth"
+import { personalSlug } from "@proof/auth"
 import {
   auditEvent,
   member,
@@ -16,10 +16,10 @@ import {
   session as sessionTable,
   user as userTable,
   verification,
-} from "@starter/db/schema"
-import { setErrorReporter } from "@starter/errors"
-import { createLogger } from "@starter/logger"
-import { createMemoryStore } from "@starter/storage"
+} from "@proof/db/schema"
+import { setErrorReporter } from "@proof/errors"
+import { createLogger } from "@proof/logger"
+import { createMemoryStore } from "@proof/storage"
 import { BASE, createTestApp, SECRET } from "./app.test.helpers"
 import { browser } from "./browser.test.helpers"
 
@@ -1737,7 +1737,7 @@ describe("auth flows over HTTP (real client, real Postgres via PGlite)", () => {
       // Deletion is confirmed by the emailed link, as in the delete-account tests.
       const asked = await departing.b.client.deleteUser({ callbackURL: "/goodbye" })
       expect(asked.error).toBeNull()
-      const confirm = await mailed(departing.email, "Confirm deleting your Starter account")
+      const confirm = await mailed(departing.email, "Confirm deleting your Proof account")
       expect((await departing.b.request(confirm.link)).status).toBe(302)
       expect((await scim()).status).toBe(401)
     })
@@ -2195,8 +2195,8 @@ describe("auth flows over HTTP (real client, real Postgres via PGlite)", () => {
 
   describe("change email", () => {
     const fresh = () => `moved-${++n}@example.com`
-    const CONFIRM = "Confirm your new email address for Starter"
-    const REQUESTED = "A new email address was requested for your Starter account"
+    const CONFIRM = "Confirm your new email address for Proof"
+    const REQUESTED = "A new email address was requested for your Proof account"
 
     it("keeps the old address until the new one confirms, and tells the old one", async () => {
       const { b, email: oldAddress } = await signedUp("Ada")
@@ -2306,7 +2306,7 @@ describe("auth flows over HTTP (real client, real Postgres via PGlite)", () => {
   })
 
   describe("delete account", () => {
-    const CONFIRM_DELETE = "Confirm deleting your Starter account"
+    const CONFIRM_DELETE = "Confirm deleting your Proof account"
 
     // The file sweep on deletion (file-sweep.ts): accounts with files, and what the store holds.
     // PNG is a real 1x1 image.
@@ -2678,7 +2678,7 @@ describe("auth flows over HTTP (real client, real Postgres via PGlite)", () => {
 
       const visitor = open()
       await visitor.client.signIn.magicLink({ email: address, callbackURL: "/" })
-      const link = (await mailed(address, "Your sign-in link for Starter")).link
+      const link = (await mailed(address, "Your sign-in link for Proof")).link
       await visitor.request(link)
       expect((await visitor.client.twoFactor.verifyTotp({ code: totp(secret) })).error).toBeNull()
       const { data } = await visitor.client.getSession()
@@ -2839,7 +2839,7 @@ describe("auth flows over HTTP (real client, real Postgres via PGlite)", () => {
       expect(start.headers.getSetCookie()).toEqual([])
       expect(b.jar.size).toBe(0)
 
-      const mail = await mailed(address, "Finish creating your Starter account")
+      const mail = await mailed(address, "Finish creating your Proof account")
       expect(mail.link).toContain("/api/auth/passkey-signup/verify?token=")
 
       const opened = await b.request(mail.link)
@@ -2879,7 +2879,7 @@ describe("auth flows over HTTP (real client, real Postgres via PGlite)", () => {
       const address = email()
       const b = open()
       await startSignUp(b, address)
-      const { link } = await mailed(address, "Finish creating your Starter account")
+      const { link } = await mailed(address, "Finish creating your Proof account")
       expect((await b.request(link)).status).toBe(302)
 
       // A refused link goes to the sign-up page, which explains it, and sets no cookie.
@@ -3233,10 +3233,10 @@ describe("auth rate limit over HTTP (opted in, behind a trusted proxy)", () => {
 
   it("ignores a client-sent copy of the client-IP header: the proxy's address decides", async () => {
     // 203.0.113.10 is over its limit. Claiming another address in the header changes nothing.
-    const spoofed = await signIn("203.0.113.10", { "x-starter-client-ip": "192.0.2.99" })
+    const spoofed = await signIn("203.0.113.10", { "x-proof-client-ip": "192.0.2.99" })
     expect(spoofed.status).toBe(429)
     // Nor does a spoofed header alone on a fresh address start a new bucket for the limited one.
-    const other = await signIn("198.51.100.8", { "x-starter-client-ip": "203.0.113.10" })
+    const other = await signIn("198.51.100.8", { "x-proof-client-ip": "203.0.113.10" })
     expect(other.status).toBe(401)
   })
 })

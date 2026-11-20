@@ -1,4 +1,4 @@
-import { allowed, covers, type PermissionSet } from "@starter/api"
+import { allowed, covers, type PermissionSet } from "@proof/api"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { createTestAuth } from "./auth.test.helpers"
 import {

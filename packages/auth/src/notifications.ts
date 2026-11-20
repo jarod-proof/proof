@@ -5,7 +5,7 @@
 // better-auth transaction the endpoint would read through the outer adapter, which waits on the
 // transaction it is inside of (PGlite has one connection; see notifications.test.ts). So `send`
 // defers to after the transaction commits, and runs at once when none is open.
-import { allowed } from "@starter/api"
+import { allowed } from "@proof/api"
 import { queueAfterTransactionHook } from "@better-auth/core/context"
 import type { DeliveryRule } from "@byo-oss/notifications"
 

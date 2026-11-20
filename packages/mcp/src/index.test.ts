@@ -1,7 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js"
-import { type Caller, defineOperation } from "@starter/api"
-import { AppError, setErrorReporter } from "@starter/errors"
+import { type Caller, defineOperation } from "@proof/api"
+import { AppError, setErrorReporter } from "@proof/errors"
 import { afterEach, describe, expect, it, onTestFinished } from "vitest"
 import { z } from "zod"
 import {

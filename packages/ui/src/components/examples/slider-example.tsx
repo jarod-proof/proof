@@ -1,8 +1,8 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Label } from "@starter/ui/components/ui/label"
-import { Slider } from "@starter/ui/components/ui/slider"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Label } from "@proof/ui/components/ui/label"
+import { Slider } from "@proof/ui/components/ui/slider"
 
 export default function SliderExample() {
   return (

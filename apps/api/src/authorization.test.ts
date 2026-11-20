@@ -7,8 +7,8 @@
 //     answer is NOT_FOUND or FORBIDDEN, and no response carries one of this organization's ids
 // Path params point at real resources of the "acme" organization (the fixtures below). An operation
 // under a new path prefix fails until a fixture for it is added here.
-import { type AnyOperation, allowed, isEmpty, type PermissionSet } from "@starter/api"
-import { roles } from "@starter/auth"
+import { type AnyOperation, allowed, isEmpty, type PermissionSet } from "@proof/api"
+import { roles } from "@proof/auth"
 import { afterAll, describe, expect, it } from "vitest"
 import { createTestApp, requestFor } from "./app.test.helpers"
 

@@ -1,4 +1,4 @@
-import type { PaletteGroup } from "@starter/ui/dplus/shell/command-palette"
+import type { PaletteGroup } from "@proof/ui/dplus/shell/command-palette"
 
 import type { ThemeChoice } from "../lib/theme"
 import type { WebOrganization } from "../lib/web-auth"

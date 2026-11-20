@@ -1,7 +1,7 @@
 import type { ByoEvent } from "@byo-oss/core"
 import { supportRoles, supportStatements } from "@byo-oss/support"
 import * as supportClient from "@byo-oss/support/client"
-import { setErrorReporter } from "@starter/errors"
+import { setErrorReporter } from "@proof/errors"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { roles, statements } from "./access"

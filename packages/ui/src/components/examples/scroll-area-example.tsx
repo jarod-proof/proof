@@ -1,9 +1,9 @@
 import * as React from "react"
-import { Image } from "@starter/ui/components/examples/example-compat"
+import { Image } from "@proof/ui/components/examples/example-compat"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { ScrollArea, ScrollBar } from "@starter/ui/components/ui/scroll-area"
-import { Separator } from "@starter/ui/components/ui/separator"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { ScrollArea, ScrollBar } from "@proof/ui/components/ui/scroll-area"
+import { Separator } from "@proof/ui/components/ui/separator"
 
 const tags = Array.from({ length: 50 }).map((_, i, a) => `v1.2.0-beta.${a.length - i}`)
 

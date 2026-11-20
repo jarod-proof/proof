@@ -2,8 +2,8 @@
 // the organization owns (provisioningDomainId). The secret is never stored in the clear, so only the
 // credential's id and its metadata are listed. Revoking goes through better-auth (operations/scim.ts),
 // which keeps the plugin's own event log.
-import type { CallerActsFor, Named, OrganizationId } from "@starter/auth-proofs"
-import { type Database, scimManagedConnection, scimManagedCredential, user } from "@starter/db"
+import type { CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import { type Database, scimManagedConnection, scimManagedCredential, user } from "@proof/db"
 import { and, desc, eq, inArray } from "drizzle-orm"
 
 export interface ScimTokenRow {

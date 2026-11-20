@@ -1,6 +1,6 @@
 import { useId, useRef, useState } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 
 import { accountErrorMessage } from "../../lib/account-api"
 import { ConfirmDialog } from "../../components/confirm-dialog"

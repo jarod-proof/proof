@@ -1,4 +1,4 @@
-import { paginated, paginationInput } from "@starter/api"
+import { paginated, paginationInput } from "@proof/api"
 import { z } from "zod"
 
 import { listAuditEvents } from "../data/audit"

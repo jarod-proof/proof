@@ -2,8 +2,8 @@
 // the organization they act in. Keys are refused, other people's and other organizations' rows and
 // personal notices never show, and listing writes nothing (no read, seen or presence change, which
 // would stop the person's emails). Seeded through the API's notifier, as operations send them.
-import type { Caller } from "@starter/api"
-import { inboxPresence, notification } from "@starter/db"
+import type { Caller } from "@proof/api"
+import { inboxPresence, notification } from "@proof/db"
 import { and, asc, desc, eq, isNull } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 

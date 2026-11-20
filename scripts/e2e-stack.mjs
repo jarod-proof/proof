@@ -28,7 +28,7 @@ const apiUrl = `http://127.0.0.1:${apiPort}`
 
 // Uploads are on for the stack: files go to a fresh directory that is removed when this process exits
 // (every exit path, the signal handlers and the children's exits, goes through process.exit).
-const storageDir = mkdtempSync(join(tmpdir(), "starter-e2e-storage-"))
+const storageDir = mkdtempSync(join(tmpdir(), "proof-e2e-storage-"))
 process.on("exit", () => rmSync(storageDir, { recursive: true, force: true }))
 
 const children = []
@@ -94,7 +94,7 @@ const dkimDns = fileURLToPath(new URL("./e2e-dkim-dns.mjs", import.meta.url))
 const apiEnv = process.env.E2E_DKIM_DIR
   ? { ...env, NODE_OPTIONS: [env.NODE_OPTIONS, `--import=${dkimDns}`].filter(Boolean).join(" ") }
   : env
-start("api", ["--filter", "@starter/api-app", "exec", "tsx", "src/server.ts"], apiEnv)
+start("api", ["--filter", "@proof/api-app", "exec", "tsx", "src/server.ts"], apiEnv)
 
 // The web app proxies to the API, and the first sign-up needs it: wait for its liveness check.
 const deadline = Date.now() + 120_000
@@ -156,7 +156,7 @@ start(
   "app",
   [
     "--filter",
-    "@starter/app",
+    "@proof/app",
     "exec",
     "vite",
     "dev",

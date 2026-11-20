@@ -1,8 +1,8 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@starter/ui/components/ui/native-select"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { NativeSelect, NativeSelectOption } from "@proof/ui/components/ui/native-select"
 import {
   Select,
   SelectContent,
@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@starter/ui/components/ui/select"
+} from "@proof/ui/components/ui/select"
 
 export default function InputExample() {
   return (

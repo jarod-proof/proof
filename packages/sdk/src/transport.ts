@@ -1,4 +1,4 @@
-import { errorFromResponse, parseRetryAfter, StarterError } from "./errors"
+import { errorFromResponse, parseRetryAfter, ProofError } from "./errors"
 
 /** Retry policy. `false` disables retries entirely. */
 export interface RetryOptions {
@@ -33,7 +33,7 @@ const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(r
 
 /**
  * A fetch that adds credentials, an Idempotency-Key to every non-GET request, retries 429/503 and
- * (for idempotent requests) network failures, and turns non-2xx responses into StarterError.
+ * (for idempotent requests) network failures, and turns non-2xx responses into ProofError.
  * The openapi-fetch client and the untyped `request` helper both go through it.
  */
 export function createTransport(options: TransportOptions): (input: Request) => Promise<Response> {
@@ -83,7 +83,7 @@ export function createTransport(options: TransportOptions): (input: Request) => 
         response = await send(base.clone())
       } catch (cause) {
         if (!canRetry || !safeToRetryNetwork) {
-          throw new StarterError({
+          throw new ProofError({
             status: 0,
             code: "NETWORK_ERROR",
             message: `Could not reach ${base.url}`,

@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 
 import type { WebAuth } from "../lib/web-auth"
 import { messageOf } from "../lib/messages"

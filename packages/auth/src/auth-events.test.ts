@@ -1,5 +1,5 @@
-import { createTestDb } from "@starter/db/testing"
-import { type AppError, setErrorReporter } from "@starter/errors"
+import { createTestDb } from "@proof/db/testing"
+import { type AppError, setErrorReporter } from "@proof/errors"
 import { APIError } from "better-auth/api"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { AUDIENCE, BASE } from "./auth.test.helpers"
@@ -359,7 +359,7 @@ describe("path coverage", () => {
 describe("authEvents plugin", () => {
   it("is a plugin with one after hook matched on the mapped paths", () => {
     const plugin = authEvents({ onAuthEvent: () => {} })
-    expect(plugin.id).toBe("starter-auth-events")
+    expect(plugin.id).toBe("proof-auth-events")
     const [hook] = plugin.hooks?.after ?? []
     expect(hook).toBeDefined()
     const matcher = hook?.matcher as (ctx: { path?: string }) => boolean

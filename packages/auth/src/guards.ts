@@ -124,7 +124,7 @@ export const impersonationAllows = (path: string, method: string): boolean => {
 }
 
 export const impersonationGuard = {
-  id: "starter-impersonation-guard",
+  id: "proof-impersonation-guard",
   hooks: {
     before: [
       {

@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useCallback, useMemo } from "react"
 
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
 
 import { useFlag } from "../lib/flags"
 import { messageOf } from "../lib/messages"

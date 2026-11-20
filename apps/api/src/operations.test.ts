@@ -1,6 +1,6 @@
 // Paginated lists: pages line up with no repeats or gaps, and a bad cursor is a BAD_REQUEST.
-import { encodeCursor } from "@starter/api"
-import { member, twoFactor, user as userTable } from "@starter/db"
+import { encodeCursor } from "@proof/api"
+import { member, twoFactor, user as userTable } from "@proof/db"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

@@ -1,4 +1,4 @@
-import type { createClient } from "@starter/auth/client"
+import type { createClient } from "@proof/auth/client"
 import { describe, expect, it, vi } from "vitest"
 
 import { checkoutReturnUrl, createStripeBillingAdapter } from "./stripe"
@@ -45,7 +45,7 @@ describe("createStripeBillingAdapter", () => {
       seats: 15,
       cancelAtPeriodEnd: false,
     })
-    // Every plan in the product catalog (@starter/plans), with no price: prices live in Stripe.
+    // Every plan in the product catalog (@proof/plans), with no price: prices live in Stripe.
     expect(snapshot.plans.map((plan) => [plan.id, plan.seatCap, plan.price])).toEqual([
       ["free", 3, null],
       ["pro", 25, null],

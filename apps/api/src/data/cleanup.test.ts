@@ -4,8 +4,8 @@ import {
   organization,
   signupAttempt,
   verification,
-} from "@starter/db"
-import { createTestDb } from "@starter/db/testing"
+} from "@proof/db"
+import { createTestDb } from "@proof/db/testing"
 import { count } from "drizzle-orm"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { EXPOSURE_RETENTION_DAYS, pruneExpired, SIGNUP_RETENTION_MS } from "./cleanup"

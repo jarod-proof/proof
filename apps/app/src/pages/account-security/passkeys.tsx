@@ -2,9 +2,9 @@ import { useForm } from "@tanstack/react-form"
 import { useId, useState } from "react"
 import { z } from "zod"
 
-import { Button } from "@starter/ui/components/ui/button"
-import { Field, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
+import { Button } from "@proof/ui/components/ui/button"
+import { Field, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
 
 import { type PasskeyInfo } from "../../lib/account-api"
 import { ConfirmDialog } from "../../components/confirm-dialog"

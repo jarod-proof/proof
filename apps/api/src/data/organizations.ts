@@ -1,5 +1,5 @@
 // Organization facts the API needs that carry no tenant data: read by organization id, so no proof.
-import { type Database, member, organization, user } from "@starter/db"
+import { type Database, member, organization, user } from "@proof/db"
 import { and, eq } from "drizzle-orm"
 
 /** Whether an owner of the organization has verified their email: the organization is "claimed". */

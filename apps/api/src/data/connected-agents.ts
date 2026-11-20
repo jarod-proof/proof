@@ -2,9 +2,9 @@
 // refresh tokens for it. Device-grant clients have no consent row, so their refresh tokens are the
 // evidence. Access tokens are JWTs and are not stored, so an OAuth client that holds only an access
 // token (no refresh token) is not listed.
-import { revokeGrants } from "@starter/auth"
-import type { CallerActsFor, Named, OrganizationId } from "@starter/auth-proofs"
-import { type Database, apikey, oauthClient, oauthConsent, oauthRefreshToken } from "@starter/db"
+import { revokeGrants } from "@proof/auth"
+import type { CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import { type Database, apikey, oauthClient, oauthConsent, oauthRefreshToken } from "@proof/db"
 import { and, eq, inArray, isNull, gt } from "drizzle-orm"
 import { z } from "zod"
 

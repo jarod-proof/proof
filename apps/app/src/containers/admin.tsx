@@ -2,8 +2,8 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { useDebouncedValue } from "@tanstack/react-pacer"
 import { useState } from "react"
 
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
-import type { SettingsTab } from "@starter/ui/dplus/shell/settings-header"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
+import type { SettingsTab } from "@proof/ui/dplus/shell/settings-header"
 
 import { useReauthGuard } from "../components/reauth-dialog"
 import type { AdminApi } from "../lib/admin-api"

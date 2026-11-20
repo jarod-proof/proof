@@ -7,9 +7,9 @@
     "cssVariables": true
   },
   "aliases": {
-    "components": "@starter/ui/components",
-    "ui": "@starter/ui/components/ui",
-    "utils": "@starter/ui",
-    "hooks": "@starter/ui/hooks"
+    "components": "@proof/ui/components",
+    "ui": "@proof/ui/components/ui",
+    "utils": "@proof/ui",
+    "hooks": "@proof/ui/hooks"
   }
 }

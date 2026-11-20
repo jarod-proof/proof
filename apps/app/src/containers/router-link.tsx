@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router"
 
-import type { LinkProps } from "@starter/ui/dplus/shell/link"
+import type { LinkProps } from "@proof/ui/dplus/shell/link"
 
 const EXACT = { exact: true, includeSearch: true } as const
 

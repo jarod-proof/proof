@@ -3,9 +3,9 @@ import { useForm } from "@tanstack/react-form"
 import { useId, useState } from "react"
 import { z } from "zod"
 
-import { Button } from "@starter/ui/components/ui/button"
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
+import { Button } from "@proof/ui/components/ui/button"
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
 
 import { AuthCard, ErrorAlert } from "../components/auth-card"
 import { messageOf } from "../lib/messages"

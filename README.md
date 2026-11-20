@@ -1,4 +1,4 @@
-# starter
+# proof
 
 Opinionated TypeScript monorepo template: Turborepo + pnpm, shadcn/ui + Storybook, Drizzle (Postgres),
 better-auth, typed env, and agent-ready guardrails. Agent-native API surface: define an operation once and
@@ -8,16 +8,8 @@ OAuth 2.1 for agents.
 ## Use it
 
 ```bash
-# template:start
-gh repo create my-app --template <owner>/<repo> --private --clone && cd my-app
-# template:end
 mise trust && mise install        # Node 24, pnpm 12, gitleaks
 pnpm install
-# template:start
-# Renames the scope, database (my_app), CLI, SDK names, skill and MCP registry name, removes the
-# template-only text and itself, then refreshes the lockfile and formats.
-pnpm init-project my-app [owner] [--domain acme.com]
-# template:end
 cp .env.example .env              # mise loads it; fill in BETTER_AUTH_SECRET (openssl rand -base64 32)
 docker compose up -d db           # local Postgres (tests don't need it)
 ```
@@ -27,7 +19,7 @@ docker compose up -d db           # local Postgres (tests don't need it)
 | | |
 |---|---|
 | `packages/ui` | shadcn/ui components, `cn`, Tailwind v4 theme, Storybook (+ MCP at `/mcp`), axe test helper |
-| `packages/db` | Drizzle ORM, committed migrations, `@starter/db/testing` (in-process PGlite) |
+| `packages/db` | Drizzle ORM, committed migrations, `@proof/db/testing` (in-process PGlite) |
 | `apps/api` | Reference API ([Hono](https://hono.dev) on Node): REST, `/mcp`, `/openapi.json`, `/llms.txt`, OAuth discovery, the registry record |
 | `apps/app` | TanStack Start SPA: sign-in, sign-up, consent, device login, agent settings. Built to `apps/app/dist` and served by `apps/api` |
 | `packages/api` | Operation registry: `defineOperation` once → REST, MCP, OpenAPI 3.1, `llms.txt` / `llms-full.txt`; `invoke` with before/after hooks and pagination helpers |
@@ -35,12 +27,12 @@ docker compose up -d db           # local Postgres (tests don't need it)
 | `packages/auth` | better-auth + Wraps, organizations + roles from one permission catalog, org API keys, OAuth 2.1 (MCP clients register themselves; tokens bound to an org), device grant, provisional signup |
 | `packages/auth-proofs` | [gdp-ts](https://github.com/rauchg/gdp-ts) proofs for tenant isolation (`callerActsFor`, `projectInOrg`), lint-enforced |
 | `packages/sdk` | Typed API client generated from `apps/api/openapi.json` (retries, idempotency keys, paginate) |
-| `packages/cli` | `starter` command: `login` (device grant), `whoami`, `ops`, `call <operation>` |
+| `packages/cli` | `proof` command: `login` (device grant), `whoami`, `ops`, `call <operation>` |
 | `packages/env` | Validated environment variables (the only place env is read) |
 | `packages/logger`, `packages/errors` | Structured logging and typed app errors |
 | `packages/observability` | Request ids, access logs, error handling and health checks for Web-standard handlers |
 | `packages/config` | Shared tsconfig and Vitest base config |
-| `skills/starter` | Template agent skill to ship to your customers' agents (`npx skills add <owner>/<repo>`) |
+| `skills/proof` | Template agent skill to ship to your customers' agents (`npx skills add <owner>/<repo>`) |
 
 ## Commands
 
@@ -49,11 +41,11 @@ pnpm turbo run lint typecheck test build   # all via Turborepo
 pnpm test:coverage               # thresholds only go up
 pnpm baseline                    # bans/ratchets (code-baseline)
 pnpm storybook                   # http://localhost:6006
-pnpm --filter @starter/api-app dev     # API on BETTER_AUTH_URL (default http://localhost:3000)
-pnpm --filter @starter/app dev         # web app dev server (proxies the API; API_URL sets its target)
-pnpm --filter @starter/auth generate   # regenerate auth tables after changing auth plugins
-pnpm --filter @starter/db db:generate  # new migration after schema changes
-pnpm --filter @starter/sdk generate    # regenerate the SDK types after changing openapi.json
+pnpm --filter @proof/api-app dev     # API on BETTER_AUTH_URL (default http://localhost:3000)
+pnpm --filter @proof/app dev         # web app dev server (proxies the API; API_URL sets its target)
+pnpm --filter @proof/auth generate   # regenerate auth tables after changing auth plugins
+pnpm --filter @proof/db db:generate  # new migration after schema changes
+pnpm --filter @proof/sdk generate    # regenerate the SDK types after changing openapi.json
 ```
 
 Commits must be [Conventional Commits](https://www.conventionalcommits.org). Pre-commit runs gitleaks,
@@ -95,16 +87,16 @@ shows up in review, and contract tests run every documented example over REST an
 
 - **Install the MCP server.** `<your API>/llms.txt` has install snippets for Claude Code, Cursor, VS Code and Codex.
   The MCP endpoint is `<your API>/mcp`; its registry record is `<your API>/.well-known/mcp/server.json`.
-- **Sign in from a terminal or agent.** `starter login --base-url <your API>` (the `starter` bin of `packages/cli`). It
-  shows a code to approve in the browser at `/device` and saves the token under `~/.config/starter`
-  (`STARTER_CONFIG_DIR` overrides it). In this repo, build it with `pnpm --filter @starter/cli build` and run
+- **Sign in from a terminal or agent.** `proof login --base-url <your API>` (the `proof` bin of `packages/cli`). It
+  shows a code to approve in the browser at `/device` and saves the token under `~/.config/proof`
+  (`PROOF_CONFIG_DIR` overrides it). In this repo, build it with `pnpm --filter @proof/cli build` and run
   `node packages/cli/dist/bin.js login --base-url <your API>`.
 - **Self-signup, no credential.** `POST <your API>/v1/signup` with `{ "email": "..." }` returns an API key (shown once)
   and emails a claim link. Until the link is followed, the organization has the lower daily limit.
 
 ## Deploy
 
-1. Build the image from the repo root: `docker build -t starter-api .`. It runs `apps/api` with tsx and serves the
+1. Build the image from the repo root: `docker build -t proof-api .`. It runs `apps/api` with tsx and serves the
    built web app from `WEB_DIST_DIR`.
 2. Apply migrations before the new version takes traffic: `DATABASE_URL=... node scripts/release.mjs`. Compose runs
    this as its `migrate` service; a platform's release command can run it too.
@@ -123,18 +115,14 @@ shows up in review, and contract tests run every documented example over REST an
   `com.acme/<name>` for a domain proved with a DNS TXT record (`mcp-publisher login dns`), which also covers
   subdomains such as `api.acme.com`. Prefer the domain once the product has one: the name then belongs to the
   product, not to a GitHub account.
-  <!-- template:start -->
-  `pnpm init-project <name> --domain acme.com` sets `com.acme/<name>`. Without `--domain` it sets
-  `io.github.<owner>/<name>`, taking the owner from its second argument or the GitHub `origin` remote.
-  <!-- template:end -->
   To change it, set `registry` in `apps/api/src/server.ts` and `DEFAULT_REGISTRY_META` in
   `packages/api/src/server-json.ts` to the same value. Either way,
   replace the placeholder title and description in `apps/api/src/server.ts`. The discovery test pins the committed `server.json` to
   `DEFAULT_REGISTRY_META` and to `ROOT_INFO` in `apps/api/src/discovery.test.ts`; update `ROOT_INFO` too.
-- **Regenerate the root `server.json`:** `UPDATE_SERVER_JSON=1 pnpm --filter @starter/api-app test discovery`, then commit it.
+- **Regenerate the root `server.json`:** `UPDATE_SERVER_JSON=1 pnpm --filter @proof/api-app test discovery`, then commit it.
   Its origin is still the placeholder; publish the live record at `<your API>/.well-known/mcp/server.json`.
 - **Submit it** to the MCP registry, the Claude connectors directory and Smithery. Each needs your account.
-- **Publish the skill.** `skills/starter` is what customers' agents install (`npx skills add <owner>/<repo>`).
+- **Publish the skill.** `skills/proof` is what customers' agents install (`npx skills add <owner>/<repo>`).
   `apps/api/src/skill-parity.test.ts` must pass first.
 - **Add a `LICENSE`.** None is set.
 

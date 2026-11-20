@@ -1,6 +1,6 @@
 // Every MCP tool states its annotations explicitly. The spec defaults destructiveHint to true when
 // absent, so a write that leaves `destructive` out is advertised as destructive and clients over-prompt.
-import { toTool } from "@starter/mcp"
+import { toTool } from "@proof/mcp"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
 import { createTestApp } from "./app.test.helpers"
@@ -12,7 +12,7 @@ describe("MCP tool annotations", () => {
   })
   afterAll(() => t.close())
 
-  // auth "none" and "person" operations are REST only, never tools (see buildServer in @starter/mcp).
+  // auth "none" and "person" operations are REST only, never tools (see buildServer in @proof/mcp).
   const tools = () => t.operations.filter((op) => op.auth === undefined)
 
   it("lists the tools the test app serves", () => {

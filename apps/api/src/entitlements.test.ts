@@ -4,8 +4,8 @@
 // past_due grace window on Stripe's subscriptions, the sweep, export, and the lifecycle (an
 // organization's rows go with it). The PRD's user jobs J1-J11 are noted on each test.
 import { sweepAll } from "@byo-oss/core"
-import { exportEntitlementsData } from "@starter/auth"
-import { entitlementOverride, entitlementSnapshot, entitlementUsage, user } from "@starter/db"
+import { exportEntitlementsData } from "@proof/auth"
+import { entitlementOverride, entitlementSnapshot, entitlementUsage, user } from "@proof/db"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

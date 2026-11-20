@@ -1,4 +1,4 @@
-import type { RegistryMeta } from "@starter/api"
+import type { RegistryMeta } from "@proof/api"
 
 // What this product is, as the outside world sees it. The API's title, version and description
 // (OpenAPI, llms.txt, /.well-known/mcp/server.json), its MCP registry entry, and the public origin
@@ -9,10 +9,10 @@ import type { RegistryMeta } from "@starter/api"
 
 export const PRODUCT = {
   /** The display name: the API's title. */
-  name: "Starter API",
+  name: "Proof API",
   version: "0.0.0",
   /** One sentence on what the product does. */
-  description: "The Starter API. Replace this with one sentence about what your product does.",
+  description: "The Proof API. Replace this with one sentence about what your product does.",
   /** The production API origin, no trailing slash. Set it to the domain you deploy to. */
   publicURL: "https://api.example.com",
   /**
@@ -21,8 +21,8 @@ export const PRODUCT = {
    * is the point of this file.
    */
   registry: {
-    name: "io.github.example/starter",
-    description: "Starter API: projects, API keys, agent access and audit for people and agents.",
-    repository: { url: "https://github.com/example/starter", source: "github" },
+    name: "io.github.jarod-proof/proof",
+    description: "Proof API: projects, API keys, agent access and audit for people and agents.",
+    repository: { url: "https://github.com/jarod-proof/proof", source: "github" },
   } satisfies RegistryMeta,
 } as const

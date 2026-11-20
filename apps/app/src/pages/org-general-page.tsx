@@ -4,7 +4,7 @@ import { useDebouncedValue } from "@tanstack/react-pacer"
 import { useEffect, useId, useState } from "react"
 import { z } from "zod"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -12,18 +12,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@starter/ui/components/ui/native-select"
-import { CopyField } from "@starter/ui/dplus/shell/copy-field"
-import { DangerAction, DangerZone } from "@starter/ui/dplus/shell/danger-zone"
-import { type RenderLink, anchorLink } from "@starter/ui/dplus/shell/link"
-import { PageBody } from "@starter/ui/dplus/shell/page-header"
-import { SettingsHeader } from "@starter/ui/dplus/shell/settings-header"
-import { type SlugStatus, SlugField } from "@starter/ui/dplus/shell/slug-field"
-import { ViewOnlyNotice } from "@starter/ui/dplus/shell/view-only-notice"
-import { OrgMark } from "@starter/ui/dplus/org-mark"
+} from "@proof/ui/components/ui/dialog"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { NativeSelect, NativeSelectOption } from "@proof/ui/components/ui/native-select"
+import { CopyField } from "@proof/ui/dplus/shell/copy-field"
+import { DangerAction, DangerZone } from "@proof/ui/dplus/shell/danger-zone"
+import { type RenderLink, anchorLink } from "@proof/ui/dplus/shell/link"
+import { PageBody } from "@proof/ui/dplus/shell/page-header"
+import { SettingsHeader } from "@proof/ui/dplus/shell/settings-header"
+import { type SlugStatus, SlugField } from "@proof/ui/dplus/shell/slug-field"
+import { ViewOnlyNotice } from "@proof/ui/dplus/shell/view-only-notice"
+import { OrgMark } from "@proof/ui/dplus/org-mark"
 
 import { ASSIGNABLE_ROLES, type AssignableRole } from "../lib/members"
 import { ROLE_LABEL } from "../lib/roles"

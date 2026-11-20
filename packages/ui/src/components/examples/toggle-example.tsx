@@ -1,6 +1,6 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
-import { Toggle } from "@starter/ui/components/ui/toggle"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
+import { Toggle } from "@proof/ui/components/ui/toggle"
 import { BoldIcon, ItalicIcon, UnderlineIcon, BookmarkIcon } from "lucide-react"
 
 export default function ToggleExample() {

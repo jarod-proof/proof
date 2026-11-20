@@ -1,5 +1,5 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Empty,
   EmptyContent,
@@ -7,9 +7,9 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@starter/ui/components/ui/empty"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@starter/ui/components/ui/input-group"
-import { Kbd } from "@starter/ui/components/ui/kbd"
+} from "@proof/ui/components/ui/empty"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@proof/ui/components/ui/input-group"
+import { Kbd } from "@proof/ui/components/ui/kbd"
 import { ArrowUpRightIcon, CircleDashedIcon, FolderIcon, PlusIcon } from "lucide-react"
 
 export default function EmptyExample() {

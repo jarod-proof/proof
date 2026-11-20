@@ -2,7 +2,7 @@ import * as React from "react"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "cn"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import { XIcon } from "lucide-react"
 
 // True while the dialog should show without an enter or exit animation: always for dialogs that

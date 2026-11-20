@@ -4,7 +4,7 @@ import type { BetterAuthOptions } from "better-auth"
  * The header better-auth reads the client address from. apps/api sets it from the address it trusts
  * (clientIp) and drops any copy a client sent, so a client cannot choose its own bucket.
  */
-export const CLIENT_IP_HEADER = "x-starter-client-ip"
+export const CLIENT_IP_HEADER = "x-proof-client-ip"
 
 /** better-auth's `advanced.ipAddress`: one trusted header, which carries one address. */
 export const authIpAddress = {

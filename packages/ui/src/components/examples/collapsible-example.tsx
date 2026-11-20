@@ -1,22 +1,22 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@starter/ui/components/ui/card"
+} from "@proof/ui/components/ui/card"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@starter/ui/components/ui/collapsible"
-import { Field, FieldGroup, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { Tabs, TabsList, TabsTrigger } from "@starter/ui/components/ui/tabs"
+} from "@proof/ui/components/ui/collapsible"
+import { Field, FieldGroup, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { Tabs, TabsList, TabsTrigger } from "@proof/ui/components/ui/tabs"
 import { ChevronRightIcon, FolderIcon, FileIcon, MinimizeIcon, MaximizeIcon } from "lucide-react"
 
 export default function CollapsibleExample() {

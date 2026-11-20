@@ -2,7 +2,7 @@ import * as React from "react"
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog"
 import { cn } from "cn"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 
 // True for the exit after Escape: a key you pressed takes effect at once, with no exit animation.
 const AlertDialogInstantContext = React.createContext(false)

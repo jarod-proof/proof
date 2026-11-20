@@ -2,7 +2,7 @@ import {} from "@tanstack/react-form"
 import { useId, useState } from "react"
 import { z } from "zod"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,10 +10,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
-import {} from "@starter/ui/components/ui/input"
-import { QrCode } from "@starter/ui/dplus/qr-code"
-import { CopyField } from "@starter/ui/dplus/shell/copy-field"
+} from "@proof/ui/components/ui/dialog"
+import {} from "@proof/ui/components/ui/input"
+import { QrCode } from "@proof/ui/dplus/qr-code"
+import { CopyField } from "@proof/ui/dplus/shell/copy-field"
 
 import { type TotpSetup, totpSecretOf } from "../../lib/account-api"
 import { dateLabel } from "../../lib/account-format"

@@ -1,4 +1,4 @@
-// The API's side of analytics (docs/analytics.md): the provider @starter/env names, and the auth
+// The API's side of analytics (docs/analytics.md): the provider @proof/env names, and the auth
 // events worth counting. Operation calls are captured by the invoke hooks (hooks.ts) and the web
 // app's events by POST /api/events (app.ts).
 import {
@@ -6,9 +6,9 @@ import {
   createAnalyticsFor,
   TRACKED_AUTH_EVENTS,
   type TrackedAuthEventName,
-} from "@starter/analytics"
-import type { AuthEvent, AuthEventName } from "@starter/auth"
-import type { Logger } from "@starter/logger"
+} from "@proof/analytics"
+import type { AuthEvent, AuthEventName } from "@proof/auth"
+import type { Logger } from "@proof/logger"
 
 // Every tracked name is a real auth event: a rename in auth-events.ts fails here.
 const tracked: ReadonlySet<string> = new Set(TRACKED_AUTH_EVENTS satisfies readonly AuthEventName[])
@@ -30,7 +30,7 @@ export function analyticsFromEnv(env: AnalyticsEnv, logger: Logger): Analytics {
     case "log":
       return createAnalyticsFor({ provider: "log", logger })
     case "posthog":
-      // @starter/env refuses posthog without its key.
+      // @proof/env refuses posthog without its key.
       return createAnalyticsFor({
         provider: "posthog",
         apiKey: env.POSTHOG_API_KEY ?? "",

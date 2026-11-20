@@ -11,7 +11,7 @@
 // The writer is injected (`onAuthEvent`), so this package never imports the API's data layer.
 import type { BetterAuthPlugin } from "better-auth"
 import { createAuthMiddleware, isAPIError } from "better-auth/api"
-import { reportError } from "@starter/errors"
+import { reportError } from "@proof/errors"
 
 export const AUTH_EVENT_NAMES = [
   "auth.sign_in",
@@ -79,11 +79,11 @@ export interface AuthSession {
 export interface AuthEventsOptions {
   /** Called after each event, off the response path. Its errors are reported, never thrown. */
   onAuthEvent: (event: AuthEvent) => void | Promise<void>
-  /** Header holding the trusted client IP. Defaults to `x-starter-client-ip`. */
+  /** Header holding the trusted client IP. Defaults to `x-proof-client-ip`. */
   ipHeader?: string
 }
 
-export const AUTH_EVENT_IP_HEADER = "x-starter-client-ip"
+export const AUTH_EVENT_IP_HEADER = "x-proof-client-ip"
 
 /** A rule's event. `outcome` is set only where the call's result isn't the outcome (see the verify rule). */
 type Draft = Pick<AuthEvent, "name" | "userId" | "organizationId" | "subjectUserId"> & {
@@ -316,7 +316,7 @@ function pickBody(body: unknown): Record<string, unknown> | undefined {
 export function authEvents(opts: AuthEventsOptions): BetterAuthPlugin {
   const ipHeader = opts.ipHeader ?? AUTH_EVENT_IP_HEADER
   return {
-    id: "starter-auth-events",
+    id: "proof-auth-events",
     hooks: {
       after: [
         {

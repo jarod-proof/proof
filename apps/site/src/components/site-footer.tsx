@@ -1,4 +1,4 @@
-import { StatusIcon } from "@starter/ui/dplus/status"
+import { StatusIcon } from "@proof/ui/dplus/status"
 
 import { footerColumns, site } from "../site"
 import { Logo } from "./logo"

@@ -1,27 +1,20 @@
 ---
-name: starter
-description: Use the Starter API from an agent: connect over MCP, sign in headless with the device grant, create or claim an account, and call operations safely. Use when the user asks to do anything in Starter, connect Starter to an agent or CI, or write code against the Starter API.
+name: proof
+description: Use the Proof API from an agent: connect over MCP, sign in headless with the device grant, create or claim an account, and call operations safely. Use when the user asks to do anything in Proof, connect Proof to an agent or CI, or write code against the Proof API.
 ---
 
-# Starter
+# Proof
 
-<!-- template:start -->
-<!-- Template: this file ships to your customers' agents (`npx skills add <owner>/<repo>`).
-Rename the folder and `name`, replace the description with what your product does and the
-phrases users say when they need it, and keep it short: link to llms-full.txt for detail.
-Keep it in step with apps/api: operation names, scopes and error codes here are checked by
-apps/api/src/skill-parity.test.ts. Install snippets come from llms.txt, not from this file. -->
-<!-- template:end -->
 
-Starter exposes the same operations four ways. Pick the first that fits:
+Proof exposes the same operations four ways. Pick the first that fits:
 
 1. **MCP** (best inside an agent): `https://api.example.com/mcp` (Streamable HTTP). The client signs the
    person in with OAuth on first use; no key is pasted. Tools are the operations below, except `signup`,
   which is REST only.
 2. **REST** (scripts, CI, server code): JSON over HTTPS, with an API key or an OAuth access token.
 3. **OpenAPI** for generated clients: `https://api.example.com/openapi.json`.
-4. **CLI** (terminal, CI): `npx @starter/cli login` signs in with the device grant, then
-   `npx @starter/cli call <operation>` runs any operation and `npx @starter/cli ops` lists them. Output is JSON.
+4. **CLI** (terminal, CI): `npx @proof/cli login` signs in with the device grant, then
+   `npx @proof/cli call <operation>` runs any operation and `npx @proof/cli ops` lists them. Output is JSON.
 
 Install snippets for each client are in `https://api.example.com/llms.txt` under "Install".
 
@@ -31,7 +24,7 @@ Every credential acts in one organization (workspace) and sees only that organiz
 
 - **API key**: an organization admin creates one with exactly the permissions it needs (for example
   `project: read`). Send `x-api-key: sk_...` or `Authorization: Bearer sk_...`. Keep it in an env var such
-  as `STARTER_API_KEY`; never paste it into code or chat.
+  as `PROOF_API_KEY`; never paste it into code or chat.
 - **OAuth, interactive**: the MCP client discovers it from `/.well-known/oauth-protected-resource/mcp`. The
   person picks the organization and approves scopes.
 - **OAuth, headless (device grant)**: for CI and machines with no browser. Register a public client that lists
@@ -47,7 +40,7 @@ Check a credential first. `whoami` names the organization, the grants, today's u
 with its features and limits:
 
 ```sh
-curl -s https://api.example.com/v1/whoami -H "x-api-key: $STARTER_API_KEY"
+curl -s https://api.example.com/v1/whoami -H "x-api-key: $PROOF_API_KEY"
 ```
 
 ## Scopes

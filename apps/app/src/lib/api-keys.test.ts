@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 // The catalog itself (not a copy): the picker must stay a subset of what the server defines.
-import { roles, statements } from "@starter/auth/client"
+import { roles, statements } from "@proof/auth/client"
 import {
   KEY_ACTIONS,
   accessSummary,

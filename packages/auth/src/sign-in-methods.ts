@@ -35,7 +35,7 @@ export function signInMethodsOf(opts: SignInMethodOptions): SignInMethods {
 
 export const signInMethodsPlugin = (methods: SignInMethods) =>
   ({
-    id: "starter-sign-in-methods",
+    id: "proof-sign-in-methods",
     endpoints: {
       signInMethods: createAuthEndpoint("/sign-in-methods", { method: "GET" }, async (ctx) =>
         ctx.json(methods),

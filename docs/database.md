@@ -2,12 +2,12 @@
 
 - App tables go in `packages/db/src/schema.ts`. Auth tables (`user`, `session`, `account`,
   `verification`) are generated into `src/auth-schema.ts`. Regenerate them with
-  `pnpm --filter @starter/auth generate` after changing auth options or plugins.
-- New migration: `pnpm --filter @starter/db db:generate`, then commit the SQL in
+  `pnpm --filter @proof/auth generate` after changing auth options or plugins.
+- New migration: `pnpm --filter @proof/db db:generate`, then commit the SQL in
   `packages/db/drizzle/`.
 - Applying migrations (`db:migrate`, `drizzle-kit push`) is denied for agents. Ask the user to run
   them, or to run `scripts/release.mjs` in a deploy.
-- Each git worktree made with `pnpm wt` has its own database, `starter_wt_<name>`, with that
+- Each git worktree made with `pnpm wt` has its own database, `proof_wt_<name>`, with that
   branch's migrations applied. `pnpm wt reset-db` rebuilds it. Agents run these; the main database
   stays the user's. See `docs/tooling.md` (Worktrees).
 
@@ -81,13 +81,10 @@
   it. Don't run `DROP INDEX CONCURRENTLY` by hand first: 0016's statements have no `IF EXISTS`, so
   it would then fail. On a large, busy table, apply it in a quiet window. Not applied yet: the user
   applies migrations, agents don't.
-<!-- template:start -->
-- Migrations `0003` onward are not applied until the user runs them.
-<!-- template:end -->
 
 ## Cleanup
 
-`pnpm --filter @starter/api-app cleanup` (`apps/api/src/cleanup.ts`, `apps/api/src/data/cleanup.ts`)
+`pnpm --filter @proof/api-app cleanup` (`apps/api/src/cleanup.ts`, `apps/api/src/data/cleanup.ts`)
 deletes, in batches of 1000: signup attempts older than 25 hours (the window is coupled by hand to
 `signup.ts`), expired idempotency keys, and expired `device-org:` verification rows. It is
 cross-tenant and takes no proof, and only the entry calls it, never a request. Schedule it hourly;

@@ -1,6 +1,6 @@
 # Observability
 
-- Wrap every route handler in `observe` from `@starter/observability`. `apps/api` has its own
+- Wrap every route handler in `observe` from `@proof/observability`. `apps/api` has its own
   request-id and access-log middleware instead.
 - Health is liveness only. `/health` (`createHealthHandler({})`) pings no dependency and answers
   `{ status: "ok", checks: {} }`.
@@ -35,13 +35,13 @@ A request with no credential has no caller fields. Paths with a token in them ar
 
 ## Logging and errors
 
-- `createLogger({ name })` from `@starter/logger` is pino with secret redaction. Use it, never
+- `createLogger({ name })` from `@proof/logger` is pino with secret redaction. Use it, never
   `console.*` or pino directly. `apps/api/src/server.ts` creates the API's logger.
-- `AppError` (`@starter/errors`) takes `hint`, `docs`, `headers` and `context`. Clients get
+- `AppError` (`@proof/errors`) takes `hint`, `docs`, `headers` and `context`. Clients get
   `error.toPublic()`, never an `INTERNAL` message.
 - `setErrorReporter` registers the reporter once at startup. `reportError` passes reported errors to
   it.
-- `parseStatusProviders` (`@starter/observability`) parses `STATUS_PROVIDERS`.
+- `parseStatusProviders` (`@proof/observability`) parses `STATUS_PROVIDERS`.
 
 ## Helpers
 

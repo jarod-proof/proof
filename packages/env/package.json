@@ -1,5 +1,5 @@
 {
-  "name": "@starter/env",
+  "name": "@proof/env",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -18,7 +18,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "oxlint": "catalog:",

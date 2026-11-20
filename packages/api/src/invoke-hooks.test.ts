@@ -1,4 +1,4 @@
-import { AppError, setErrorReporter } from "@starter/errors"
+import { AppError, setErrorReporter } from "@proof/errors"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 import type { PermissionSet } from "./permissions"

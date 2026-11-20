@@ -4,7 +4,7 @@ import { cn } from "cn"
 import { useId, useRef, useState, type ReactNode } from "react"
 import {} from "zod"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -12,19 +12,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { Textarea } from "@starter/ui/components/ui/textarea"
-import {} from "@starter/ui/dplus/status"
+} from "@proof/ui/components/ui/dialog"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { Textarea } from "@proof/ui/components/ui/textarea"
+import {} from "@proof/ui/dplus/status"
 import {
   type LinkProps,
   type RenderLink,
   anchorLink,
   useRenderLink,
-} from "@starter/ui/dplus/shell/link"
-import { PageBody } from "@starter/ui/dplus/shell/page-header"
-import { SettingsHeader } from "@starter/ui/dplus/shell/settings-header"
+} from "@proof/ui/dplus/shell/link"
+import { PageBody } from "@proof/ui/dplus/shell/page-header"
+import { SettingsHeader } from "@proof/ui/dplus/shell/settings-header"
 
 import { ConfirmDialog } from "../components/confirm-dialog"
 import { messageOf } from "../lib/messages"

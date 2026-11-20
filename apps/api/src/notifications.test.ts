@@ -1,4 +1,4 @@
-import type { Caller } from "@starter/api"
+import type { Caller } from "@proof/api"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 
 import { createTestApp } from "./app.test.helpers"

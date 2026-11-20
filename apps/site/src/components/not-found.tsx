@@ -1,4 +1,4 @@
-import { buttonVariants } from "@starter/ui/components/ui/button"
+import { buttonVariants } from "@proof/ui/components/ui/button"
 import { cn } from "cn"
 
 /** The 404 page body: say so plainly and offer the way back. */

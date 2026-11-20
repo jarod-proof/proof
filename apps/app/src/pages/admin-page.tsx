@@ -4,7 +4,7 @@ import { createColumnHelper, tableFeatures, useTable } from "@tanstack/react-tab
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useId, useMemo, useRef, useState } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -12,16 +12,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
+} from "@proof/ui/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@starter/ui/components/ui/dropdown-menu"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { NativeSelect, NativeSelectOption } from "@starter/ui/components/ui/native-select"
+} from "@proof/ui/components/ui/dropdown-menu"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { NativeSelect, NativeSelectOption } from "@proof/ui/components/ui/native-select"
 import {
   Table,
   TableBody,
@@ -29,11 +29,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@starter/ui/components/ui/table"
-import { type RenderLink, anchorLink } from "@starter/ui/dplus/shell/link"
-import { PageBody } from "@starter/ui/dplus/shell/page-header"
-import { type SettingsTab, SettingsHeader } from "@starter/ui/dplus/shell/settings-header"
-import { Status } from "@starter/ui/dplus/status"
+} from "@proof/ui/components/ui/table"
+import { type RenderLink, anchorLink } from "@proof/ui/dplus/shell/link"
+import { PageBody } from "@proof/ui/dplus/shell/page-header"
+import { type SettingsTab, SettingsHeader } from "@proof/ui/dplus/shell/settings-header"
+import { Status } from "@proof/ui/dplus/status"
 
 import type { AdminAction } from "../containers/admin-data"
 import type { AdminRole, AdminSession, AdminUser } from "../lib/admin-api"

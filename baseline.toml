@@ -1,5 +1,5 @@
 [baseline]
-name = "starter"
+name = "proof"
 extends = ["shadcn-strict", "dependency-hygiene", "security", "ai-codegen"]
 # scripts: CLIs may log. *-example.tsx: shadcn demo code, full of raw colors by design. *.gen.ts:
 # generated (TanStack's route tree is full of `as any`). docs: agent prompts, not product text.
@@ -40,7 +40,7 @@ suggest = "Use a shadcn semantic token class or add an explicit dark: counterpar
 allowed_classes = ["bg-black/20"]
 
 # Overrides the preset's no-console-log (a warning that only matched log/debug): every console
-# method is an error. Log with @starter/logger; CLIs write to process.stdout/stderr.
+# method is an error. Log with @proof/logger; CLIs write to process.stdout/stderr.
 [[rule]]
 id = "no-console-log"
 type = "banned-pattern"
@@ -50,18 +50,18 @@ exclude_glob = ["**/scripts/**"]
 regex = true
 skip_strings = true
 pattern = "\\bconsole\\.(log|debug|info|warn|error|trace)\\("
-message = "Use @starter/logger instead of console"
-suggest = "import { createLogger } from \"@starter/logger\"; const log = createLogger({ name: \"...\" })"
+message = "Use @proof/logger instead of console"
+suggest = "import { createLogger } from \"@proof/logger\"; const log = createLogger({ name: \"...\" })"
 
 [[rule]]
-id = "use-starter-logger"
+id = "use-proof-logger"
 type = "banned-import"
 severity = "error"
 glob = "**/*.{ts,tsx,js,jsx,mjs,cjs}"
 exclude_glob = ["packages/logger/**"]
 packages = ["pino", "winston", "bunyan", "consola", "loglevel"]
-message = "Log through @starter/logger (it redacts secrets)"
-suggest = "import { createLogger } from \"@starter/logger\""
+message = "Log through @proof/logger (it redacts secrets)"
+suggest = "import { createLogger } from \"@proof/logger\""
 
 [[rule]]
 id = "use-cn"
@@ -73,9 +73,9 @@ message = "Merge class names with cn"
 suggest = "import { cn } from \"cn\""
 
 # Primitives and component kits belong in packages/ui (shadcn base-sera, on Base UI). Apps import
-# components from @starter/ui; add new ones there with the shadcn CLI.
+# components from @proof/ui; add new ones there with the shadcn CLI.
 [[rule]]
-id = "use-starter-ui"
+id = "use-proof-ui"
 type = "banned-import"
 severity = "error"
 glob = "**/*.{ts,tsx,js,jsx}"
@@ -93,15 +93,15 @@ packages = [
   "antd",
   "react-bootstrap",
 ]
-message = "Use components from @starter/ui instead of a UI library directly"
-suggest = "Import from @starter/ui, or add the component there with npx shadcn@latest add <name>"
+message = "Use components from @proof/ui instead of a UI library directly"
+suggest = "Import from @proof/ui, or add the component there with npx shadcn@latest add <name>"
 
 # Env vars are read and validated in packages/env. Exceptions: tests (e2e tests run in the e2e
 # runner, not with the app's env), build-tool configs, the
 # logger (LOG_LEVEL, read before anything else loads), createDb's default URL and the CLI, which
 # runs on a customer's machine rather than with the server's env.
 [[rule]]
-id = "use-starter-env"
+id = "use-proof-env"
 type = "banned-pattern"
 severity = "error"
 glob = "**/*.{ts,tsx,js,jsx,mjs,cjs}"
@@ -117,8 +117,8 @@ exclude_glob = [
 ]
 skip_strings = true
 pattern = "process.env"
-message = "Read env vars through @starter/env"
-suggest = "Add the variable to packages/env and .env.example, then import env from @starter/env"
+message = "Read env vars through @proof/env"
+suggest = "Add the variable to packages/env and .env.example, then import env from @proof/env"
 
 # Overrides the security preset's no-env-files, which fails on any `.env` on disk, including the local,
 # gitignored one the setup creates (`cp .env.example .env`); it checks presence, not git, and ignores
@@ -197,9 +197,9 @@ id = "no-server-imports-in-client"
 type = "banned-import"
 severity = "error"
 glob = "{apps/app,packages/ui,packages/sdk,packages/cli}/**/*.{ts,tsx}"
-packages = ["@starter/db", "@starter/env", "@starter/auth-proofs", "@starter/observability"]
+packages = ["@proof/db", "@proof/env", "@proof/auth-proofs", "@proof/observability"]
 message = "Server-only package imported from client code"
-suggest = "Go through the API (@starter/sdk) or move the shared piece to a package both sides can use"
+suggest = "Go through the API (@proof/sdk) or move the shared piece to a package both sides can use"
 
 # Handlers and data access throw AppError (clients get error.toPublic()); bare Error leaks nothing but
 # also carries no code.
@@ -211,7 +211,7 @@ glob = "apps/api/src/**/*.ts"
 exclude_glob = ["**/*.test.ts", "**/*.test.helpers.ts"]
 skip_strings = true
 pattern = "new Error("
-message = "Throw AppError from @starter/errors"
+message = "Throw AppError from @proof/errors"
 suggest = "throw new AppError(\"INTERNAL\", \"...\")"
 
 [[rule]]
@@ -258,7 +258,7 @@ glob = "{apps,packages}/**/*.{ts,tsx}"
 regex = true
 pattern = "from \"(\\.\\./)+(apps|packages)/"
 message = "Import another package through its name, not a relative path into its src"
-suggest = "Export it from the package (apps/app gets the auth catalog from @starter/auth/client)"
+suggest = "Export it from the package (apps/app gets the auth catalog from @proof/auth/client)"
 
 [[rule]]
 id = "ratchet-as-unknown-as"
@@ -334,5 +334,5 @@ severity = "error"
 glob = "apps/api/src/**/*.ts"
 exclude_glob = ["apps/api/src/data/**", "apps/api/src/server.ts", "**/*.test.ts", "**/*.test.helpers.ts"]
 regex = true
-pattern = "^(import \\{[^}]*\\}|\\}) from \"@starter/db\""
-message = "Only apps/api/src/data/ imports tables from @starter/db; elsewhere use import type { Database }"
+pattern = "^(import \\{[^}]*\\}|\\}) from \"@proof/db\""
+message = "Only apps/api/src/data/ imports tables from @proof/db; elsewhere use import type { Database }"

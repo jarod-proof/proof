@@ -9,8 +9,8 @@ import {
   name,
   type OperatorOrg,
   type OrganizationId,
-} from "@starter/auth-proofs"
-import { AppError } from "@starter/errors"
+} from "@proof/auth-proofs"
+import { AppError } from "@proof/errors"
 import {
   dayBefore,
   type ExposureDay,
@@ -18,7 +18,7 @@ import {
   INACTIVE_DAYS,
   SINGLE_VALUE_DAYS,
   staleSignals,
-} from "@starter/flags"
+} from "@proof/flags"
 import { z } from "zod"
 
 import {

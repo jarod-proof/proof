@@ -2,7 +2,7 @@ import { mkdtemp, readdir, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-import { AppError } from "@starter/errors"
+import { AppError } from "@proof/errors"
 import { afterAll, describe, expect, it, vi } from "vitest"
 
 import {
@@ -222,7 +222,7 @@ describe("local", () => {
   })
 
   it("writes, reads and deletes files under its directory", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "starter-storage-"))
+    const dir = await mkdtemp(join(tmpdir(), "proof-storage-"))
     dirs.push(dir)
     const store = createFileStore({
       driver: "local",

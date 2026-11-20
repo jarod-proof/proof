@@ -5,20 +5,20 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { credentialsPath, loadCredentials, saveCredentials } from "./config"
 
 describe("credentialsPath", () => {
-  it("prefers STARTER_CONFIG_DIR, then XDG_CONFIG_HOME, then ~/.config", () => {
-    expect(credentialsPath({ STARTER_CONFIG_DIR: "/x" }, "/home/u")).toBe("/x/credentials.json")
+  it("prefers PROOF_CONFIG_DIR, then XDG_CONFIG_HOME, then ~/.config", () => {
+    expect(credentialsPath({ PROOF_CONFIG_DIR: "/x" }, "/home/u")).toBe("/x/credentials.json")
     expect(credentialsPath({ XDG_CONFIG_HOME: "/xdg" }, "/home/u")).toBe(
-      "/xdg/starter/credentials.json",
+      "/xdg/proof/credentials.json",
     )
     expect(credentialsPath({ XDG_CONFIG_HOME: "" }, "/home/u")).toBe(
-      "/home/u/.config/starter/credentials.json",
+      "/home/u/.config/proof/credentials.json",
     )
-    expect(credentialsPath({}, "/home/u")).toBe("/home/u/.config/starter/credentials.json")
+    expect(credentialsPath({}, "/home/u")).toBe("/home/u/.config/proof/credentials.json")
   })
 
-  it("treats an empty STARTER_CONFIG_DIR as unset, not the working directory", () => {
-    expect(credentialsPath({ STARTER_CONFIG_DIR: "" }, "/home/u")).toBe(
-      "/home/u/.config/starter/credentials.json",
+  it("treats an empty PROOF_CONFIG_DIR as unset, not the working directory", () => {
+    expect(credentialsPath({ PROOF_CONFIG_DIR: "" }, "/home/u")).toBe(
+      "/home/u/.config/proof/credentials.json",
     )
   })
 })
@@ -27,7 +27,7 @@ describe("credentials file", () => {
   let dir: string
   let path: string
   beforeEach(async () => {
-    dir = await mkdtemp(join(tmpdir(), "starter-config-"))
+    dir = await mkdtemp(join(tmpdir(), "proof-config-"))
     path = join(dir, "nested", "credentials.json")
   })
   afterEach(async () => {

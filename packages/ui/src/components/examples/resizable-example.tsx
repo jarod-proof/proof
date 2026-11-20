@@ -3,12 +3,12 @@
 import * as React from "react"
 import type { Layout } from "react-resizable-panels"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@starter/ui/components/ui/resizable"
+} from "@proof/ui/components/ui/resizable"
 
 export default function ResizableExample() {
   return (

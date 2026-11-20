@@ -1,6 +1,6 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
-import { ButtonGroup, ButtonGroupText } from "@starter/ui/components/ui/button-group"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
+import { ButtonGroup, ButtonGroupText } from "@proof/ui/components/ui/button-group"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,11 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@starter/ui/components/ui/dropdown-menu"
-import { Field, FieldGroup } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@starter/ui/components/ui/input-group"
-import { Label } from "@starter/ui/components/ui/label"
+} from "@proof/ui/components/ui/dropdown-menu"
+import { Field, FieldGroup } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@proof/ui/components/ui/input-group"
+import { Label } from "@proof/ui/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -20,8 +20,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@starter/ui/components/ui/select"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@starter/ui/components/ui/tooltip"
+} from "@proof/ui/components/ui/select"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@proof/ui/components/ui/tooltip"
 import {
   ChevronDownIcon,
   VolumeX,

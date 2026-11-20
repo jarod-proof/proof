@@ -56,7 +56,7 @@ export function uploadFieldRefusal(path: string | undefined, body: unknown): str
  * matcher reads `request` (set by the router) so `auth.api.*` from server code is never refused.
  */
 export const uploadFieldGuard = {
-  id: "starter-upload-fields",
+  id: "proof-upload-fields",
   hooks: {
     before: [
       {

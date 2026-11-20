@@ -1,4 +1,4 @@
-import { buttonVariants } from "@starter/ui/components/ui/button"
+import { buttonVariants } from "@proof/ui/components/ui/button"
 import { cn } from "cn"
 
 import { type NavId, nav, site } from "../site"

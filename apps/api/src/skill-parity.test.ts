@@ -1,17 +1,17 @@
-// The shipped skill (skills/starter/SKILL.md) is read by customers' agents, so what it names must be
+// The shipped skill (skills/proof/SKILL.md) is read by customers' agents, so what it names must be
 // what the server does: its error codes equal ErrorCode, its scopes equal OAUTH_SCOPES, every
 // operation it names exists in the registry. llms.txt must carry the install snippets the skill
 // points at.
 import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
-import { OAUTH_SCOPES } from "@starter/auth"
-import type { ErrorCode } from "@starter/errors"
+import { OAUTH_SCOPES } from "@proof/auth"
+import type { ErrorCode } from "@proof/errors"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { createTestApp } from "./app.test.helpers"
 import { PRODUCT } from "./product"
 
 const SKILL = readFileSync(
-  fileURLToPath(new URL("../../../skills/starter/SKILL.md", import.meta.url)),
+  fileURLToPath(new URL("../../../skills/proof/SKILL.md", import.meta.url)),
   "utf8",
 )
 
@@ -43,7 +43,7 @@ function section(md: string, heading: string): string {
 /** Inline code spans without spaces: `read`, `BAD_REQUEST`, `list_projects`. */
 const codeSpans = (text: string) => [...text.matchAll(/`([^`\s]+)`/g)].map((m) => m[1] ?? "")
 
-describe("skills/starter/SKILL.md matches the server", () => {
+describe("skills/proof/SKILL.md matches the server", () => {
   let t: Awaited<ReturnType<typeof createTestApp>>
   beforeAll(async () => {
     t = await createTestApp([], { skill: SKILL })
@@ -92,7 +92,7 @@ describe("skills/starter/SKILL.md matches the server", () => {
       expect(txt, path).toContain("httpUrl")
       expect(txt, path).toContain("Add custom connector")
       expect(txt, path).toContain("codex mcp login")
-      expect(txt, path).toContain("npx @starter/cli login")
+      expect(txt, path).toContain("npx @proof/cli login")
       // The skill is the Docs entry agents read first, and it is the served file itself.
       expect(txt, path).toMatch(/- \[Agent skill\]\(https?:\/\/[^)]+\/skill\.md\)/)
     }

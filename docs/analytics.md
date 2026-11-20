@@ -12,7 +12,7 @@ Product analytics go to the **analytics provider** (GLOSSARY) that `ANALYTICS_PR
 With no provider, the API's access log still names each request's operation, caller and outcome
 (`docs/observability.md`), so usage is readable from the logs alone.
 
-Change the provider by changing the env. No code changes. `@starter/env` refuses to start with
+Change the provider by changing the env. No code changes. `@proof/env` refuses to start with
 `posthog` and no `POSTHOG_API_KEY`. `.env.example` lists the variables.
 
 ## What is captured
@@ -40,7 +40,7 @@ Every **analytics event** is in one catalog, `AnalyticsEvent` in
 
 ## How it works
 
-- `@starter/analytics` has one interface, `Analytics` (`capture`, `flush`, `shutdown`), and one
+- `@proof/analytics` has one interface, `Analytics` (`capture`, `flush`, `shutdown`), and one
   adapter per provider (`AnalyticsProvider.send(batch)`). `createAnalyticsFor(config)` picks the
   adapter. The package reads no env: `apps/api/src/analytics.ts` builds the config.
 - `capture` only queues. It never waits on the network and never throws, so it is safe on the
@@ -58,7 +58,7 @@ Every **analytics event** is in one catalog, `AnalyticsEvent` in
   origin (API keys and OAuth tokens are FORBIDDEN). It accepts only the browser's events
   (`clientEventBatchSchema`: known names, strict fields, at most 20 events, a 16 KB body). The
   actor and organization come from the session, never from the body. It is not in OpenAPI.
-- `ANALYTICS_EVENTS_PATH` and the client schema come from `@starter/analytics/events`, the
+- `ANALYTICS_EVENTS_PATH` and the client schema come from `@proof/analytics/events`, the
   browser-safe entry (zod and types only). The web app imports that entry, never the root.
 
 ## Add an event

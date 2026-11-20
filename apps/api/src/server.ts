@@ -2,13 +2,13 @@ import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 
 import { serve } from "@hono/node-server"
-import { createAuth, parseStripePlans } from "@starter/auth"
-import { createDb } from "@starter/db"
-import { env } from "@starter/env"
-import { reportError, setErrorReporter } from "@starter/errors"
-import { createLogger } from "@starter/logger"
-import { parseStatusProviders } from "@starter/observability"
-import { createFileStore, type FileStore } from "@starter/storage"
+import { createAuth, parseStripePlans } from "@proof/auth"
+import { createDb } from "@proof/db"
+import { env } from "@proof/env"
+import { reportError, setErrorReporter } from "@proof/errors"
+import { createLogger } from "@proof/logger"
+import { parseStatusProviders } from "@proof/observability"
+import { createFileStore, type FileStore } from "@proof/storage"
 
 import { analyticsFromEnv, captureAuthEvent, captureSignUp } from "./analytics"
 import { createApp } from "./app"
@@ -24,10 +24,10 @@ import { PRODUCT } from "./product"
 import { startSupportSweep } from "./support-sweep"
 
 const logger = createLogger({ name: "api" })
-// The agent skill (skills/starter), served at /skill.md. Read from the repo (or the image) at boot, so a
+// The agent skill (skills/proof), served at /skill.md. Read from the repo (or the image) at boot, so a
 // missing file stops startup instead of serving nothing.
 const skill = readFileSync(
-  fileURLToPath(new URL("../../../skills/starter/SKILL.md", import.meta.url)),
+  fileURLToPath(new URL("../../../skills/proof/SKILL.md", import.meta.url)),
   "utf8",
 )
 // Every reported error (5xx and unexposed ones, from REST, MCP tools, the hooks and analytics) is
@@ -55,7 +55,7 @@ const supportEmail = env.SUPPORT_REPLY_DOMAIN
       replyDelay: env.SUPPORT_REPLY_DELAY_MS,
     }
   : undefined
-// Where uploads go (docs/storage.md). @starter/env has checked the chosen driver's variables are set.
+// Where uploads go (docs/storage.md). @proof/env has checked the chosen driver's variables are set.
 function fileStore(): FileStore | undefined {
   switch (env.STORAGE_DRIVER) {
     case undefined:
@@ -145,7 +145,7 @@ const auth = createAuth({
   support: {
     staffOrganizationId: env.OPERATOR_ORGANIZATION_ID,
     email: supportEmail,
-    // @starter/env has checked each source comes with the reply domain, and only one is set.
+    // @proof/env has checked each source comes with the reply domain, and only one is set.
     inbound: env.SUPPORT_INBOUND_SECRET
       ? { secret: env.SUPPORT_INBOUND_SECRET }
       : env.WRAPS_INBOUND_KEY && env.WRAPS_INBOUND_BUCKET
@@ -161,7 +161,7 @@ const auth = createAuth({
 // retries and closing solved tickets, and the notification emails that are delayed or retried.
 const supportSweep = startSupportSweep(auth, { logger, intervalMs: env.SUPPORT_SWEEP_INTERVAL_MS })
 
-// The daily request limit is the plan's (@starter/plans), through entitlements; unclaimed
+// The daily request limit is the plan's (@proof/plans), through entitlements; unclaimed
 // organizations get UNCLAIMED_ORG_DAILY_REQUEST_LIMIT (createAuth's `entitlements` option).
 const meter = createMeter({ db, entitlements: auth.entitlements })
 

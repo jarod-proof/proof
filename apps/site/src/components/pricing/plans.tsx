@@ -1,5 +1,5 @@
-import { Badge } from "@starter/ui/components/ui/badge"
-import { buttonVariants } from "@starter/ui/components/ui/button"
+import { Badge } from "@proof/ui/components/ui/badge"
+import { buttonVariants } from "@proof/ui/components/ui/button"
 import { cn } from "cn"
 import type { ReactNode } from "react"
 

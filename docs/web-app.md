@@ -1,6 +1,6 @@
 # Web app
 
-`apps/app` (`@starter/app`) is TanStack Start in SPA mode, the D+ app. `vite build` writes
+`apps/app` (`@proof/app`) is TanStack Start in SPA mode, the D+ app. `vite build` writes
 `apps/app/dist`, which `apps/api` serves from its origin. Dev: `vite dev` proxies `/api`, `/v1`,
 `/mcp`, `/.well-known` and `/ofrep` to `API_URL`.
 
@@ -28,8 +28,8 @@ list from `apps/app/src/routeTree.gen.ts`, and turbo hashes that file for api-ap
 ## Shape
 
 Thin route file, then a container in `src/containers` (data, TanStack Query, mutations), then a
-presentational page in `src/pages` (props in, callbacks out) built from `@starter/ui` and
-`@starter/ui/dplus/*`. The shell components take links through `renderLink` and `ShellLinkProvider`
+presentational page in `src/pages` (props in, callbacks out) built from `@proof/ui` and
+`@proof/ui/dplus/*`. The shell components take links through `renderLink` and `ShellLinkProvider`
 (TanStack Router's `Link` in `containers/router-link.tsx`).
 
 Account security is split into `src/pages/account-security/*.tsx`: passkeys, two-factor, backup
@@ -37,7 +37,7 @@ codes, sessions, password, connected accounts, plus `shared.tsx`.
 
 Shared pieces to reuse rather than rebuild:
 
-- `@starter/ui/dplus/shell/page-header`: `PageHeader` (the bordered title band), `PageTabs` (link
+- `@proof/ui/dplus/shell/page-header`: `PageHeader` (the bordered title band), `PageTabs` (link
   tabs under it) and `PageBody` (the content, one width for every page). Settings pages use
   `SettingsHeader`, which builds on them. Don't set a page's own `max-w` or centre it.
 - `components/confirm-dialog.tsx`: `ConfirmDialog`, for destructive confirmations.
@@ -50,9 +50,9 @@ Shared pieces to reuse rather than rebuild:
 
 ## Data layer
 
-- The product API (`/v1`) is called through `@starter/sdk`, via `productClient(orgId)` in
+- The product API (`/v1`) is called through `@proof/sdk`, via `productClient(orgId)` in
   `lib/product-client.ts`. It sends `X-Organization-Id`, turns off retries, and maps a
-  `StarterError` to a `WebError` with the server's hint. `ResponseBody<op>`, `RequestBody<op>` and
+  `ProofError` to a `WebError` with the server's hint. `ResponseBody<op>`, `RequestBody<op>` and
   `QueryParams<op>` are its types. The response types in `lib/*-api.ts` are aliases of them (for
   example `ResponseBody<"list_member_security">`), not hand-written copies.
 - Better-auth clients come from `makeAuthClient` in `lib/web-auth.ts`; `createWebAuth` wraps them.
@@ -60,7 +60,7 @@ Shared pieces to reuse rather than rebuild:
   (`qk.org(orgId)…`) and per-area key files. Recent additions: `qk.organizationSlugAvailable()`,
   `qk.org().membersSecurity()`, `qk.org().agentsCount()`.
 - Better-auth org calls always pass `organizationId`. `/v1` calls send `X-Organization-Id`
-  (`ORGANIZATION_HEADER` from `@starter/api`), and `resolvePrincipal` answers 409 when it disagrees
+  (`ORGANIZATION_HEADER` from `@proof/api`), and `resolvePrincipal` answers 409 when it disagrees
   with the caller's org, so two tabs on two orgs can't write to the wrong one.
 - Tables: TanStack Table. Long lists: TanStack Virtual. Debounce and run polling: TanStack Pacer,
   which pauses in background tabs. Shortcuts: TanStack Hotkeys (Ctrl/⌘K palette, G H, G A, G O,
@@ -107,7 +107,7 @@ anyone it isn't for, and the server decides every call.
 
 ## Theme
 
-Light, Dark or System, in `lib/theme.ts` (localStorage `starter.theme`). The boot script is inline
+Light, Dark or System, in `lib/theme.ts` (localStorage `proof.theme`). The boot script is inline
 (`src/theme-boot.js?raw`, allowed by the CSP hash). Never put un-hashed files under `/assets`: that
 path is served immutable. `app.css` `@source`s both `packages/ui/src/components/ui` and
 `packages/ui/src/dplus`.

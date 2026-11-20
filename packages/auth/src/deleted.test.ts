@@ -1,7 +1,7 @@
 // onDeleted: reported once the user or organization row is gone, on every deletion path, and never
 // a failure for the deletion itself. The HTTP flows (with the file sweep) are in
 // apps/api/src/auth-flows.test.ts.
-import { setErrorReporter } from "@starter/errors"
+import { setErrorReporter } from "@proof/errors"
 import { afterAll, beforeAll, describe, expect, it, onTestFinished } from "vitest"
 
 import { createTestAuth } from "./auth.test.helpers"

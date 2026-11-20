@@ -1,5 +1,5 @@
 {
-  "name": "@starter/mcp",
+  "name": "@proof/mcp",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",
-    "@starter/api": "workspace:*",
-    "@starter/errors": "workspace:*",
+    "@proof/api": "workspace:*",
+    "@proof/errors": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "oxlint": "catalog:",

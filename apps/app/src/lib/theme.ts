@@ -1,7 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react"
 
 /** localStorage key. `src/theme-boot.js` reads the same key before first paint: keep them equal. */
-export const THEME_STORAGE_KEY = "starter.theme"
+export const THEME_STORAGE_KEY = "proof.theme"
 
 export type ThemeChoice = "light" | "dark" | "system"
 

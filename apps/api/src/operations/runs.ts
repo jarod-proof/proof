@@ -1,7 +1,7 @@
-import { paginated, paginationInput } from "@starter/api"
-import type { OrgEventInput } from "@starter/auth"
-import { AgentId, agentInOrg, name, RunId, runInOrg } from "@starter/auth-proofs"
-import { AppError } from "@starter/errors"
+import { paginated, paginationInput } from "@proof/api"
+import type { OrgEventInput } from "@proof/auth"
+import { AgentId, agentInOrg, name, RunId, runInOrg } from "@proof/auth-proofs"
+import { AppError } from "@proof/errors"
 import { z } from "zod"
 import {
   appendRunStep,

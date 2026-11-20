@@ -1,4 +1,4 @@
-import { AppError } from "@starter/errors"
+import { AppError } from "@proof/errors"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import { decodeCursor, encodeCursor, paginated, paginationInput } from "./pagination"

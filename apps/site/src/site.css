@@ -1,4 +1,4 @@
-@import "@starter/ui/styles.css";
+@import "@proof/ui/styles.css";
 
 /* Tailwind scans this site and the ui package's components, vendored and D+ (not auto-detected from
    node_modules), as apps/app/src/app.css does. */

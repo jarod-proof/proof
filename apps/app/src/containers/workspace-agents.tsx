@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { type ReactNode, useCallback, useMemo } from "react"
 
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
 
 import { workspaceAgentKeys } from "../lib/agent-keys"
 import { messageOf } from "../lib/messages"

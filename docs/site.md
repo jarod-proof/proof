@@ -1,6 +1,6 @@
 # Marketing site (`apps/site`)
 
-`@starter/site` is the public marketing site: Astro, prerendered to static HTML in `apps/site/dist`,
+`@proof/site` is the public marketing site: Astro, prerendered to static HTML in `apps/site/dist`,
 with no client JavaScript except the "Copy link" button on blog posts. It is built from the
 "Marketing site template" boards of the D+ design canvas (`SiteHome`, `SitePricing`, `SiteBlog`,
 `SitePost`, `SiteChangelog`, `SiteLegal`, `SiteHeader`, `SiteFooter`).
@@ -9,7 +9,7 @@ with no client JavaScript except the "Copy link" button on blog posts. It is bui
 
 - `src/pages/*.astro` are thin: they load content and compose components. `src/layouts/base.astro`
   holds `<head>`, the pre-paint theme script, the header and the footer.
-- `src/components/**/*.tsx` are React components from `@starter/ui`, rendered by Astro at build
+- `src/components/**/*.tsx` are React components from `@proof/ui`, rendered by Astro at build
   time with no `client:` directive, so they ship as HTML. Markup goes here, not in `.astro` files:
   oxlint's `jsx-a11y` rules, baseline's dark-mode and raw-colour rules, and the tests only see
   `.tsx`.
@@ -25,8 +25,8 @@ Routes: `/`, `/pricing`, `/blog` (paged by six, `/blog/2`...), `/blog/<slug>`,
 
 ## Styling
 
-`src/site.css` imports `@starter/ui/styles.css`, so the site uses the app's tokens and dark mode
-(the `.dark` class, set before paint from the same `starter.theme` key as the app). It adds the
+`src/site.css` imports `@proof/ui/styles.css`, so the site uses the app's tokens and dark mode
+(the `.dark` class, set before paint from the same `proof.theme` key as the app). It adds the
 marketing type scale (`type-hero`, `type-page-title`, `type-section`, `type-lead`) and the styles
 for rendered Markdown (`.post-body`, `.legal-body`, `.change-body`), which has no classes of its
 own. Code blocks are not syntax-coloured (`markdown.syntaxHighlight: false`).
@@ -41,7 +41,7 @@ own. Code blocks are not syntax-coloured (`markdown.syntaxHighlight: false`).
 
 `SITE_URL` (canonical URLs, RSS) and `APP_URL` (where "Sign in" and "Start free" go) are read by
 `astro.config.ts` at build time; both are declared in `packages/env`. Under `pnpm dev`, portless
-serves the site as `site.starter` and both default to the portless URLs.
+serves the site as `site.proof` and both default to the portless URLs.
 
 ## Before publishing
 
@@ -52,7 +52,7 @@ design's copy; replace or delete them.
 
 ## Tooling notes
 
-- `pnpm --filter @starter/site typecheck` runs `astro sync && tsc`. `astro check` is not used: it
+- `pnpm --filter @proof/site typecheck` runs `astro sync && tsc`. `astro check` is not used: it
   needs TypeScript 5 or 6, and the repo is on 7. `.astro` files are therefore not type-checked,
   which is another reason to keep them thin.
 - Tests server-render each component with `renderToStaticMarkup` (as Astro does) and run

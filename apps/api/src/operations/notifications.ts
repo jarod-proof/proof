@@ -1,5 +1,5 @@
-import { paginated, paginationInput } from "@starter/api"
-import { AppError } from "@starter/errors"
+import { paginated, paginationInput } from "@proof/api"
+import { AppError } from "@proof/errors"
 import { z } from "zod"
 
 import { listNotifications } from "../data/notifications"

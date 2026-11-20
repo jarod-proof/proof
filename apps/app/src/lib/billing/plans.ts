@@ -1,6 +1,6 @@
-// The plans the billing page lists, from the product's plan catalog (@starter/plans): the copy the
+// The plans the billing page lists, from the product's plan catalog (@proof/plans): the copy the
 // pricing page shows and the limits the API enforces. Both adapters use it; prices are theirs.
-import { catalog, planDisplay, planIds } from "@starter/plans"
+import { catalog, planDisplay, planIds } from "@proof/plans"
 
 import type { BillingPlan } from "./adapter"
 

@@ -22,11 +22,11 @@ let harness: Harness
 let cleanup: () => Promise<void>
 
 async function makeHarness(): Promise<Harness> {
-  const dir = await mkdtemp(join(tmpdir(), "starter-cli-"))
+  const dir = await mkdtemp(join(tmpdir(), "proof-cli-"))
   const api = fakeApi()
   const waits: number[] = []
   let clock = Date.now()
-  const baseEnv = { STARTER_CONFIG_DIR: dir, STARTER_URL: BASE }
+  const baseEnv = { PROOF_CONFIG_DIR: dir, PROOF_URL: BASE }
   cleanup = () => rm(dir, { recursive: true, force: true })
   const run: Harness["run"] = async (argv, env = {}, stdin = "") => {
     let stdout = ""
@@ -58,13 +58,13 @@ async function makeHarness(): Promise<Harness> {
     dir,
     waits,
     run,
-    creds: () => loadCredentials(credentialsPath({ STARTER_CONFIG_DIR: dir })),
+    creds: () => loadCredentials(credentialsPath({ PROOF_CONFIG_DIR: dir })),
   }
 }
 
 /** A stored login for BASE whose access token is fresh unless `expiresAt` says otherwise. */
 async function storeLogin(dir: string, expiresAt = Date.now() + 3_600_000) {
-  await saveCredentials(credentialsPath({ STARTER_CONFIG_DIR: dir }), {
+  await saveCredentials(credentialsPath({ PROOF_CONFIG_DIR: dir }), {
     current: BASE,
     profiles: {
       [BASE]: { clientId: "cli_1", accessToken: "at_1", refreshToken: "rt_1", expiresAt },
@@ -170,21 +170,21 @@ describe("login", () => {
 
   it("allows plain http on this machine", async () => {
     const result = await harness.run(["whoami", "--base-url", "http://127.0.0.1:9"], {
-      STARTER_URL: "",
+      PROOF_URL: "",
     })
     // Not a usage error: the URL is accepted, then there is no login for it.
     expect(errorOf(result.stderr)).not.toMatchObject({ error: { code: "USAGE" } })
   })
 
-  it("treats an empty STARTER_URL as unset", async () => {
+  it("treats an empty PROOF_URL as unset", async () => {
     await storeLogin(harness.dir)
-    const result = await harness.run(["whoami"], { STARTER_URL: "" })
+    const result = await harness.run(["whoami"], { PROOF_URL: "" })
     expect(result.code, result.stderr).toBe(0)
   })
 
   it("stores the credentials owner-only (0600)", async () => {
     await harness.run(["login"])
-    const mode = (await stat(credentialsPath({ STARTER_CONFIG_DIR: harness.dir }))).mode & 0o777
+    const mode = (await stat(credentialsPath({ PROOF_CONFIG_DIR: harness.dir }))).mode & 0o777
     expect(mode).toBe(0o600)
   })
 
@@ -336,9 +336,9 @@ describe("whoami and authentication", () => {
     expect(harness.api.calls.at(-1)?.headers.get("authorization")).toBe("Bearer at_1")
   })
 
-  it("sends STARTER_API_KEY as x-api-key in preference to a saved login", async () => {
+  it("sends PROOF_API_KEY as x-api-key in preference to a saved login", async () => {
     await storeLogin(harness.dir)
-    await harness.run(["whoami"], { STARTER_API_KEY: "sk_live_1" })
+    await harness.run(["whoami"], { PROOF_API_KEY: "sk_live_1" })
     const last = harness.api.calls.at(-1)
     expect(last?.headers.get("x-api-key")).toBe("sk_live_1")
     expect(last?.headers.get("authorization")).toBeNull()
@@ -376,7 +376,7 @@ describe("whoami and authentication", () => {
     expect(result.code).toBe(1)
     expect(errorOf(result.stderr)).toMatchObject({
       status: 400,
-      error: { code: "SESSION_EXPIRED", hint: "Run starter login again." },
+      error: { code: "SESSION_EXPIRED", hint: "Run proof login again." },
     })
   })
 
@@ -399,7 +399,7 @@ describe("whoami and authentication", () => {
   })
 
   it("refuses a saved login that has no refresh token", async () => {
-    await saveCredentials(credentialsPath({ STARTER_CONFIG_DIR: harness.dir }), {
+    await saveCredentials(credentialsPath({ PROOF_CONFIG_DIR: harness.dir }), {
       current: BASE,
       profiles: { [BASE]: { clientId: "cli_1", expiresAt: Date.now() - 1 } },
     })
@@ -426,7 +426,7 @@ describe("whoami and authentication", () => {
 
 describe("ops", () => {
   it("lists the operations in the API's openapi.json", async () => {
-    const result = await harness.run(["ops"], { STARTER_API_KEY: "k" })
+    const result = await harness.run(["ops"], { PROOF_API_KEY: "k" })
     expect(result.code).toBe(0)
     const ops = parse(result.stdout) as { name: string; method: string; path: string }[]
     expect(ops).toContainEqual({
@@ -454,7 +454,7 @@ describe("ops", () => {
 
   it("fails when the base URL does not serve openapi.json", async () => {
     harness.api.routes["GET /openapi.json"] = { status: 404 }
-    const result = await harness.run(["ops"], { STARTER_API_KEY: "k" })
+    const result = await harness.run(["ops"], { PROOF_API_KEY: "k" })
     expect(result.code).toBe(1)
     expect(errorOf(result.stderr)).toMatchObject({
       status: 404,
@@ -464,7 +464,7 @@ describe("ops", () => {
 })
 
 describe("call", () => {
-  const env = { STARTER_API_KEY: "k" }
+  const env = { PROOF_API_KEY: "k" }
 
   it("maps query fields onto the query string for a GET", async () => {
     const result = await harness.run(
@@ -615,7 +615,7 @@ describe("arguments and help", () => {
   it("prints help with no command", async () => {
     const result = await harness.run([])
     expect(result.code).toBe(0)
-    expect(result.stdout).toContain("starter login")
+    expect(result.stdout).toContain("proof login")
   })
 
   it("prints help for --help", async () => {
@@ -650,10 +650,10 @@ describe("arguments and help", () => {
     })
   })
 
-  it("uses --base-url over STARTER_URL", async () => {
+  it("uses --base-url over PROOF_URL", async () => {
     harness.api.routes["GET /openapi.json"] = { status: 200, body: { paths: {} } }
     const result = await harness.run(["ops", "--base-url", "https://flag.test/"], {
-      STARTER_API_KEY: "k",
+      PROOF_API_KEY: "k",
     })
     expect(result.code).toBe(0)
     expect(harness.api.calls.at(-1)?.path).toBe("/openapi.json")
@@ -663,13 +663,13 @@ describe("arguments and help", () => {
     harness.api.fetch = async () => {
       throw new TypeError("fetch failed")
     }
-    const result = await harness.run(["ops"], { STARTER_API_KEY: "k" })
+    const result = await harness.run(["ops"], { PROOF_API_KEY: "k" })
     expect(result.code).toBe(1)
     expect(errorOf(result.stderr)).toMatchObject({ error: { code: "NETWORK_ERROR" } })
   })
 
   it("reports a corrupt credentials file rather than ignoring it", async () => {
-    await writeFile(credentialsPath({ STARTER_CONFIG_DIR: harness.dir }), '"just a string"')
+    await writeFile(credentialsPath({ PROOF_CONFIG_DIR: harness.dir }), '"just a string"')
     const result = await harness.run(["whoami"])
     expect(result.code).toBe(1)
     expect(errorOf(result.stderr)).toMatchObject({
@@ -679,10 +679,10 @@ describe("arguments and help", () => {
 
   it("rewrites the credentials file in place", async () => {
     await storeLogin(harness.dir)
-    await saveCredentials(credentialsPath({ STARTER_CONFIG_DIR: harness.dir }), {
+    await saveCredentials(credentialsPath({ PROOF_CONFIG_DIR: harness.dir }), {
       profiles: {},
     })
-    const text = await readFile(credentialsPath({ STARTER_CONFIG_DIR: harness.dir }), "utf8")
+    const text = await readFile(credentialsPath({ PROOF_CONFIG_DIR: harness.dir }), "utf8")
     expect(JSON.parse(text)).toEqual({ profiles: {} })
   })
 })
@@ -693,15 +693,15 @@ describe("default base URL", () => {
     expect(resolveBaseUrl({}, {}, { profiles: {} })).toBe("https://api.example.com")
   })
 
-  it("is overridden by STARTER_URL, then by the last login", () => {
-    expect(resolveBaseUrl({}, { STARTER_URL: BASE }, { profiles: {} })).toBe(BASE)
+  it("is overridden by PROOF_URL, then by the last login", () => {
+    expect(resolveBaseUrl({}, { PROOF_URL: BASE }, { profiles: {} })).toBe(BASE)
     expect(resolveBaseUrl({}, {}, { current: "http://localhost:3000", profiles: {} })).toBe(
       "http://localhost:3000",
     )
   })
 
   it("is what a credential-less call names when nothing is set", async () => {
-    const result = await harness.run(["whoami"], { STARTER_URL: "" })
+    const result = await harness.run(["whoami"], { PROOF_URL: "" })
     expect(result.code).toBe(1)
     expect(errorOf(result.stderr)).toMatchObject({
       error: { code: "NOT_LOGGED_IN", message: "No saved login for https://api.example.com" },

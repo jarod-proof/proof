@@ -1,4 +1,4 @@
-import { createLogger } from "@starter/logger"
+import { createLogger } from "@proof/logger"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import {

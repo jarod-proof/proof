@@ -1,6 +1,6 @@
 name: Release
 
-# Publishes @starter/cli and @starter/sdk to npm, with provenance, and then server.json to the MCP
+# Publishes @proof/cli and @proof/sdk to npm, with provenance, and then server.json to the MCP
 # registry. Run only from a version tag (v<version>), by pushing the tag or by dispatching from it.
 # See docs/tooling.md, "Releasing".
 on:
@@ -56,8 +56,8 @@ jobs:
 
       - name: Build and test the packages
         run: |
-          pnpm --filter @starter/cli --filter @starter/sdk build
-          pnpm --filter @starter/cli --filter @starter/sdk test
+          pnpm --filter @proof/cli --filter @proof/sdk build
+          pnpm --filter @proof/cli --filter @proof/sdk test
 
       # npm and pnpm read the token from ~/.npmrc, where ${NODE_AUTH_TOKEN} is expanded at run time.
       # The value is never printed. mise-action sets no registry, so this file does the auth.

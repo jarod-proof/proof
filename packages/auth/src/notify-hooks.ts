@@ -178,7 +178,7 @@ export function notificationHooks(options: NotificationHooksOptions): Notificati
   // ── Plugin hooks: the paths whose outcome or actor the organization hooks don't carry ────────────
 
   const plugin = {
-    id: "starter-notifications",
+    id: "proof-notifications",
     hooks: {
       before: [
         {

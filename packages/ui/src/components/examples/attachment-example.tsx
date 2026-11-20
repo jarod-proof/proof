@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
 import {
   Attachment,
   AttachmentAction,
@@ -11,8 +11,8 @@ import {
   AttachmentMedia,
   AttachmentTitle,
   AttachmentTrigger,
-} from "@starter/ui/components/ui/attachment"
-import { Button } from "@starter/ui/components/ui/button"
+} from "@proof/ui/components/ui/attachment"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -20,8 +20,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@starter/ui/components/ui/dialog"
-import { Spinner } from "@starter/ui/components/ui/spinner"
+} from "@proof/ui/components/ui/dialog"
+import { Spinner } from "@proof/ui/components/ui/spinner"
 import {
   FileTextIcon,
   XIcon,

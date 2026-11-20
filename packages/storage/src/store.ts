@@ -1,4 +1,4 @@
-import { AppError } from "@starter/errors"
+import { AppError } from "@proof/errors"
 
 /** Which file store holds uploads. `memory` is for tests. */
 export type StorageDriver = "local" | "s3" | "r2" | "vercel-blob" | "memory"

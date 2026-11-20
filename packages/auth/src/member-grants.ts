@@ -2,8 +2,8 @@
 // grant check (`grantStands` in principal.ts) only asks whether a consent or live refresh token
 // stands, so without this a person removed and later re-added would find their old agent working
 // again. Revoking stamps `revoked`, which also refuses access tokens issued before it.
-import type { Database } from "@starter/db"
-import { oauthAccessToken, oauthConsent, oauthRefreshToken } from "@starter/db/schema"
+import type { Database } from "@proof/db"
+import { oauthAccessToken, oauthConsent, oauthRefreshToken } from "@proof/db/schema"
 import { and, eq, isNull } from "drizzle-orm"
 import { APIError, createAuthMiddleware, getSessionFromCtx } from "better-auth/api"
 import type { Adapter } from "./membership"

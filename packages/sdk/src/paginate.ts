@@ -1,4 +1,4 @@
-import { StarterError } from "./errors"
+import { ProofError } from "./errors"
 
 /** A page of a cursor-paginated list, as the API returns them: `nextCursor` is null on the last page. */
 export interface CursorPage {
@@ -23,7 +23,7 @@ export async function* paginate<Page extends CursorPage, Item>(
     const next = page.nextCursor ?? undefined
     if (next !== undefined && seen.has(next)) {
       // A server that repeats a cursor would loop forever; fail loudly instead.
-      throw new StarterError({
+      throw new ProofError({
         status: 0,
         code: "PAGINATION_LOOP",
         message: "The server returned a cursor it had already returned",

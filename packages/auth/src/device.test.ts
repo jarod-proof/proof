@@ -1,7 +1,7 @@
 // The device grant's rules at the auth layer: which approvals count, what the token endpoint answers
 // for each code state, and that no code without an organization ever gets a token. The full flow
 // over the app's HTTP surface is in apps/api/src/device-flow.test.ts.
-import { createTestDb } from "@starter/db/testing"
+import { createTestDb } from "@proof/db/testing"
 import { decodeJwt } from "jose"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { AUDIENCE, BASE } from "./auth.test.helpers"

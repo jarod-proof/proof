@@ -1,7 +1,7 @@
 // listNotifications against the real schema, seeded through the API's notifier (never raw inserts):
 // only the person's rows stamped with the organization, newest first, paged on (created_at, id).
-import type { Caller } from "@starter/api"
-import { notification } from "@starter/db"
+import type { Caller } from "@proof/api"
+import { notification } from "@proof/db"
 import { and, desc, eq, isNull } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest"
 

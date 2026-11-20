@@ -1,8 +1,8 @@
-import { type Caller, decodeCursor, encodeCursor, operationsFor } from "@starter/api"
-import type { Auth, Catalog } from "@starter/auth"
-import type { Database } from "@starter/db"
-import { AppError, reportError } from "@starter/errors"
-import type { FileStore } from "@starter/storage"
+import { type Caller, decodeCursor, encodeCursor, operationsFor } from "@proof/api"
+import type { Auth, Catalog } from "@proof/auth"
+import type { Database } from "@proof/db"
+import { AppError, reportError } from "@proof/errors"
+import type { FileStore } from "@proof/storage"
 import { z } from "zod"
 
 import type { FlagService } from "../flags"
@@ -45,7 +45,7 @@ export const personUserId = (caller: Caller): string | undefined =>
 
 // Example operations. Each one is a REST route, an MCP tool, and an entry in openapi.json and
 // llms.txt. Replace them with your product's; keep descriptions written for an agent reader.
-// `permissions` is checked against the catalog in @starter/auth at compile time.
+// `permissions` is checked against the catalog in @proof/auth at compile time.
 export const defineOperation = operationsFor<Catalog>()
 
 // Keyset cursors: the position after the last row of a page, as the sort key (time and id).

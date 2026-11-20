@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import type { SignInMethods } from "@starter/auth/client"
-import { expectNoA11yViolations } from "@starter/ui/a11y"
+import type { SignInMethods } from "@proof/auth/client"
+import { expectNoA11yViolations } from "@proof/ui/a11y"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"

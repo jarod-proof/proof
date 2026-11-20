@@ -1,8 +1,8 @@
 // Plan refusals for the product API: a capacity check (@byo-oss/entitlements checkCapacity) that
 // says no becomes a FORBIDDEN naming the plan that would allow it, never a 500. A check that could
 // not read the plan (reason "error") is INTERNAL: nothing is created while the plan is unknown.
-import { AppError } from "@starter/errors"
-import { type PlanId, planDisplay } from "@starter/plans"
+import { AppError } from "@proof/errors"
+import { type PlanId, planDisplay } from "@proof/plans"
 
 /** What the refusal is about, in words: "agents", "seats". */
 export interface CapacityRefusal {

@@ -12,7 +12,7 @@ that the operator organization changes through the operator operations. Words as
 **Credential.** Rollout operations answer only to the **operator organization**
 (`OPERATOR_ORGANIZATION_ID`; `whoami` says `operator: true`): an `sk_` key of that organization with
 `featureFlag` permissions, or an OAuth token in it (`write` ramps, `admin` also deletes). Call them as
-MCP tools or with `starter call <operation> --json '{...}'`. A person in that organization does the
+MCP tools or with `proof call <operation> --json '{...}'`. A person in that organization does the
 same in the web app's admin console, `/admin/flags`.
 
 **Evidence** is what `get_feature_flag` returns: evaluations and 5xx errors per value per day
@@ -51,7 +51,7 @@ Each step ends on its check. Hold the release at the first check that fails.
 ## Stale sweep
 
 `pnpm flags stale` lists the flags due for removal, each signal with its next step and the code
-references (with `STARTER_API_URL` and `STARTER_API_KEY` set it reads the rollouts; else only
+references (with `PROOF_API_URL` and `PROOF_API_KEY` set it reads the rollouts; else only
 `expired` and `unused`). `--check` exits 1 when anything is stale. Per signal:
 
 - `orphaned`: step 6.

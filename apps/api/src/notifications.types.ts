@@ -1,7 +1,7 @@
 // Type-level: an org event needs the organization as a proof and the caller's proof of acting in it, so
 // an operation can only notify the org it acts in. A raw id, or a name with no proof, is refused.
 // Checked by `pnpm typecheck` (apps/api/tsconfig.json includes *.types.ts).
-import { name, OrganizationId } from "@starter/auth-proofs"
+import { name, OrganizationId } from "@proof/auth-proofs"
 import type { ApiNotifier } from "./notifications"
 
 declare const notifier: ApiNotifier

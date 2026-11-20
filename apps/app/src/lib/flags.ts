@@ -1,6 +1,6 @@
 import { OFREPWebProvider } from "@openfeature/ofrep-web-provider"
 import { useBooleanFlagValue } from "@openfeature/react-sdk"
-import { type FlagKey, flags } from "@starter/flags"
+import { type FlagKey, flags } from "@proof/flags"
 
 import { organizationHeaders } from "./org-header"
 
@@ -10,7 +10,7 @@ import { organizationHeaders } from "./org-header"
 // targetingKey (that organization's id) only keeps the SDK's cache per organization.
 
 /** The OpenFeature domain the app's flags are bound to. */
-export const FLAG_DOMAIN = "starter-web"
+export const FLAG_DOMAIN = "proof-web"
 
 /** The evaluation context for an organization's pages. */
 export const flagContext = (organizationId: string) => ({ targetingKey: organizationId })

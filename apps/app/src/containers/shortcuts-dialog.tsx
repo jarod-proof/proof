@@ -4,8 +4,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
-import { Shortcut } from "@starter/ui/dplus/shell/shortcut"
+} from "@proof/ui/components/ui/dialog"
+import { Shortcut } from "@proof/ui/dplus/shell/shortcut"
 import { type ModifierKeyLabel, modifierKeyLabel } from "../lib/platform"
 
 /**

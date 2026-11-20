@@ -1,14 +1,14 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
 import {
   Avatar,
   AvatarFallback,
   AvatarGroup,
   AvatarGroupCount,
   AvatarImage,
-} from "@starter/ui/components/ui/avatar"
-import { Button } from "@starter/ui/components/ui/button"
+} from "@proof/ui/components/ui/avatar"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Card,
   CardAction,
@@ -17,10 +17,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@starter/ui/components/ui/card"
-import { Field, FieldGroup, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { ToggleGroup, ToggleGroupItem } from "@starter/ui/components/ui/toggle-group"
+} from "@proof/ui/components/ui/card"
+import { Field, FieldGroup, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { ToggleGroup, ToggleGroupItem } from "@proof/ui/components/ui/toggle-group"
 import { CaptionsIcon, PlusIcon } from "lucide-react"
 
 const spacingOptions = [

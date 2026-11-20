@@ -2,8 +2,8 @@
 // starter minus the decider, owners and admins for key events, the member for two-factor resets), that
 // run.done fires once, that usage.limit_reached fires once per organization per day, and that a
 // notifier that throws never changes an operation's response.
-import { user } from "@starter/db"
-import { AppError } from "@starter/errors"
+import { user } from "@proof/db"
+import { AppError } from "@proof/errors"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

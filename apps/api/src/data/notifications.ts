@@ -3,8 +3,8 @@
 // `inbox_presence`, because a read or seen row drops its pending email and presence decides whether
 // an email waits (docs/notifications.md, "Email"). Personal notices (organization_id null) are never
 // returned. Newest first, paginated on (created_at, id).
-import type { CallerActsFor, Named, OrganizationId } from "@starter/auth-proofs"
-import { type Database, notification } from "@starter/db"
+import type { CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import { type Database, notification } from "@proof/db"
 import { and, desc, eq, lt, or } from "drizzle-orm"
 
 export interface NotificationRow {

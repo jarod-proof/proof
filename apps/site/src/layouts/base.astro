@@ -30,13 +30,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <link rel="alternate" type="application/rss+xml" title={`${site.name} blog`} href="/rss.xml" />
     <script is:inline>
       // Before first paint, so a dark-mode visitor never sees the light page flash. The key and the
-      // rule match apps/app/src/theme-boot.js ("starter.theme"): keep them in step. Storage is per
+      // rule match apps/app/src/theme-boot.js ("proof.theme"): keep them in step. Storage is per
       // origin, so the app's choice carries over only when both are served from the same origin.
       ;(function () {
         try {
           let choice = "system"
           try {
-            const stored = window.localStorage.getItem("starter.theme")
+            const stored = window.localStorage.getItem("proof.theme")
             if (stored === "light" || stored === "dark" || stored === "system") choice = stored
           } catch {
             // Storage blocked: follow the OS setting.

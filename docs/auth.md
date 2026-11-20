@@ -224,7 +224,7 @@ If the AWS CLI works but sends fail with Wraps' `CredentialsError`, check the pr
 `credential_process` line (left by `aws-sso-util`): the JS SDK runs it instead of `sso_session`, and a
 stale one fails.
 
-## Exports from `@starter/auth`
+## Exports from `@proof/auth`
 
 - `revokeGrants(db, scope, now)` (`packages/auth/src/member-grants.ts`) ends a grant: it deletes the
   consent, and revokes the refresh and access tokens. `revokeMemberGrants` is the member-scoped form

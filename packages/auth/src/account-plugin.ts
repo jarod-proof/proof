@@ -209,7 +209,7 @@ export function accountPlugin(opts: {
   onEmailChanged: (userId: string) => Promise<void>
 }) {
   return {
-    id: "starter-account",
+    id: "proof-account",
     hooks: {
       before: [
         {

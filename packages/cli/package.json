@@ -1,11 +1,11 @@
 {
-  "name": "@starter/cli",
+  "name": "@proof/cli",
   "version": "0.0.0",
-  "description": "Command-line client for the Starter API: sign in, list its operations and call them.",
+  "description": "Command-line client for the Proof API: sign in, list its operations and call them.",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/example/starter.git",
+    "url": "git+https://github.com/jarod-proof/proof.git",
     "directory": "packages/cli"
   },
   "engines": {
@@ -16,13 +16,13 @@
     "provenance": true
   },
   "bin": {
-    "starter": "./dist/bin.js"
+    "proof": "./dist/bin.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "starter": "node dist/bin.js",
+    "proof": "node dist/bin.js",
     "build": "esbuild src/bin.ts --bundle --platform=node --format=esm --target=node22 --banner:js=\"#!/usr/bin/env node\" --outfile=dist/bin.js",
     "typecheck": "tsc",
     "lint": "oxlint --type-aware -c ../../.oxlintrc.json",
@@ -31,8 +31,8 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
-    "@starter/sdk": "workspace:*",
+    "@proof/config": "workspace:*",
+    "@proof/sdk": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "esbuild": "^0.28.2",

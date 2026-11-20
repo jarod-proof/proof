@@ -1,4 +1,4 @@
-import { intersect, type PermissionSet, type PermissionsOf, union } from "@starter/api"
+import { intersect, type PermissionSet, type PermissionsOf, union } from "@proof/api"
 import {
   type Catalog,
   PERSON_ONLY_ACTIONS,

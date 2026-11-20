@@ -1,6 +1,6 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Textarea } from "@starter/ui/components/ui/textarea"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Textarea } from "@proof/ui/components/ui/textarea"
 
 export default function TextareaExample() {
   return (

@@ -11,7 +11,7 @@ import {
 } from "./e2e/support/support-stack"
 
 // Port 0: the runner picks a free port and passes it to the stack as {port}, so runs never clash. A
-// running `pnpm dev` (portless, https) is not reused; portless serves https://app.starter.localhost
+// running `pnpm dev` (portless, https) is not reused; portless serves https://app.proof.localhost
 // and the runner needs plain http on its own port.
 // One app process for every target: targets that declare the same app.command share it.
 // The app is the web dev server (apps/app, Vite) and the API (apps/api), started by scripts/e2e-stack.mjs.

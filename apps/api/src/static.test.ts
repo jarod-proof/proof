@@ -39,7 +39,7 @@ describe("web app serving", () => {
   let t: Awaited<ReturnType<typeof createTestApp>>
 
   beforeAll(async () => {
-    dist = mkdtempSync(join(tmpdir(), "starter-web-"))
+    dist = mkdtempSync(join(tmpdir(), "proof-web-"))
     mkdirSync(join(dist, "assets"))
     writeFileSync(
       join(dist, "index.html"),
@@ -155,7 +155,7 @@ describe("web app serving", () => {
 
 describe("mountWeb", () => {
   it("fails at startup when the build has no index.html", () => {
-    const empty = mkdtempSync(join(tmpdir(), "starter-empty-"))
+    const empty = mkdtempSync(join(tmpdir(), "proof-empty-"))
     try {
       expect(() => mountWeb(new Hono(), empty)).toThrow(/index\.html/)
     } finally {

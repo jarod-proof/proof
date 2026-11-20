@@ -1,9 +1,9 @@
 import * as React from "react"
 import { toast } from "sonner"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
-import { Card, CardContent, CardFooter } from "@starter/ui/components/ui/card"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
+import { Card, CardContent, CardFooter } from "@proof/ui/components/ui/card"
 import {
   Combobox,
   ComboboxChip,
@@ -21,7 +21,7 @@ import {
   ComboboxTrigger,
   ComboboxValue,
   useComboboxAnchor,
-} from "@starter/ui/components/ui/combobox"
+} from "@proof/ui/components/ui/combobox"
 import {
   Dialog,
   DialogContent,
@@ -30,17 +30,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@starter/ui/components/ui/dialog"
+} from "@proof/ui/components/ui/dialog"
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@starter/ui/components/ui/input-group"
-import { Item, ItemContent, ItemDescription, ItemTitle } from "@starter/ui/components/ui/item"
+} from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@proof/ui/components/ui/input-group"
+import { Item, ItemContent, ItemDescription, ItemTitle } from "@proof/ui/components/ui/item"
 import {
   Select,
   SelectContent,
@@ -48,7 +48,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@starter/ui/components/ui/select"
+} from "@proof/ui/components/ui/select"
 import { GlobeIcon, ChevronDownIcon } from "lucide-react"
 
 export default function ComboboxExample() {

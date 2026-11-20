@@ -1,12 +1,12 @@
-import type { Auth } from "@starter/auth"
-import type { Logger } from "@starter/logger"
+import type { Auth } from "@proof/auth"
+import type { Logger } from "@proof/logger"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { createTestApp } from "./app.test.helpers"
 import type { ApiHooks } from "./hooks"
 
-// better-auth reads the client address from x-starter-client-ip (its rate limiter keys on it).
+// better-auth reads the client address from x-proof-client-ip (its rate limiter keys on it).
 // These check what reaches auth.handler, with the real app and auth on PGlite.
-const HEADER = "x-starter-client-ip"
+const HEADER = "x-proof-client-ip"
 
 type TestApp = Awaited<ReturnType<typeof createTestApp>>
 

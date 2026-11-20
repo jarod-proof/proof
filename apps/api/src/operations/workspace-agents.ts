@@ -1,4 +1,4 @@
-import { AgentId, agentInOrg, name } from "@starter/auth-proofs"
+import { AgentId, agentInOrg, name } from "@proof/auth-proofs"
 import { z } from "zod"
 
 import {

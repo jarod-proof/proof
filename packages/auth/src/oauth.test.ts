@@ -1,4 +1,4 @@
-import { createTestDb } from "@starter/db/testing"
+import { createTestDb } from "@proof/db/testing"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { createAuth } from "./index"
 

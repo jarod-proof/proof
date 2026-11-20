@@ -1,4 +1,4 @@
-import { baseConfig } from "@starter/config/vitest.base"
+import { baseConfig } from "@proof/config/vitest.base"
 import { mergeConfig } from "vitest/config"
 
 // Route files, the router and the generated route tree are wiring: each one only passes params and

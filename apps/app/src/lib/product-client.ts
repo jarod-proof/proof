@@ -1,4 +1,4 @@
-import { createClient, type operations, StarterError } from "@starter/sdk"
+import { createClient, type operations, ProofError } from "@proof/sdk"
 
 import { organizationHeaders } from "./org-header"
 import { recordServerDate } from "./server-clock"
@@ -6,7 +6,7 @@ import { WebError } from "./web-auth"
 
 // The browser's client for the product API (/v1), generated from the same contract the API serves.
 // Requests go to the page's origin, so the session cookie goes with them. One place turns the SDK's
-// StarterError into the WebError the screens show, with the server's hint appended.
+// ProofError into the WebError the screens show, with the server's hint appended.
 
 /** The 200 body of an operation, as the contract types it. */
 export type ResponseBody<Op extends keyof operations> =
@@ -55,7 +55,7 @@ export function productClient(organizationId: string | undefined, fetchImpl?: ty
  * API body (a gateway page, a transport error without a server reply) keeps the generic text.
  */
 export function toWebError(caught: unknown): unknown {
-  if (!(caught instanceof StarterError)) return caught
+  if (!(caught instanceof ProofError)) return caught
   const message = caught.code.startsWith("HTTP_") ? undefined : caught.message
   const text = [message, caught.hint].filter(Boolean).join(" ")
   return new WebError(text || "Something went wrong", caught.status, caught.code)

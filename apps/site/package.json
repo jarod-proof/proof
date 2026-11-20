@@ -1,5 +1,5 @@
 {
-  "name": "@starter/site",
+  "name": "@proof/site",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,15 +16,15 @@
   "dependencies": {
     "@astrojs/react": "^7.1.0",
     "@astrojs/rss": "^4.0.19",
-    "@starter/plans": "workspace:*",
-    "@starter/ui": "workspace:*",
+    "@proof/plans": "workspace:*",
+    "@proof/ui": "workspace:*",
     "astro": "^7.4.0",
     "cn": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",

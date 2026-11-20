@@ -1,4 +1,4 @@
-import { allowed } from "@starter/api"
+import { allowed } from "@proof/api"
 import { cimd } from "@better-auth/cimd"
 import { fetchClientMetadataResource } from "@better-auth/cimd/node"
 import { apiKey } from "@better-auth/api-key"
@@ -7,14 +7,14 @@ import { passkey } from "@better-auth/passkey"
 import { scim } from "@better-auth/scim"
 import { sso } from "@better-auth/sso"
 import { stripe } from "@better-auth/stripe"
-import type { Database } from "@starter/db"
-import * as schema from "@starter/db/schema"
-import { createLogger } from "@starter/logger"
+import type { Database } from "@proof/db"
+import * as schema from "@proof/db/schema"
+import { createLogger } from "@proof/logger"
 import { type AuthWithContext, deleteMemberData, inbox } from "@byo-oss/notifications"
 import { createEntitlements, deleteOrganizationData } from "@byo-oss/entitlements"
 import { stripePlans } from "@byo-oss/entitlements/stripe"
 import { type WrapsSesOptions, wraps } from "@wraps.dev/better-auth"
-import { reportError } from "@starter/errors"
+import { reportError } from "@proof/errors"
 import Stripe from "stripe"
 import {
   type BetterAuthPlugin,
@@ -318,7 +318,7 @@ function setUserFields(db: Adapter, userId: string, update: Record<string, unkno
  * (auth-events.ts) would not know who signed out. This loads it before the endpoint runs.
  */
 const signOutSession = {
-  id: "starter-sign-out-session",
+  id: "proof-sign-out-session",
   hooks: {
     before: [
       {
@@ -478,7 +478,7 @@ export function createAuth(opts: AuthOptions) {
     apiKey: opts.wrapsApiKey,
     email: {
       from: opts.emailFrom,
-      appName: opts.appName ?? "Starter",
+      appName: opts.appName ?? "Proof",
       appUrl: opts.baseURL,
       ses: opts.ses,
       onError: opts.onEmailError,
@@ -486,7 +486,7 @@ export function createAuth(opts: AuthOptions) {
   })
   // The account emails wraps doesn't send (change of address, deletion), on the same SES client.
   const notices = createNotices({
-    appName: opts.appName ?? "Starter",
+    appName: opts.appName ?? "Proof",
     send: wrapsPlugin.emails.send,
   })
 
@@ -673,12 +673,12 @@ export function createAuth(opts: AuthOptions) {
       // Passkeys are bound to the app's origins: the base URL and the web origins (see passkeyRpID).
       passkey({
         rpID: passkeyRpID([apiOrigin, ...webOrigins]),
-        rpName: opts.appName ?? "Starter",
+        rpName: opts.appName ?? "Proof",
         origin: [apiOrigin, ...webOrigins],
       }),
       // TOTP with backup codes and trusted devices. Signing in with a second factor pending answers
       // `twoFactorRedirect`; the web app sends the person to /two-factor (see client.ts).
-      twoFactor({ issuer: opts.appName ?? "Starter" }),
+      twoFactor({ issuer: opts.appName ?? "Proof" }),
       // Sign-in links; the wraps plugin sends them through the same SES path as other auth emails.
       magicLink({ sendMagicLink: wrapsPlugin.emails.magicLink }),
       // Unlinking, deletion and email-change rules, and the security summary the page reads.
@@ -910,7 +910,7 @@ export function createAuth(opts: AuthOptions) {
           channels: {
             email: notificationEmailChannel({
               from: opts.emailFrom,
-              appName: opts.appName ?? "Starter",
+              appName: opts.appName ?? "Proof",
               ses: opts.ses,
             }),
           },

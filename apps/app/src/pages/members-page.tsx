@@ -5,8 +5,8 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { useId, useMemo, useRef, useState } from "react"
 import {} from "zod"
 
-import { Badge } from "@starter/ui/components/ui/badge"
-import { Button } from "@starter/ui/components/ui/button"
+import { Badge } from "@proof/ui/components/ui/badge"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +14,8 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@starter/ui/components/ui/dropdown-menu"
-import {} from "@starter/ui/components/ui/input"
+} from "@proof/ui/components/ui/dropdown-menu"
+import {} from "@proof/ui/components/ui/input"
 import {
   Table,
   TableBody,
@@ -23,11 +23,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@starter/ui/components/ui/table"
-import { type RenderLink, anchorLink } from "@starter/ui/dplus/shell/link"
-import { PageBody } from "@starter/ui/dplus/shell/page-header"
-import { SettingsHeader } from "@starter/ui/dplus/shell/settings-header"
-import { ViewOnlyNotice } from "@starter/ui/dplus/shell/view-only-notice"
+} from "@proof/ui/components/ui/table"
+import { type RenderLink, anchorLink } from "@proof/ui/dplus/shell/link"
+import { PageBody } from "@proof/ui/dplus/shell/page-header"
+import { SettingsHeader } from "@proof/ui/dplus/shell/settings-header"
+import { ViewOnlyNotice } from "@proof/ui/dplus/shell/view-only-notice"
 
 import {
   ASSIGNABLE_ROLES,

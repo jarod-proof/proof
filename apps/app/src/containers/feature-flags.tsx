@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useCallback, useState } from "react"
 
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
-import type { SettingsTab } from "@starter/ui/dplus/shell/settings-header"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
+import type { SettingsTab } from "@proof/ui/dplus/shell/settings-header"
 
 import type { FeatureFlagsApi } from "../lib/feature-flags-api"
 import { messageOf } from "../lib/messages"

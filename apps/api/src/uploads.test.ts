@@ -1,5 +1,5 @@
-import { organization, user } from "@starter/db"
-import { createMemoryStore } from "@starter/storage"
+import { organization, user } from "@proof/db"
+import { createMemoryStore } from "@proof/storage"
 import { eq } from "drizzle-orm"
 import { afterAll, describe, expect, it } from "vitest"
 

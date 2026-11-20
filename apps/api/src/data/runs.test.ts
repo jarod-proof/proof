@@ -7,9 +7,9 @@ import {
   OrganizationId,
   RunId,
   runInOrg,
-} from "@starter/auth-proofs"
-import { agent, approval, organization, run } from "@starter/db"
-import { createTestDb } from "@starter/db/testing"
+} from "@proof/auth-proofs"
+import { agent, approval, organization, run } from "@proof/db"
+import { createTestDb } from "@proof/db/testing"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { approvalView, blockingApprovals, decideApproval, undoApproval } from "./runs"

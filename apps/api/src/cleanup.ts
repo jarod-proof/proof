@@ -1,8 +1,8 @@
-// Scheduled maintenance: `pnpm --filter @starter/api-app cleanup`. Deletes expired signup attempts,
+// Scheduled maintenance: `pnpm --filter @proof/api-app cleanup`. Deletes expired signup attempts,
 // idempotency keys and device approvals (see data/cleanup.ts). Run it from cron or the platform
 // scheduler, once an hour is plenty. It exits 1 on error so the scheduler marks the run failed.
-import { env } from "@starter/env"
-import { createLogger } from "@starter/logger"
+import { env } from "@proof/env"
+import { createLogger } from "@proof/logger"
 
 import { runCleanup } from "./data/cleanup"
 

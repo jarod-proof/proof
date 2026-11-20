@@ -62,8 +62,8 @@ describe("install snippets", () => {
   it("points the CLI at this deployment's origin, with the signup-free commands", () => {
     const txt = installSnippets(info).join("\n")
     expect(txt).toContain("### CLI")
-    expect(txt).toContain("npx @starter/cli login --base-url https://api.acme.test")
-    expect(txt).toContain("npx @starter/cli call <operation>")
+    expect(txt).toContain("npx @proof/cli login --base-url https://api.acme.test")
+    expect(txt).toContain("npx @proof/cli call <operation>")
   })
 
   it("includes the self-signup section only when signup is public", () => {

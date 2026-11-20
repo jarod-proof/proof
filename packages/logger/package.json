@@ -1,5 +1,5 @@
 {
-  "name": "@starter/logger",
+  "name": "@proof/logger",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -17,7 +17,7 @@
     "pino": "^10.4.0"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@types/node": "catalog:",
     "oxlint": "catalog:",
     "vitest": "catalog:",

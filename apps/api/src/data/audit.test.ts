@@ -1,14 +1,14 @@
-import type { Caller } from "@starter/api"
+import type { Caller } from "@proof/api"
 import {
   type CallerActsFor,
   callerActsFor,
   name,
   type Named,
   OrganizationId,
-} from "@starter/auth-proofs"
-import { personalSlug } from "@starter/auth"
-import { auditEvent, member, organization, user } from "@starter/db"
-import { createTestDb } from "@starter/db/testing"
+} from "@proof/auth-proofs"
+import { personalSlug } from "@proof/auth"
+import { auditEvent, member, organization, user } from "@proof/db"
+import { createTestDb } from "@proof/db/testing"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { listAuditEvents, recordAuditEvent, recordAuthEvent } from "./audit"
 

@@ -1,6 +1,6 @@
 // Metering, idempotency, audit and permission hints, through the real REST and MCP surfaces.
-import { type Caller, defineOperation } from "@starter/api"
-import { idempotencyKey, user, auditEvent } from "@starter/db"
+import { type Caller, defineOperation } from "@proof/api"
+import { idempotencyKey, user, auditEvent } from "@proof/db"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { z } from "zod"

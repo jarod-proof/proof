@@ -1,9 +1,9 @@
 import type { ReactNode } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
-import { PageBody, PageHeader } from "@starter/ui/dplus/shell/page-header"
-import { type SettingsTab, SettingsHeader } from "@starter/ui/dplus/shell/settings-header"
+import { Button } from "@proof/ui/components/ui/button"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
+import { PageBody, PageHeader } from "@proof/ui/dplus/shell/page-header"
+import { type SettingsTab, SettingsHeader } from "@proof/ui/dplus/shell/settings-header"
 
 /**
  * The requester's support page (/account/support, and /account/support/$id where thread mail and

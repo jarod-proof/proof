@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { ROLE_DESCRIPTION, ROLE_LABEL, hasRole, isOrgRole, isOwner, roleParts } from "./roles"
-import { roles } from "@starter/auth/client"
+import { roles } from "@proof/auth/client"
 
 describe("roleParts", () => {
   it("splits a stored role string into trimmed, non-empty parts", () => {

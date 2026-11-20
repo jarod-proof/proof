@@ -19,11 +19,11 @@ import {
   type InvokeOutcome,
   type OperationContext,
   type PermissionSet,
-} from "@starter/api"
-import { type Analytics, noopAnalytics } from "@starter/analytics"
-import { isFresh, OAUTH_SCOPE_GRANTS, OAUTH_SCOPES } from "@starter/auth"
-import type { Database } from "@starter/db"
-import { AppError, type ErrorCode, reportError } from "@starter/errors"
+} from "@proof/api"
+import { type Analytics, noopAnalytics } from "@proof/analytics"
+import { isFresh, OAUTH_SCOPE_GRANTS, OAUTH_SCOPES } from "@proof/auth"
+import type { Database } from "@proof/db"
+import { AppError, type ErrorCode, reportError } from "@proof/errors"
 
 import { recordAuditEvent } from "./data/audit"
 import {

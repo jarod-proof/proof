@@ -5,8 +5,8 @@ import type { ReactElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 
-import { expectNoA11yViolations } from "@starter/ui/a11y"
-import { Dialog } from "@starter/ui/components/ui/dialog"
+import { expectNoA11yViolations } from "@proof/ui/a11y"
+import { Dialog } from "@proof/ui/components/ui/dialog"
 
 import { WebError } from "../lib/web-auth"
 import type { ReauthAuth, ReauthConfirm } from "../lib/reauth"

@@ -1,4 +1,4 @@
-import { AppError } from "@starter/errors"
+import { AppError } from "@proof/errors"
 
 /** The image types an upload may be. No SVG: it can carry script, and the files are public. */
 export const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"] as const

@@ -1,7 +1,7 @@
 // Where uploads are recorded: the URL of an organization's logo and of a person's avatar. The files
-// themselves are in the file store (@starter/storage); these rows only point at them.
-import type { CallerActsFor, Named, OrganizationId } from "@starter/auth-proofs"
-import { type Database, organization, user } from "@starter/db"
+// themselves are in the file store (@proof/storage); these rows only point at them.
+import type { CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import { type Database, organization, user } from "@proof/db"
 import { eq } from "drizzle-orm"
 
 /** Sets the organization's logo URL (null clears it) and returns the one it replaced. */

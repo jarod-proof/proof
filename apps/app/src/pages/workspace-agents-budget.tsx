@@ -2,9 +2,9 @@ import { FieldIssues, FormError, invalidOf } from "../components/form"
 import { useForm } from "@tanstack/react-form"
 import { type ReactNode, useId, useState } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
+import { Button } from "@proof/ui/components/ui/button"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
 
 import { messageOf } from "../lib/messages"
 import {

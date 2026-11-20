@@ -1,5 +1,5 @@
-import { buttonVariants } from "@starter/ui/components/ui/button"
-import { StatusIcon } from "@starter/ui/dplus/status"
+import { buttonVariants } from "@proof/ui/components/ui/button"
+import { StatusIcon } from "@proof/ui/dplus/status"
 import { cn } from "cn"
 
 import { site } from "../../site"

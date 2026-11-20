@@ -1,5 +1,5 @@
 import createFetchClient from "openapi-fetch"
-import { StarterError } from "./errors"
+import { ProofError } from "./errors"
 import type { paths as GeneratedPaths } from "./schema.gen"
 import { createTransport, type TransportOptions } from "./transport"
 
@@ -18,7 +18,7 @@ export interface RawRequest {
   body?: unknown
 }
 
-export type StarterClient = ReturnType<typeof createClient>
+export type ProofClient = ReturnType<typeof createClient>
 
 // openapi-fetch's declarations require `Record<string, Record<HttpMethod, {}>>`. schema.gen.ts is an
 // interface (no implicit index signature), and openapi-typescript marks absent methods `?: undefined`
@@ -62,7 +62,7 @@ export function expandPath(template: string, values: Record<string, string | num
   return template.replace(/\{([^}]+)\}/g, (_, name: string) => {
     const value = values[name]
     if (value === undefined) {
-      throw new StarterError({
+      throw new ProofError({
         status: 0,
         code: "BAD_REQUEST",
         message: `Missing path parameter "${name}"`,
@@ -72,7 +72,7 @@ export function expandPath(template: string, values: Record<string, string | num
     // encodeURIComponent leaves dots alone, and the URL parser would resolve "." or ".." as a
     // path step, sending the call to another route.
     if (text === "." || text === "..") {
-      throw new StarterError({
+      throw new ProofError({
         status: 0,
         code: "BAD_REQUEST",
         message: `Path parameter "${name}" can't be "${text}"`,

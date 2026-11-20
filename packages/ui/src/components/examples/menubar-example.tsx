@@ -1,7 +1,7 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@starter/ui/components/ui/dialog"
+} from "@proof/ui/components/ui/dialog"
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -26,7 +26,7 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from "@starter/ui/components/ui/menubar"
+} from "@proof/ui/components/ui/menubar"
 import {
   FileIcon,
   FolderIcon,

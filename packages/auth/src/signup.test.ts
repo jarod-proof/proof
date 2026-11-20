@@ -2,8 +2,8 @@
 // existing email is refused without revealing more than that it exists.
 // One database for the file (not one per test): each test uses its own addresses, IPs and domains,
 // so the rate limits and the outbox filters don't see each other's signups.
-import { createTestDb } from "@starter/db/testing"
-import { AppError } from "@starter/errors"
+import { createTestDb } from "@proof/db/testing"
+import { AppError } from "@proof/errors"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { createAuth } from "./index"
 import { resolvePrincipal } from "./principal"

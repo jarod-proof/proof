@@ -39,7 +39,7 @@ export {
 /** The security page's summary (security-summary.ts): GET /api/auth/security/summary. */
 const securitySummaryClient = () =>
   ({
-    id: "starter-security-summary-client",
+    id: "proof-security-summary-client",
     getActions: ($fetch) => ({
       securitySummary: () =>
         $fetch<{
@@ -54,7 +54,7 @@ const securitySummaryClient = () =>
 /** The sign-in page's methods (sign-in-methods.ts): GET /api/auth/sign-in-methods, no session needed. */
 const signInMethodsClient = () =>
   ({
-    id: "starter-sign-in-methods-client",
+    id: "proof-sign-in-methods-client",
     getActions: ($fetch) => ({
       signInMethods: () => $fetch<SignInMethods>("/sign-in-methods", { method: "GET" }),
     }),

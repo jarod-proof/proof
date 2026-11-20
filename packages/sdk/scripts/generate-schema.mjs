@@ -1,5 +1,5 @@
 // Generates src/schema.gen.ts (the operation types of the SDK) from the committed API contract.
-// Run with `pnpm --filter @starter/sdk generate` after `apps/api/openapi.json` changes. The
+// Run with `pnpm --filter @proof/sdk generate` after `apps/api/openapi.json` changes. The
 // schema.test.ts in src re-runs generateSchema in memory and fails when the committed file is stale.
 import { readFile, writeFile } from "node:fs/promises"
 import { pathToFileURL } from "node:url"

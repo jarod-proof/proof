@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { StarterError } from "./errors"
+import { ProofError } from "./errors"
 import { paginate } from "./paginate"
 
 interface Page {
@@ -54,7 +54,7 @@ describe("paginate", () => {
       }
     }
     await expect(iterate()).rejects.toMatchObject({ code: "PAGINATION_LOOP" })
-    await expect(iterate()).rejects.toBeInstanceOf(StarterError)
+    await expect(iterate()).rejects.toBeInstanceOf(ProofError)
     // The first run fetched "same" once, then the second run did the same from a fresh start.
     expect(seen).toEqual(["same", "same"])
   })

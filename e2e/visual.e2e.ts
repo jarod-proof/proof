@@ -51,7 +51,7 @@ async function signUp(base: string, email: string) {
 
 test("public pages, light and dark", { tags: ["visual"] }, async ({ app, browser }) => {
   for (const theme of THEMES) {
-    await browser.addInitScript(`localStorage.setItem("starter.theme", ${JSON.stringify(theme)});`)
+    await browser.addInitScript(`localStorage.setItem("proof.theme", ${JSON.stringify(theme)});`)
     await browser.addInitScript(cspProbe)
     for (const [name, path] of [
       ["sign-in", "/sign-in"],
@@ -98,7 +98,7 @@ test("signed-in pages, light and dark", { tags: ["visual"] }, async ({ app, brow
   ] as const
 
   for (const theme of THEMES) {
-    await browser.addInitScript(`localStorage.setItem("starter.theme", ${JSON.stringify(theme)});`)
+    await browser.addInitScript(`localStorage.setItem("proof.theme", ${JSON.stringify(theme)});`)
     await browser.addInitScript(cspProbe)
     for (const [name, path] of pages) {
       await app.open(path)

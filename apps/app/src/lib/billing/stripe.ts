@@ -1,4 +1,4 @@
-import type { createClient } from "@starter/auth/client"
+import type { createClient } from "@proof/auth/client"
 
 import { catalogPlans } from "./plans"
 import { fetchBillingUsage } from "./usage"
@@ -68,7 +68,7 @@ export function createStripeBillingAdapter(
         "Could not load the subscription",
       )
       const active = rows.find((row) => row.status === "active" || row.status === "trialing")
-      // The plans are the product catalog's (@starter/plans), the ones the API enforces; prices
+      // The plans are the product catalog's (@proof/plans), the ones the API enforces; prices
       // live in Stripe, so none is shown here.
       const snapshot: BillingSnapshot = {
         sample: false,

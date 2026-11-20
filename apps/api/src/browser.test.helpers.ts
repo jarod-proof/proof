@@ -1,6 +1,6 @@
 // Test-only: a browser stand-in for driving auth over HTTP the way a web app does. It keeps a
 // cookie jar, sends Origin like a browser, and runs the real `createClient` against the app.
-import { createClient } from "@starter/auth/client"
+import { createClient } from "@proof/auth/client"
 import { BASE } from "./app.test.helpers"
 
 type Fetch = (url: string, init?: RequestInit) => Response | Promise<Response>

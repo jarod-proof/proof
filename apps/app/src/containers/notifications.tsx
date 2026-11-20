@@ -6,7 +6,7 @@ import {
   type NotificationItem,
   type NotificationTab,
   NotificationsMenu,
-} from "@starter/ui/dplus/shell/notifications-menu"
+} from "@proof/ui/dplus/shell/notifications-menu"
 
 import type { WebOrganization } from "../lib/web-auth"
 

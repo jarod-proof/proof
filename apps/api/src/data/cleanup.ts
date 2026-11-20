@@ -1,4 +1,4 @@
-// Maintenance: deletes rows that can no longer matter. Run by `pnpm --filter @starter/api-app cleanup`
+// Maintenance: deletes rows that can no longer matter. Run by `pnpm --filter @proof/api-app cleanup`
 // (apps/api/src/cleanup.ts), never by a request.
 //
 // These queries are cross-tenant on purpose. There is no caller and no organization to prove, so
@@ -11,7 +11,7 @@ import {
   idempotencyKey,
   signupAttempt,
   verification,
-} from "@starter/db"
+} from "@proof/db"
 import { and, inArray, like, lt } from "drizzle-orm"
 
 export const CLEANUP_BATCH_SIZE = 1000
@@ -25,7 +25,7 @@ export const SIGNUP_RETENTION_MS = 25 * 60 * 60 * 1000
 
 /**
  * Flag exposure days older than this are deleted. The stale signals look back 30 days
- * (INACTIVE_DAYS in @starter/flags); the margin keeps a quarter of history for a reclaim decision.
+ * (INACTIVE_DAYS in @proof/flags); the margin keeps a quarter of history for a reclaim decision.
  */
 export const EXPOSURE_RETENTION_DAYS = 90
 

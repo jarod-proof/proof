@@ -37,7 +37,7 @@ everywhere: a new concept gets a line here before it gets code. Keep each entry 
 - **OAuth client** — an app (an AI tool, a CLI) that holds a user's consent for an organization and acts
   with a JWT access token carrying an `org` claim.
 - **Device grant** — the sign-in for CLIs and agents: `POST /api/auth/device/code`, a person approves at
-  `/device`, the client polls for the token. `starter login` is the reference client.
+  `/device`, the client polls for the token. `proof login` is the reference client.
 - **Connected agent** — an API key or an OAuth client that can act in the organization right now
   (`list_connected_agents`, `revoke_agent_access`). Not to be confused with a workspace agent.
 - **Workspace agent** (or just **agent** in the product) — a worker the organization configures: name,
@@ -78,12 +78,12 @@ everywhere: a new concept gets a line here before it gets code. Keep each entry 
   `FORBIDDEN` and `BAD_REQUEST` attempts are not (yet).
 - **Metering** — calls per organization per UTC day against its limit; read-only session calls are free.
 - **File store** — where uploaded files live: S3, Cloudflare R2, Vercel Blob or a local directory,
-  chosen by `STORAGE_DRIVER` (`@starter/storage`). Unset, uploads are off.
+  chosen by `STORAGE_DRIVER` (`@proof/storage`). Unset, uploads are off.
 - **Analytics event** — one typed product event (`AnalyticsEvent`, `packages/analytics/src/events.ts`):
   an operation call, a new account, a counted auth event or a page view, with its actor and organization.
   Ids only.
 - **Analytics provider** — where analytics events go: the log, PostHog or nowhere, chosen by
-  `ANALYTICS_PROVIDER` (`@starter/analytics`). Unset, nothing is captured.
+  `ANALYTICS_PROVIDER` (`@proof/analytics`). Unset, nothing is captured.
 - **Upload** — an image a person or agent sends to be kept in the file store: a person's **avatar**
   (`user.image`) or an organization's **logo** (`organization.logo`). The row keeps its public URL.
 - **File sweep** — removing everything under a deleted organization's or person's prefix
@@ -116,7 +116,7 @@ everywhere: a new concept gets a line here before it gets code. Keep each entry 
 ## Plans
 
 - **Plan** — what an organization's subscription includes: Free, Pro or Team, declared once in
-  `packages/plans/src/catalog.ts` (`@starter/plans`) for the API, the web app and the pricing page.
+  `packages/plans/src/catalog.ts` (`@proof/plans`) for the API, the web app and the pricing page.
   Without a subscription an organization is on Free. Prices are in Stripe, not in the catalog.
 - **Entitlement** — what the plan allows an organization: a **feature** (on or off) or a **limit**
   (requests per UTC day, seats, agents, run history days), checked through
@@ -137,13 +137,13 @@ everywhere: a new concept gets a line here before it gets code. Keep each entry 
 
 ## The web app
 
-- **App** — the signed-in product (`apps/app`, `@starter/app`) at `app.` on the product domain.
+- **App** — the signed-in product (`apps/app`, `@proof/app`) at `app.` on the product domain.
 - **Site** — the public website at the apex domain: marketing, pricing, docs, changelog and `llms.txt`.
-  It will live in `apps/site` (`@starter/site`), which does not exist yet. Not the **app**.
+  It will live in `apps/site` (`@proof/site`), which does not exist yet. Not the **app**.
 - **D+** — the design system: warm paper and ink, the `solar` "needs you" accent, 8px radius, 2px ink
   borders. Lives in `packages/ui/src/styles.css` and `src/dplus`.
 - **Board** — a design board in `docs/build-app/boards`; each page follows its board's journey, and the
   e2e test for the page follows the same journey.
 - **Container** / **page** — the web app's split: a container (`src/containers`) owns data and mutations, a
   page (`src/pages`) is presentational, props in and callbacks out.
-- **Shell** — the app frame (sidebar, topbar, command palette) in `@starter/ui/dplus/shell`.
+- **Shell** — the app frame (sidebar, topbar, command palette) in `@proof/ui/dplus/shell`.

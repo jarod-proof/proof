@@ -1,5 +1,5 @@
-import { allowed } from "@starter/api"
-import { ApprovalId, approvalInOrg, name, RunId, runInOrg } from "@starter/auth-proofs"
+import { allowed } from "@proof/api"
+import { ApprovalId, approvalInOrg, name, RunId, runInOrg } from "@proof/auth-proofs"
 import { z } from "zod"
 
 import {

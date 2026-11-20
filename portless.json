@@ -1,8 +1,8 @@
 {
   "turbo": false,
   "apps": {
-    "apps/api": { "name": "api.starter" },
-    "apps/app": { "name": "app.starter" },
-    "apps/site": { "name": "site.starter" }
+    "apps/api": { "name": "api.proof" },
+    "apps/app": { "name": "app.proof" },
+    "apps/site": { "name": "site.proof" }
   }
 }

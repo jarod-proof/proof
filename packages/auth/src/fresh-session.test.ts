@@ -1,8 +1,8 @@
 // The fresh-session guard over a real better-auth instance (PGlite): a stale session is refused with
 // SESSION_NOT_FRESH on a guarded endpoint, a fresh one passes the guard, and no session passes
 // through to the endpoint's own UNAUTHORIZED.
-import { createTestDb } from "@starter/db/testing"
-import * as schema from "@starter/db/schema"
+import { createTestDb } from "@proof/db/testing"
+import * as schema from "@proof/db/schema"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { twoFactor } from "better-auth/plugins"

@@ -18,11 +18,10 @@ export interface Credentials {
   profiles: Record<string, Profile>
 }
 
-/** Where credentials live: STARTER_CONFIG_DIR, else $XDG_CONFIG_HOME/starter, else ~/.config/starter. */
+/** Where credentials live: PROOF_CONFIG_DIR, else $XDG_CONFIG_HOME/proof, else ~/.config/proof. */
 export function credentialsPath(env: Record<string, string | undefined>, home = homedir()): string {
   // An empty value counts as unset, or the token file would land in the working directory.
-  const dir =
-    env.STARTER_CONFIG_DIR || join(env.XDG_CONFIG_HOME || join(home, ".config"), "starter")
+  const dir = env.PROOF_CONFIG_DIR || join(env.XDG_CONFIG_HOME || join(home, ".config"), "proof")
   return join(dir, "credentials.json")
 }
 
@@ -36,7 +35,7 @@ export async function loadCredentials(path: string): Promise<Credentials> {
   }
   const parsed = JSON.parse(text) as Partial<Credentials>
   if (typeof parsed !== "object" || parsed === null || typeof parsed.profiles !== "object") {
-    throw new Error(`${path} is not a credentials file; delete it and run starter login`)
+    throw new Error(`${path} is not a credentials file; delete it and run proof login`)
   }
   return { current: parsed.current, profiles: parsed.profiles }
 }

@@ -5,7 +5,7 @@
   try {
     let choice = "system"
     try {
-      const stored = window.localStorage.getItem("starter.theme")
+      const stored = window.localStorage.getItem("proof.theme")
       if (stored === "light" || stored === "dark" || stored === "system") choice = stored
     } catch {
       // Storage blocked: follow the OS setting.

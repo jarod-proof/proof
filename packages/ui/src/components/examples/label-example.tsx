@@ -1,9 +1,9 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Checkbox } from "@starter/ui/components/ui/checkbox"
-import { Field } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { Label } from "@starter/ui/components/ui/label"
-import { Textarea } from "@starter/ui/components/ui/textarea"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Checkbox } from "@proof/ui/components/ui/checkbox"
+import { Field } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { Label } from "@proof/ui/components/ui/label"
+import { Textarea } from "@proof/ui/components/ui/textarea"
 
 export default function LabelExample() {
   return (

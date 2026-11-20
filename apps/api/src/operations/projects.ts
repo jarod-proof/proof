@@ -1,5 +1,5 @@
-import { paginated, paginationInput } from "@starter/api"
-import { ProjectId, name, projectInOrg } from "@starter/auth-proofs"
+import { paginated, paginationInput } from "@proof/api"
+import { ProjectId, name, projectInOrg } from "@proof/auth-proofs"
 import { z } from "zod"
 
 import { createProject, deleteProject, listProjects } from "../data/projects"

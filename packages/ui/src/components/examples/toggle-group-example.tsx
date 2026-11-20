@@ -1,8 +1,8 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -10,8 +10,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@starter/ui/components/ui/select"
-import { ToggleGroup, ToggleGroupItem } from "@starter/ui/components/ui/toggle-group"
+} from "@proof/ui/components/ui/select"
+import { ToggleGroup, ToggleGroupItem } from "@proof/ui/components/ui/toggle-group"
 import {
   BoldIcon,
   ItalicIcon,

@@ -1,5 +1,5 @@
 {
-  "name": "@starter/storage",
+  "name": "@proof/storage",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,12 +14,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@starter/errors": "workspace:*",
+    "@proof/errors": "workspace:*",
     "@vercel/blob": "^2.8.2",
     "aws4fetch": "^1.0.20"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "oxlint": "catalog:",

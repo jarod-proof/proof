@@ -1,7 +1,7 @@
 // Test-only: an auth instance on in-process Postgres (PGlite), with helpers for users and orgs.
 import { memorySource } from "./testing"
-import type { PlanId } from "@starter/plans"
-import { createTestDb } from "@starter/db/testing"
+import type { PlanId } from "@proof/plans"
+import { createTestDb } from "@proof/db/testing"
 import { type AuthOptions, createAuth } from "./index"
 import { firstMembership } from "./membership"
 

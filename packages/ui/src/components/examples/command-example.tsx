@@ -2,9 +2,9 @@
 
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
-import { Card, CardContent } from "@starter/ui/components/ui/card"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
+import { Card, CardContent } from "@proof/ui/components/ui/card"
 import {
   Command,
   CommandDialog,
@@ -15,7 +15,7 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@starter/ui/components/ui/command"
+} from "@proof/ui/components/ui/command"
 import {
   CalendarIcon,
   SmileIcon,

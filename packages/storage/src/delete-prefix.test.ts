@@ -66,7 +66,7 @@ describe("local deletePrefix", () => {
     for (const dir of dirs) await rm(dir, { recursive: true, force: true })
   })
   const tempDir = async () => {
-    const dir = await mkdtemp(join(tmpdir(), "starter-sweep-"))
+    const dir = await mkdtemp(join(tmpdir(), "proof-sweep-"))
     dirs.push(dir)
     return dir
   }
@@ -356,7 +356,7 @@ describe("every driver", () => {
   it("refuses a bad prefix before any network call or file-system access", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>()
     const blob = { put: vi.fn(), del: vi.fn(), list: vi.fn() }
-    const dir = join(tmpdir(), "starter-sweep-never-created")
+    const dir = join(tmpdir(), "proof-sweep-never-created")
     const stores: FileStore[] = [
       createS3Store({
         driver: "s3",

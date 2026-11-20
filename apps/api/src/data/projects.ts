@@ -6,9 +6,9 @@ import type {
   OrganizationId,
   ProjectId,
   ProjectInOrg,
-} from "@starter/auth-proofs"
-import { AppError } from "@starter/errors"
-import { type Database, project } from "@starter/db"
+} from "@proof/auth-proofs"
+import { AppError } from "@proof/errors"
+import { type Database, project } from "@proof/db"
 import { and, asc, eq, gt, or, sql } from "drizzle-orm"
 
 export type Project = typeof project.$inferSelect

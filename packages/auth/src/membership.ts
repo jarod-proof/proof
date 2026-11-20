@@ -1,4 +1,4 @@
-import type { PermissionSet } from "@starter/api"
+import type { PermissionSet } from "@proof/api"
 import type { DBAdapter } from "better-auth"
 
 import { rolePermissions } from "./permissions"

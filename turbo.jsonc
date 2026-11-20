@@ -15,7 +15,7 @@
     },
     // A transit node (turbo docs: core-concepts/package-and-task-graph, configuring-tasks) that
     // carries the workspace dependency graph into each test task's hash. Without it a test hash
-    // only sees its own package: editing packages/auth/src/access.ts left @starter/app#test
+    // only sees its own package: editing packages/auth/src/access.ts left @proof/app#test
     // unchanged (probed with `turbo run test --dry-run=json`). Migrations, vitest config and
     // every other file a dependency's tests read are then inputs through the package graph.
     "transit": {
@@ -35,25 +35,25 @@
     // Files the app tests read that no workspace dependency reaches (each needs its own input):
     // routeTree.gen.ts (static.test.ts), the registry record and the shipped skill (discovery and
     // skill-parity tests), and the CLI and SDK source that onboarding.test.ts runs as a process
-    // (api-app does not depend on @starter/cli).
-    "@starter/api-app#test": {
+    // (api-app does not depend on @proof/cli).
+    "@proof/api-app#test": {
       "dependsOn": ["transit"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/apps/app/src/routeTree.gen.ts",
         "$TURBO_ROOT$/server.json",
-        "$TURBO_ROOT$/skills/starter/SKILL.md",
+        "$TURBO_ROOT$/skills/proof/SKILL.md",
         "$TURBO_ROOT$/packages/cli/src/**",
         "$TURBO_ROOT$/packages/sdk/src/**"
       ]
     },
-    "@starter/api-app#test:coverage": {
+    "@proof/api-app#test:coverage": {
       "dependsOn": ["transit"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/apps/app/src/routeTree.gen.ts",
         "$TURBO_ROOT$/server.json",
-        "$TURBO_ROOT$/skills/starter/SKILL.md",
+        "$TURBO_ROOT$/skills/proof/SKILL.md",
         "$TURBO_ROOT$/packages/cli/src/**",
         "$TURBO_ROOT$/packages/sdk/src/**"
       ],
@@ -61,16 +61,16 @@
     },
     // shell.test.ts reads the prerendered shell (dist/index.html), so the web tests run after the
     // web build.
-    "@starter/app#test": {
+    "@proof/app#test": {
       "dependsOn": ["transit", "build"]
     },
-    "@starter/app#test:coverage": {
+    "@proof/app#test:coverage": {
       "dependsOn": ["transit", "build"],
       "outputs": ["coverage/**"]
     },
     // sdk's schema.test.ts checks the generated client against the API's committed contract. The
     // SDK does not depend on apps/api, so openapi.json is not in its graph.
-    "@starter/sdk#test": {
+    "@proof/sdk#test": {
       "dependsOn": ["transit"],
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/api/openapi.json"]
     }

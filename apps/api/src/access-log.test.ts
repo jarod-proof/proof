@@ -1,6 +1,6 @@
 // The access log line: with no analytics provider set, it is what says who called which operation
 // and how it ended, over REST and MCP alike.
-import { createLogger } from "@starter/logger"
+import { createLogger } from "@proof/logger"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 import { createTestApp } from "./app.test.helpers"

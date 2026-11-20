@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { errorFromResponse, parseRetryAfter, StarterError } from "./errors"
+import { errorFromResponse, parseRetryAfter, ProofError } from "./errors"
 
 describe("parseRetryAfter", () => {
   it("reads delta-seconds", () => {
@@ -34,13 +34,13 @@ describe("errorFromResponse", () => {
       { status: 429, headers: { "retry-after": "5" } },
     )
     const error = await errorFromResponse(response)
-    expect(error).toBeInstanceOf(StarterError)
+    expect(error).toBeInstanceOf(ProofError)
     expect(error).toMatchObject({ status: 429, code: "RATE_LIMITED", hint: "h", docs: "d" })
     expect(error.retryAfter).toBe(5)
   })
 
   it("omits hint and docs from the JSON when they are absent", () => {
-    const error = new StarterError({ status: 400, code: "BAD_REQUEST", message: "bad" })
+    const error = new ProofError({ status: 400, code: "BAD_REQUEST", message: "bad" })
     expect(error.toJSON()).toEqual({
       status: 400,
       error: { code: "BAD_REQUEST", message: "bad" },
@@ -49,7 +49,7 @@ describe("errorFromResponse", () => {
 
   it("keeps the cause of a transport failure", () => {
     const cause = new Error("socket")
-    const error = new StarterError({ status: 0, code: "NETWORK_ERROR", message: "m", cause })
+    const error = new ProofError({ status: 0, code: "NETWORK_ERROR", message: "m", cause })
     expect(error.cause).toBe(cause)
   })
 })

@@ -12,7 +12,7 @@ const SIGNING_PARAMS = new Set(["sig", "exp", "ba_param", "ba_iat", "ba_pl"])
 
 export const resumeMagicLinkAuthorization = (opts: { authorizeUrl: string; signInUrl: string }) =>
   ({
-    id: "starter-resume-magic-link",
+    id: "proof-resume-magic-link",
     hooks: {
       before: [
         {

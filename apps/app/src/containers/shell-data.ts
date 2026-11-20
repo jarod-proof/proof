@@ -1,6 +1,6 @@
-import type { PinnedAgent } from "@starter/ui/dplus/shell/app-sidebar"
+import type { PinnedAgent } from "@proof/ui/dplus/shell/app-sidebar"
 import { useMemo } from "react"
-import type { OrgRole, OrgSummary } from "@starter/ui/dplus/shell/org-picker"
+import type { OrgRole, OrgSummary } from "@proof/ui/dplus/shell/org-picker"
 import {
   type QueryClient,
   useMutation,

@@ -1,6 +1,6 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Badge } from "@starter/ui/components/ui/badge"
-import { Button } from "@starter/ui/components/ui/button"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Badge } from "@proof/ui/components/ui/badge"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Empty,
   EmptyContent,
@@ -8,10 +8,10 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@starter/ui/components/ui/empty"
-import { Field, FieldLabel } from "@starter/ui/components/ui/field"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@starter/ui/components/ui/input-group"
-import { Spinner } from "@starter/ui/components/ui/spinner"
+} from "@proof/ui/components/ui/empty"
+import { Field, FieldLabel } from "@proof/ui/components/ui/field"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@proof/ui/components/ui/input-group"
+import { Spinner } from "@proof/ui/components/ui/spinner"
 import { ArrowRightIcon } from "lucide-react"
 
 export default function SpinnerExample() {

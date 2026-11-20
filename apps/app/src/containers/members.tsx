@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useMemo } from "react"
 
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
 
 import { useReauthGuard } from "../components/reauth-dialog"
 import { messageOf } from "../lib/messages"

@@ -1,6 +1,6 @@
 // The organization a caller acts in, as the proof tenant data functions require. Metering, audit and
 // idempotency reach org data through this too.
-import type { Caller } from "@starter/api"
+import type { Caller } from "@proof/api"
 import {
   type CallerActsFor,
   callerActsFor,
@@ -9,9 +9,9 @@ import {
   type OperatorOrg,
   OrganizationId,
   operatorOrg,
-} from "@starter/auth-proofs"
-import type { Database } from "@starter/db"
-import { AppError } from "@starter/errors"
+} from "@proof/auth-proofs"
+import type { Database } from "@proof/db"
+import { AppError } from "@proof/errors"
 
 /** Run `fn` in the caller's organization, with the proof that tenant data access requires. */
 export function inCallerOrg<T>(

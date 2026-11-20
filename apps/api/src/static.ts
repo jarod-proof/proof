@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs"
 import { readFile, stat } from "node:fs/promises"
 import { extname, join, resolve, sep } from "node:path"
 
-import { isReservedOrgSlug } from "@starter/auth/client"
+import { isReservedOrgSlug } from "@proof/auth/client"
 import type { Env, Hono } from "hono"
 
 /**

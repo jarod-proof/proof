@@ -2,8 +2,8 @@
 // organization (targets, percentage, kill switch, reclaim), exposures and the 5xx errors counted
 // against the values a request saw, and the lifecycle's guards (reclaimed is final; a rollout is
 // deleted only once the code no longer declares it). acme is the operator organization.
-import { defineOperation } from "@starter/api"
-import { featureFlag } from "@starter/db"
+import { defineOperation } from "@proof/api"
+import { featureFlag } from "@proof/db"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { z } from "zod"
 

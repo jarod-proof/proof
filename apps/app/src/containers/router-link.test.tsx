@@ -8,7 +8,7 @@ import {
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { PageTabs } from "@starter/ui/dplus/shell/page-header"
+import { PageTabs } from "@proof/ui/dplus/shell/page-header"
 
 import { RouterLink } from "./router-link"
 

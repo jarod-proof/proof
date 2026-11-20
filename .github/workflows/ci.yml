@@ -57,9 +57,9 @@ jobs:
       # drift fails. openapi.json is checked by the contract test instead.
       - name: Generated files are current
         run: |
-          pnpm --filter @starter/db db:generate
-          pnpm --filter @starter/auth generate
-          pnpm --filter @starter/sdk generate
+          pnpm --filter @proof/db db:generate
+          pnpm --filter @proof/auth generate
+          pnpm --filter @proof/sdk generate
           pnpm stories
           pnpm biome format --write packages/db/src/auth-schema.ts packages/ui/src/components
           git add --intent-to-add packages/db
@@ -68,60 +68,6 @@ jobs:
       - run: pnpm test:coverage
       - run: pnpm format:check
 
-  # template:start
-  # The template's own check: a project made with init-project passes the done-checks and keeps no
-  # template names. init-project strips this job, like every template: block, from new projects.
-  template:
-    name: New project from the template
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5.2.1
-      - name: Resolve the pnpm store path
-        id: pnpm-store
-        run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ${{ steps.pnpm-store.outputs.path }}
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: pnpm-store-${{ runner.os }}-
-      - run: pnpm install --frozen-lockfile
-      # A dashed name exercises every form: database smoke_app, SDK SmokeAppError, env SMOKE_APP_.
-      # The checkout is disposable, so it is renamed in place.
-      - run: pnpm init-project smoke-app --domain example.com
-      # The checks below pass with a leftover name in place, so this is what catches a missed one.
-      # `RunStarter` and "the run's starter" (who started a run) are not template names.
-      - name: No template names are left
-        run: |
-          vendored=$(node -p "Object.keys(require('./skills-lock.json').skills).map((s) => '--exclude-dir=' + s).join(' ')")
-          pattern='@starter/|Starter(Error|Client)|STARTER_|skills/starter|starter_wt_|starter-[a-z]|starter (login|logout|whoami|ops|call)|binary .starter|config/starter|starter\\?\.theme|template:(start|end)|init-project'
-          if grep -rInE "$pattern" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.turbo \
-            --exclude-dir=dist --exclude=pnpm-lock.yaml $vendored .; then exit 1; fi
-          test -f skills/smoke-app/SKILL.md && test ! -e skills/starter && test ! -e docs/prompts
-      # The user's first commit, through the same hooks (gitleaks, baseline, format, commitlint).
-      - name: First commit
-        run: |
-          git add -A
-          git -c user.name=ci -c user.email=ci@example.com commit -q -m "chore: init smoke-app"
-      - run: pnpm baseline
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm build
-      # The check job's generated-files step, as the new project runs it.
-      - name: Generated files are current
-        run: |
-          pnpm --filter @smoke-app/db db:generate
-          pnpm --filter @smoke-app/auth generate
-          pnpm --filter @smoke-app/sdk generate
-          pnpm stories
-          pnpm biome format --write packages/db/src/auth-schema.ts packages/ui/src/components
-          git add --intent-to-add packages/db
-          git diff --exit-code
-          test -z "$(git status --porcelain)"
-      - run: pnpm test:coverage
-      - run: pnpm format:check
-  # template:end
 
   # Its own job: a newly published advisory turns it red on any PR, whatever the diff. Ignored
   # advisories, each with its reason, are `auditConfig.ignoreGhsas` in pnpm-workspace.yaml.
@@ -148,15 +94,15 @@ jobs:
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: pass
-          POSTGRES_DB: starter
+          POSTGRES_DB: proof
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U user -d starter"
+          --health-cmd "pg_isready -U user -d proof"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
     env:
-      DATABASE_URL: postgres://user:pass@localhost:5432/starter
+      DATABASE_URL: postgres://user:pass@localhost:5432/proof
       E2E_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -1,5 +1,5 @@
-import type { OrgRole as OrgRoleLabel } from "@starter/ui/dplus/shell/org-picker"
-import { roles } from "@starter/auth/client"
+import type { OrgRole as OrgRoleLabel } from "@proof/ui/dplus/shell/org-picker"
+import { roles } from "@proof/auth/client"
 
 /**
  * The one place that reads a stored role string. The server keeps a member's roles as a

@@ -3,7 +3,7 @@
 // `inCallerOrg` hands its callback), so an operation can only notify the organization it acts in:
 //   inCallerOrg(caller, (org, proof) => notifier.inOrg(org, proof, event))
 // A send never fails its operation: every failure goes to `onError`, which defaults to reportError
-// (it reports only 5xx and unexposed errors, see @starter/errors).
+// (it reports only 5xx and unexposed errors, see @proof/errors).
 import {
   type Auth,
   createNotifier,
@@ -11,10 +11,10 @@ import {
   type NotificationType,
   type Notifier,
   type OrgEventInput,
-} from "@starter/auth"
-import type { CallerActsFor, Named, OrganizationId } from "@starter/auth-proofs"
-import type { Database } from "@starter/db"
-import { reportError } from "@starter/errors"
+} from "@proof/auth"
+import type { CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import type { Database } from "@proof/db"
+import { reportError } from "@proof/errors"
 
 import { organizationRef } from "./data/organizations"
 

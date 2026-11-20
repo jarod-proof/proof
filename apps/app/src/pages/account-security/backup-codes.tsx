@@ -1,12 +1,12 @@
 import { useState } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
+} from "@proof/ui/components/ui/dialog"
 
 // The sections of the Security page (board Security). Each takes its data and callbacks as props.
 // Errors a call throws are shown in the section; the container has already mapped their copy.

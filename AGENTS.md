@@ -1,4 +1,4 @@
-# starter
+# proof
 
 Turborepo + pnpm 12 monorepo, TypeScript. `apps/api` is a reference Hono API; add apps beside it.
 Reference detail is in `docs/` and `.claude/skills/agent-api/SKILL.md`; sections link to it.
@@ -10,18 +10,13 @@ words in code, docs and UI, and add a line there before introducing a new one.
 ```bash
 mise trust && mise install   # Node 24, pnpm 12, gitleaks; a fresh clone is untrusted until this
 pnpm install
-# template:start
-# new project only: renames the template (scope, DB, CLI, SDK, skill, MCP registry names), drops
-# the template-only text and itself, then installs and formats
-pnpm init-project <name> [owner] [--domain <domain>]
-# template:end
 cp .env.example .env         # mise loads it; BETTER_AUTH_SECRET: openssl rand -base64 32
 docker compose up -d db      # optional local Postgres; tests don't need it
-pnpm wt new <branch>         # a worktree in ../starter.<name> with its own database
+pnpm wt new <branch>         # a worktree in ../proof.<name> with its own database
 ```
 
 Worktrees: `pnpm wt new`, `ls`, `rm <branch>`, `prune` (after merging; `--yes` applies),
-`reset-db` (`scripts/worktree.mjs`, `docs/tooling.md`). Each gets `starter_wt_<name>` through
+`reset-db` (`scripts/worktree.mjs`, `docs/tooling.md`). Each gets `proof_wt_<name>` through
 `.env.worktree`. Agents run these themselves, never the user: make a worktree with `pnpm wt new`
 (or EnterWorktree, whose hook runs it), and after a branch merges or closes, run
 `pnpm wt prune --yes`. Never a bare `git worktree add`.
@@ -34,17 +29,17 @@ Worktrees: `pnpm wt new`, `ls`, `rm <branch>`, `prune` (after merging; `--yes` a
   tenant helpers in `src/tenant.ts`, tenant data in `src/data/`. `apps/api/src/server.ts` only wires
   env, DB and listener. `src/product.ts` is the one source for the product's name, version, public URL
   and MCP registry entry.
-- `apps/app` — `@starter/app`, TanStack Start in SPA mode (the D+ app). See `docs/web-app.md`.
-- `apps/site` — `@starter/site`, the static Astro marketing site (home, pricing, blog, changelog,
-  legal) built from `@starter/ui`. Markup lives in `.tsx` components, not `.astro`. See
+- `apps/app` — `@proof/app`, TanStack Start in SPA mode (the D+ app). See `docs/web-app.md`.
+- `apps/site` — `@proof/site`, the static Astro marketing site (home, pricing, blog, changelog,
+  legal) built from `@proof/ui`. Markup lives in `.tsx` components, not `.astro`. See
   `docs/site.md`.
 - `packages/api` — operation registry (`defineOperation`, `defineRegistry`, `invoke`), OpenAPI,
   llms.txt, server.json, pagination. Framework-agnostic.
-- `packages/sdk` — `@starter/sdk`, the typed client generated from `apps/api/openapi.json`.
-- `packages/cli` — `@starter/cli`, binary `starter`: `login`, `logout`, `whoami`, `ops`, `call`.
+- `packages/sdk` — `@proof/sdk`, the typed client generated from `apps/api/openapi.json`.
+- `packages/cli` — `@proof/cli`, binary `proof`: `login`, `logout`, `whoami`, `ops`, `call`.
 - `packages/mcp` — stateless Streamable HTTP MCP handler; RFC 9728 resource metadata.
 - `packages/ui` — shadcn/ui (`base-sera`), D+ pieces, Storybook. See `docs/ui.md`.
-- `packages/db` — Drizzle (Postgres), migrations in `drizzle/`, `@starter/db/testing`. See
+- `packages/db` — Drizzle (Postgres), migrations in `drizzle/`, `@proof/db/testing`. See
   `docs/database.md`.
 - `packages/auth` — better-auth with organizations, org API keys (`sk_`), OAuth 2.1, device grant.
   `packages/auth/src/access.ts` is the permission catalog (browser-safe). See `docs/auth.md`.
@@ -55,26 +50,26 @@ Worktrees: `pnpm wt new`, `ls`, `rm <branch>`, `prune` (after merging; `--yes` a
 - `packages/logger`, `packages/errors` — pino with redaction; `AppError`, `ErrorCode`,
   `reportError`.
 - `packages/observability` — `observe`, health and status handlers. See `docs/observability.md`.
-- `packages/flags` — `@starter/flags`: the feature flag catalog (`src/catalog.ts`), evaluator and
+- `packages/flags` — `@proof/flags`: the feature flag catalog (`src/catalog.ts`), evaluator and
   stale signals; browser-safe. See `docs/feature-flags.md`.
-- `packages/plans` — `@starter/plans`: the plan catalog (`src/catalog.ts`, @byo-oss/entitlements'
+- `packages/plans` — `@proof/plans`: the plan catalog (`src/catalog.ts`, @byo-oss/entitlements'
   `defineEntitlements`): Free, Pro and Team, their features and limits and their copy. Browser-safe;
   the API (`auth.entitlements`, `packages/auth/src/entitlements.ts`), the web app's billing page and
   the pricing site all read it.
-- `packages/storage` — `@starter/storage`, the file store uploads go to (S3, R2, Vercel Blob or a
+- `packages/storage` — `@proof/storage`, the file store uploads go to (S3, R2, Vercel Blob or a
   local directory, by `STORAGE_DRIVER`) and image checks. See `docs/storage.md`.
-- `packages/analytics` — `@starter/analytics`, product analytics: the event catalog (browser-safe at
-  `@starter/analytics/events`) and the provider (log or PostHog, by `ANALYTICS_PROVIDER`). The web
+- `packages/analytics` — `@proof/analytics`, product analytics: the event catalog (browser-safe at
+  `@proof/analytics/events`) and the provider (log or PostHog, by `ANALYTICS_PROVIDER`). The web
   app posts page views to `POST /api/events`. See `docs/analytics.md`.
 - `packages/env` — the only place env vars are read (Zod). `packages/config` — shared tsconfig and
   Vitest base.
-- `scripts/` — `scripts/worktree.mjs` (`pnpm wt`), `scripts/init-project.mjs`,
+- `scripts/` — `scripts/worktree.mjs` (`pnpm wt`),
   `scripts/generate-stories.mjs`, `scripts/release.mjs` (applies migrations),
   `scripts/e2e-stack.mjs` (with `scripts/e2e-dkim-dns.mjs`), `scripts/seed-demo-run.mjs`,
   `scripts/flags.mjs` (`pnpm flags`).
 - `Dockerfile`, `docker-compose.yml` — the API image; compose's `migrate` runs `scripts/release.mjs`
   first.
-- `skills/starter` — the template skill for customers' agents, served at `/skill.md`; `server.json`
+- `skills/proof` — the template skill for customers' agents, served at `/skill.md`; `server.json`
   — the MCP registry record; `.github/workflows/release.yml` publishes both packages and the record
   (`docs/tooling.md`, "Releasing").
 
@@ -87,8 +82,8 @@ pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm baseline && \
   pnpm format:check && pnpm build
 ```
 
-After an API change, run `pnpm --filter @starter/api-app test -u` and
-`pnpm --filter @starter/sdk generate` first. CI adds gitleaks, commitlint, a generated-files check,
+After an API change, run `pnpm --filter @proof/api-app test -u` and
+`pnpm --filter @proof/sdk generate` first. CI adds gitleaks, commitlint, a generated-files check,
 an OpenAPI check, `pnpm audit`, the e2e suite and a Docker build (`docs/tooling.md`). `pnpm format`
 fixes formatting.
 
@@ -99,16 +94,16 @@ fixes formatting.
   follow the same format.
 - **Hooks:** pre-commit runs gitleaks, baseline and format; commit-msg runs commitlint. Never use
   `--no-verify`. For a gitleaks hit on a test fixture, add `// gitleaks:allow` on that line only.
-- **Logging:** use `@starter/logger`, never `console.*` or pino directly. Throw `AppError`; send
+- **Logging:** use `@proof/logger`, never `console.*` or pino directly. Throw `AppError`; send
   clients `error.toPublic()`, never an `INTERNAL` message. Register the reporter once with
   `setErrorReporter`.
 - **Observability:** wrap every route handler in `observe`. `/health` is liveness only. Details:
   `docs/observability.md`.
 - **Accessibility:** oxlint's `jsx-a11y` rules are errors outside the vendored `ui/components` and
   `hooks` (`.oxlintrc.json` overrides). Test UI with `expectNoA11yViolations(html)` from
-  `@starter/ui/a11y`; the test file needs `// @vitest-environment jsdom`.
+  `@proof/ui/a11y`; the test file needs `// @vitest-environment jsdom`.
 - **Env:** add each variable to `packages/env` and `.env.example`, and read it from there, never
-  `process.env` (baseline `use-starter-env`). Never read or edit `.env`.
+  `process.env` (baseline `use-proof-env`). Never read or edit `.env`.
 - **Authorization:** declare what an operation needs in `permissions`, and guard tenant data with
   gdp-ts proofs. Don't hand-roll role or ownership checks in handlers. Every query lives in
   `apps/api/src/data/` behind a proof (baseline `api-queries-in-data-layer`). An operation under a
@@ -144,7 +139,7 @@ tables, `apps/api`, `packages/api`, `packages/mcp`, `packages/auth-proofs`, `pac
 - **Tenant data takes proofs.** Use `inCallerOrg`, `requireInOrg` and `orNotFound`
   (`apps/api/src/tenant.ts`). Another org's row is NOT_FOUND, never FORBIDDEN.
 - **The contract is a snapshot.** After an intended change run
-  `pnpm --filter @starter/api-app test -u` and `pnpm --filter @starter/sdk generate`, then review
+  `pnpm --filter @proof/api-app test -u` and `pnpm --filter @proof/sdk generate`, then review
   the `apps/api/openapi.json` diff as a public API change. Removing, renaming or tightening breaks
   deployed agents: add an operation or `/v2`.
 - **Errors** are thrown `AppError`s, never returned shapes. Only 5xx and unexposed errors are
@@ -172,7 +167,7 @@ Details: `docs/web-app.md`.
   `lib/theme.ts`.
 - Route files are thin. Data and mutations live in `src/containers`; presentational pages in
   `src/pages` take props and callbacks.
-- Call the product API through `@starter/sdk` (`productClient(orgId)`, `lib/product-client.ts`).
+- Call the product API through `@proof/sdk` (`productClient(orgId)`, `lib/product-client.ts`).
   Better-auth org calls always pass `organizationId`.
 - Forms use `useAppForm` and the fields in `components/form.tsx`, with Zod. Query keys come from
   `lib/query-keys.ts`; role checks from `lib/roles.ts`.
@@ -204,15 +199,11 @@ Details: `docs/testing.md`.
 Details: `docs/database.md`.
 
 - App tables go in `packages/db/src/schema.ts`; every customer-data table has `organizationId`.
-- New migration: `pnpm --filter @starter/db db:generate`, then commit the SQL. Auth option or plugin
-  change: `pnpm --filter @starter/auth generate`, then `pnpm format`.
+- New migration: `pnpm --filter @proof/db db:generate`, then commit the SQL. Auth option or plugin
+  change: `pnpm --filter @proof/auth generate`, then `pnpm format`.
 - Applying migrations (`db:migrate`, `drizzle-kit push`) is denied for agents. Ask the user, or use
   `scripts/release.mjs` in a deploy. The exception is `pnpm wt`: it migrates only a worktree's own
   `*_wt_*` database, and agents run it themselves.
-<!-- template:start -->
-- Migrations `0001_agent_auth` through `0016_drop_oauth_client_id_indexes`; 0003 onward are not
-  applied yet.
-<!-- template:end -->
 
 ## Tooling
 

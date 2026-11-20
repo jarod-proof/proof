@@ -9,7 +9,7 @@
 - E2e for passkeys (the e2e browser has no WebAuthn).
 - Publishing: `.github/workflows/release.yml` publishes the CLI, the SDK and server.json from a
   version tag, once the setup in `docs/tooling.md` ("Releasing") is done. Not yet automated: the
-  Claude connectors directory, Smithery, and `npx skills add` for `skills/starter` (which needs a
+  Claude connectors directory, Smithery, and `npx skills add` for `skills/proof` (which needs a
   public repository; the API serves the skill at `/skill.md` meanwhile). Each needs your namespace and
   a real URL. A `.well-known/agent-skills/index.json` once that convention settles.
 - Deploy target: the Dockerfile and `scripts/release.mjs` only. No platform config.

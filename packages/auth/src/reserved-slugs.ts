@@ -1,6 +1,6 @@
 // Organization slugs are public URL segments (`/:org`), so they can't shadow the app's own routes or
 // the API's paths. Creating or renaming an organization to one of these is refused. Plain data with
-// no imports: the web app reuses it from `@starter/auth/client`.
+// no imports: the web app reuses it from `@proof/auth/client`.
 export const RESERVED_ORG_SLUGS = [
   "new",
   "account",

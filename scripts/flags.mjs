@@ -3,7 +3,7 @@
 //   refs [key]        every code reference to each declared flag, and declared flags nothing reads
 //   stale [--check]   the flags due for removal, each with its references and the next step
 //
-// `stale` reads the rollouts from the API when STARTER_API_URL and STARTER_API_KEY are set (a key
+// `stale` reads the rollouts from the API when PROOF_API_URL and PROOF_API_KEY are set (a key
 // of the operator organization with featureFlag:read): all five signals, as list_feature_flags
 // reports them. Without them it reports what the code alone shows: flags past reclaimBy, and
 // declared flags nothing reads. `--check` exits 1 when anything is stale, for CI or a schedule.
@@ -49,8 +49,7 @@ function refs(key) {
 }
 
 const NEXT = {
-  orphaned: (f) =>
-    `delete the rollout: starter call delete_feature_flag --json '{"key":"${f.key}"}'`,
+  orphaned: (f) => `delete the rollout: proof call delete_feature_flag --json '{"key":"${f.key}"}'`,
   "reclaimed-in-code": (f) =>
     `replace each read with ${f.reclaimedValue}, remove it from ${CATALOG}, deploy, then delete_feature_flag`,
   "single-value": (f) =>
@@ -75,8 +74,8 @@ function staticStale() {
 
 async function apiStale() {
   const client = createClient({
-    baseURL: process.env.STARTER_API_URL,
-    apiKey: process.env.STARTER_API_KEY,
+    baseURL: process.env.PROOF_API_URL,
+    apiKey: process.env.PROOF_API_KEY,
   })
   const { flags: stale } = await client.request("GET", "/v1/feature-flags", {
     query: { stale: true },
@@ -110,10 +109,10 @@ switch (command) {
     break
   }
   case "stale": {
-    const fromApi = Boolean(process.env.STARTER_API_URL && process.env.STARTER_API_KEY)
+    const fromApi = Boolean(process.env.PROOF_API_URL && process.env.PROOF_API_KEY)
     const stale = fromApi ? await apiStale() : staticStale()
     if (!fromApi) {
-      console.log("STARTER_API_URL and STARTER_API_KEY unset: code signals only (expired, unused).")
+      console.log("PROOF_API_URL and PROOF_API_KEY unset: code signals only (expired, unused).")
     }
     if (stale.length === 0) console.log("No stale flags.")
     for (const f of stale) {

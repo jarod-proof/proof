@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { toast } from "sonner"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
-import { ButtonGroup, ButtonGroupText } from "@starter/ui/components/ui/button-group"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
+import { ButtonGroup, ButtonGroupText } from "@proof/ui/components/ui/button-group"
 import {
   Card,
   CardContent,
@@ -11,15 +11,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@starter/ui/components/ui/card"
+} from "@proof/ui/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@starter/ui/components/ui/dropdown-menu"
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
+} from "@proof/ui/components/ui/dropdown-menu"
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
 import {
   InputGroup,
   InputGroupAddon,
@@ -27,8 +27,8 @@ import {
   InputGroupInput,
   InputGroupText,
   InputGroupTextarea,
-} from "@starter/ui/components/ui/input-group"
-import { Kbd, KbdGroup } from "@starter/ui/components/ui/kbd"
+} from "@proof/ui/components/ui/input-group"
+import { Kbd, KbdGroup } from "@proof/ui/components/ui/kbd"
 import {
   Popover,
   PopoverContent,
@@ -36,10 +36,10 @@ import {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-} from "@starter/ui/components/ui/popover"
-import { Spinner } from "@starter/ui/components/ui/spinner"
-import { Textarea } from "@starter/ui/components/ui/textarea"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@starter/ui/components/ui/tooltip"
+} from "@proof/ui/components/ui/popover"
+import { Spinner } from "@proof/ui/components/ui/spinner"
+import { Textarea } from "@proof/ui/components/ui/textarea"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@proof/ui/components/ui/tooltip"
 import {
   SearchIcon,
   EyeOffIcon,

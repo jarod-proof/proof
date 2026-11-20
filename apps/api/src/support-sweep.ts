@@ -4,7 +4,7 @@
 // swept here too. Runs never overlap: a tick that finds the last run still
 // going does nothing. Several replicas are safe: support claims each delivery with a lease.
 import { type ByoAuth, sweepAll } from "@byo-oss/core"
-import type { Logger } from "@starter/logger"
+import type { Logger } from "@proof/logger"
 
 export interface SupportSweepOptions {
   logger: Logger

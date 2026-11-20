@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { expectNoA11yViolations } from "@starter/ui/a11y"
-import { Dialog, DialogContent } from "@starter/ui/components/ui/dialog"
+import { expectNoA11yViolations } from "@proof/ui/a11y"
+import { Dialog, DialogContent } from "@proof/ui/components/ui/dialog"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import type { ReactElement } from "react"

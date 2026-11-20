@@ -1,4 +1,4 @@
-import { anchorLink, type RenderLink } from "@starter/ui/dplus/shell/link"
+import { anchorLink, type RenderLink } from "@proof/ui/dplus/shell/link"
 
 /** The URL names an organization the caller is not in (or that doesn't exist). Shown inside the shell. */
 export function OrgNotFoundPage({

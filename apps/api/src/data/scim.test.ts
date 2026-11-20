@@ -1,15 +1,15 @@
 // The organization's SCIM tokens: only live tokens of this organization, with no secrets, and a
 // revoked or another organization's token is not in the list.
-import type { Caller } from "@starter/api"
+import type { Caller } from "@proof/api"
 import {
   type CallerActsFor,
   callerActsFor,
   name,
   type Named,
   OrganizationId,
-} from "@starter/auth-proofs"
-import { organization, scimManagedConnection, scimManagedCredential, user } from "@starter/db"
-import { createTestDb } from "@starter/db/testing"
+} from "@proof/auth-proofs"
+import { organization, scimManagedConnection, scimManagedCredential, user } from "@proof/db"
+import { createTestDb } from "@proof/db/testing"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { listScimTokens } from "./scim"
 

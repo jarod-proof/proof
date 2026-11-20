@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
 // The catalog's roles, so the fake answers what the server would.
-import { roles } from "@starter/auth/client"
+import { roles } from "@proof/auth/client"
 import type { MembersApi, MemberSecurity, OrgInvitation } from "../lib/members-api"
 import type { OrgSettingsApi } from "../lib/org-settings-api"
 import { qk } from "../lib/query-keys"

@@ -1,4 +1,4 @@
-import { defineRegistry } from "@starter/api"
+import { defineRegistry } from "@proof/api"
 
 import { type ApiNotifier, createApiNotifier } from "../notifications"
 import { accountOperations } from "./account"

@@ -4,7 +4,7 @@
 // the network.
 import { generateKeyPairSync, randomUUID } from "node:crypto"
 import { createRequire } from "node:module"
-import type { SupportConfig } from "@starter/auth"
+import type { SupportConfig } from "@proof/auth"
 
 type DkimResolver = NonNullable<NonNullable<SupportConfig["inbound"]>["resolver"]>
 
@@ -20,7 +20,7 @@ interface DkimSign {
 
 // mailauth is support's own dependency (its DKIM check), not this app's: load it from there.
 const require = createRequire(import.meta.url)
-const supportEntry = createRequire(require.resolve("@starter/auth")).resolve("@byo-oss/support")
+const supportEntry = createRequire(require.resolve("@proof/auth")).resolve("@byo-oss/support")
 const { dkimSign } = createRequire(supportEntry)("mailauth") as DkimSign
 
 export interface TestMail {

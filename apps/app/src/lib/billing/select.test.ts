@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
-import type { createClient } from "@starter/auth/client"
+import type { createClient } from "@proof/auth/client"
 
 import { billingAdapterOnce, chooseBillingAdapter } from "./select"
 

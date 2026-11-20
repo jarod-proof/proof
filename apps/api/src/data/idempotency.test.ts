@@ -1,13 +1,13 @@
-import type { Caller } from "@starter/api"
+import type { Caller } from "@proof/api"
 import {
   type CallerActsFor,
   callerActsFor,
   name,
   type Named,
   OrganizationId,
-} from "@starter/auth-proofs"
-import { idempotencyKey, organization } from "@starter/db"
-import { createTestDb } from "@starter/db/testing"
+} from "@proof/auth-proofs"
+import { idempotencyKey, organization } from "@proof/db"
+import { createTestDb } from "@proof/db/testing"
 import { eq } from "drizzle-orm"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import {

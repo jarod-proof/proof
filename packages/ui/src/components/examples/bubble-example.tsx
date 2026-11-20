@@ -1,16 +1,11 @@
 import * as React from "react"
 import { toast } from "sonner"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import {
-  Bubble,
-  BubbleContent,
-  BubbleGroup,
-  BubbleReactions,
-} from "@starter/ui/components/ui/bubble"
-import { Button } from "@starter/ui/components/ui/button"
-import { Collapsible, CollapsibleTrigger } from "@starter/ui/components/ui/collapsible"
-import { Marker, MarkerContent } from "@starter/ui/components/ui/marker"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Bubble, BubbleContent, BubbleGroup, BubbleReactions } from "@proof/ui/components/ui/bubble"
+import { Button } from "@proof/ui/components/ui/button"
+import { Collapsible, CollapsibleTrigger } from "@proof/ui/components/ui/collapsible"
+import { Marker, MarkerContent } from "@proof/ui/components/ui/marker"
 import { ChevronDownIcon, ThumbsUpIcon, ThumbsDownIcon } from "lucide-react"
 
 export default function BubbleExample() {

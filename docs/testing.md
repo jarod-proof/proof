@@ -9,7 +9,7 @@
   branches) and only go up. Generated `src/auth-schema.ts`, stories, tests and `*.types.ts` are
   excluded from coverage.
 - Type-level tests go in `*.types.ts`. `pnpm typecheck` checks them; Vitest doesn't run them.
-- Database tests use `createTestDb()` from `@starter/db/testing`: in-process Postgres (PGlite) with
+- Database tests use `createTestDb()` from `@proof/db/testing`: in-process Postgres (PGlite) with
   the real migrations applied. Regenerate the migration after any schema change, or those tests run
   against a stale schema.
 - The shared config allows 30 seconds per test and 60 seconds per hook, because PGlite startup is
@@ -42,7 +42,7 @@ HTTP.
 
 - `apps/api/src/server.ts` is excluded from coverage (`apps/api/vitest.config.ts`). It only wires
   env, the database and the listener.
-- Test UI with `expectNoA11yViolations(html)` from `@starter/ui/a11y` (axe-core). The test file
+- Test UI with `expectNoA11yViolations(html)` from `@proof/ui/a11y` (axe-core). The test file
   needs `// @vitest-environment jsdom`, and an app needs `jsdom` as its own devDependency.
 - jsdom can't check colour contrast or landmarks, so `packages/ui/src/a11y.ts` turns those rules
   off.

@@ -5,9 +5,9 @@
 // (`errors`), and error reports name them: the evidence a reclaim decision compares.
 import { AsyncLocalStorage } from "node:async_hooks"
 
-import type { Caller } from "@starter/api"
-import type { Database } from "@starter/db"
-import { reportError } from "@starter/errors"
+import type { Caller } from "@proof/api"
+import type { Database } from "@proof/db"
+import { reportError } from "@proof/errors"
 import {
   type Evaluation,
   evaluate,
@@ -15,7 +15,7 @@ import {
   type FlagKey,
   flags as productFlags,
   type Rollout,
-} from "@starter/flags"
+} from "@proof/flags"
 
 import { addExposures, type ExposureCount, loadRollouts, targetsOf } from "./data/feature-flags"
 import { inCallerOrg } from "./tenant"

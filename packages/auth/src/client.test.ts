@@ -88,7 +88,7 @@ describe("createClient", () => {
     expect(personalSlug("u1")).toBe("personal-u1")
   })
 
-  // The client ships to browsers: no server code (@starter/api, the DB, ./permissions) may reach it.
+  // The client ships to browsers: no server code (@proof/api, the DB, ./permissions) may reach it.
   it("imports only browser-safe modules", () => {
     const browserSafe =
       /^(better-auth\/client(\/plugins)?|better-auth\/plugins\/(organization\/)?access|@better-auth\/oauth-provider\/client|@better-auth\/passkey\/client|@better-auth\/sso\/client|@better-auth\/stripe\/client|@wraps\.dev\/better-auth\/client|@byo-oss\/notifications\/client|@byo-oss\/support\/client|@byo-oss\/entitlements\/client|\.\/access|\.\/reserved-slugs|\.\/constants|\.\/membership|\.\/sign-in-methods-shared)$/

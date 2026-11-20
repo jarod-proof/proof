@@ -24,7 +24,7 @@ export const hasOwnerRole = (role: string) =>
     .map((r) => r.trim())
     .includes(OWNER_ROLE)
 
-/** The logging calls the projection makes. The app's @starter/logger instance satisfies it. */
+/** The logging calls the projection makes. The app's @proof/logger instance satisfies it. */
 export interface ProjectionLogger {
   info(fields: Record<string, unknown>, msg: string): void
   warn(fields: Record<string, unknown>, msg: string): void

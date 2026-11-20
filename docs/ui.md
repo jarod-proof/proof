@@ -32,7 +32,7 @@ touch them. baseline allows `bg-black/20`, the overlay scrim used by dialog, she
 ## D+ pieces
 
 Pieces shadcn has no equivalent for live in `packages/ui/src/dplus` (`Status`, `Meter`, `OrgMark`,
-`QrCode`), and the presentational app shell in `src/dplus/shell` (`@starter/ui/dplus/shell/<name>`).
+`QrCode`), and the presentational app shell in `src/dplus/shell` (`@proof/ui/dplus/shell/<name>`).
 They are tested and count toward coverage.
 
 `src/dplus/pages/*.stories.tsx` rebuild the design boards (design system, run view, sidebar, org

@@ -2,7 +2,7 @@ import { FieldIssues, FormError, invalidOf } from "../components/form"
 import { useForm } from "@tanstack/react-form"
 import { useEffect, useId, useRef, useState } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,12 +10,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
-import { Progress } from "@starter/ui/components/ui/progress"
-import { Meter } from "@starter/ui/dplus/meter"
-import { Status } from "@starter/ui/dplus/status"
+} from "@proof/ui/components/ui/dialog"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
+import { Progress } from "@proof/ui/components/ui/progress"
+import { Meter } from "@proof/ui/dplus/meter"
+import { Status } from "@proof/ui/dplus/status"
 
 import { messageOf } from "../lib/messages"
 import { serverNowMs } from "../lib/server-clock"

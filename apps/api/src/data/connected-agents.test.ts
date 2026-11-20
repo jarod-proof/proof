@@ -1,6 +1,6 @@
 // Connected agents: list the org's API keys and OAuth clients, and revoke them. The OAuth client is
 // connected through the real device grant, the same way a headless CLI would connect.
-import { apikey } from "@starter/db"
+import { apikey } from "@proof/db"
 import { decodeJwt } from "jose"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"

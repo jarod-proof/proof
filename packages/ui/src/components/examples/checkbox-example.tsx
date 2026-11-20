@@ -2,8 +2,8 @@
 
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Checkbox } from "@starter/ui/components/ui/checkbox"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Checkbox } from "@proof/ui/components/ui/checkbox"
 import {
   Field,
   FieldContent,
@@ -11,7 +11,7 @@ import {
   FieldGroup,
   FieldLabel,
   FieldTitle,
-} from "@starter/ui/components/ui/field"
+} from "@proof/ui/components/ui/field"
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@starter/ui/components/ui/table"
+} from "@proof/ui/components/ui/table"
 
 export default function CheckboxExample() {
   return (

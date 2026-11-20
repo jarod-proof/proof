@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
-import { OrgMark } from "@starter/ui/dplus/org-mark"
-import { Button } from "@starter/ui/components/ui/button"
+import { OrgMark } from "@proof/ui/dplus/org-mark"
+import { Button } from "@proof/ui/components/ui/button"
 
 import { AuthCard, ErrorAlert } from "../components/auth-card"
 import { NotYou } from "../components/not-you"

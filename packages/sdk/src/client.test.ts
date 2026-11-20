@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { createClient, expandPath } from "./client"
-import { StarterError } from "./errors"
+import { ProofError } from "./errors"
 
 interface Seen {
   method: string
@@ -40,11 +40,11 @@ const json = (body: unknown, init: ResponseInit = {}) =>
 const noSleep = { sleep: async () => {}, random: () => 0 }
 
 /** The error a call rejects with; fails the test if the call succeeds. */
-async function rejection(promise: Promise<unknown>): Promise<StarterError> {
+async function rejection(promise: Promise<unknown>): Promise<ProofError> {
   try {
     await promise
   } catch (error) {
-    return error as StarterError
+    return error as ProofError
   }
   throw new Error("expected the call to fail")
 }
@@ -90,7 +90,7 @@ describe("createClient typed calls", () => {
     expect(data).toMatchObject({ organizationId: "org_1" })
   })
 
-  it("throws a StarterError for a typed call that fails", async () => {
+  it("throws a ProofError for a typed call that fails", async () => {
     const { fetch } = fakeFetch([
       json(
         { error: { code: "FORBIDDEN", message: "No.", hint: "Ask an admin." } },
@@ -132,12 +132,12 @@ describe("createClient.request", () => {
   })
 
   it("rejects a path with a missing parameter", () => {
-    expect(() => expandPath("/v1/projects/{id}", {})).toThrow(StarterError)
+    expect(() => expandPath("/v1/projects/{id}", {})).toThrow(ProofError)
   })
 
   it("refuses a dot segment, which would resolve to another route", () => {
     for (const id of [".", ".."]) {
-      expect(() => expandPath("/v1/runs/{id}/steps", { id })).toThrow(StarterError)
+      expect(() => expandPath("/v1/runs/{id}/steps", { id })).toThrow(ProofError)
     }
     expect(expandPath("/v1/runs/{id}", { id: "..x" })).toBe("/v1/runs/..x")
   })
@@ -274,10 +274,10 @@ describe("retries", () => {
       ...noSleep,
     })
     const error = await client.request("GET", "/v1/projects").catch((e: unknown) => e)
-    expect(error).toBeInstanceOf(StarterError)
+    expect(error).toBeInstanceOf(ProofError)
     expect(error).toMatchObject({ status: 429, code: "RATE_LIMITED", retryAfter: 1 })
     // The JSON an agent reads (the CLI prints it) keeps the wait.
-    expect((error as StarterError).toJSON()).toMatchObject({ status: 429, retryAfter: 1 })
+    expect((error as ProofError).toJSON()).toMatchObject({ status: 429, retryAfter: 1 })
     expect(calls).toHaveLength(2)
   })
 
@@ -393,7 +393,7 @@ describe("error mapping", () => {
       status: 404,
       error: { code: "NOT_FOUND", message: "No project.", hint: "List them.", docs: "https://d" },
     })
-    expect(error.name).toBe("StarterError")
+    expect(error.name).toBe("ProofError")
   })
 
   it("maps a non-JSON failure to HTTP_<status> with the status text", async () => {

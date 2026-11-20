@@ -8,7 +8,7 @@
 //
 // It delegates to drizzle-kit's `migrate` in packages/db, which applies the same migrations folder
 // with the same bookkeeping table as the app's drizzle migrator. The only env it reads is
-// DATABASE_URL; the full @starter/env validation would demand the auth secrets a migration never uses.
+// DATABASE_URL; the full @proof/env validation would demand the auth secrets a migration never uses.
 import { spawn } from "node:child_process"
 import { join } from "node:path"
 import { fileURLToPath } from "node:url"

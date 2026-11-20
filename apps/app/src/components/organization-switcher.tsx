@@ -1,7 +1,7 @@
 import { useId } from "react"
 
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
-import { NativeSelect, NativeSelectOption } from "@starter/ui/components/ui/native-select"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
+import { NativeSelect, NativeSelectOption } from "@proof/ui/components/ui/native-select"
 
 import type { WebOrganization } from "../lib/web-auth"
 

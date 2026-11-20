@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.example/starter",
-  "title": "Starter API",
-  "description": "Starter API: projects, API keys, agent access and audit for people and agents.",
+  "name": "io.github.jarod-proof/proof",
+  "title": "Proof API",
+  "description": "Proof API: projects, API keys, agent access and audit for people and agents.",
   "version": "0.0.0",
   "websiteUrl": "https://api.example.com/llms.txt",
   "remotes": [
@@ -12,7 +12,7 @@
     }
   ],
   "repository": {
-    "url": "https://github.com/example/starter",
+    "url": "https://github.com/jarod-proof/proof",
     "source": "github"
   }
 }

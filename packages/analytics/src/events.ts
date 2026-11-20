@@ -1,5 +1,5 @@
 // The analytics event catalog: every event the app captures, by name. Browser-safe (zod and types
-// only): the web app imports it as `@starter/analytics/events`, and the server entry re-exports it.
+// only): the web app imports it as `@proof/analytics/events`, and the server entry re-exports it.
 //
 // Events carry ids and catalog words, never emails, names, IPs or operation input. A new event gets
 // a line here first; a provider adapter never sees anything that isn't in this union.

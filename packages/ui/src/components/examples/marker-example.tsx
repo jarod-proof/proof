@@ -2,14 +2,14 @@
 
 import { toast } from "sonner"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@starter/ui/components/ui/accordion"
-import { Button } from "@starter/ui/components/ui/button"
+} from "@proof/ui/components/ui/accordion"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Drawer,
   DrawerClose,
@@ -19,9 +19,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@starter/ui/components/ui/drawer"
-import { Marker, MarkerContent, MarkerIcon } from "@starter/ui/components/ui/marker"
-import { Spinner } from "@starter/ui/components/ui/spinner"
+} from "@proof/ui/components/ui/drawer"
+import { Marker, MarkerContent, MarkerIcon } from "@proof/ui/components/ui/marker"
+import { Spinner } from "@proof/ui/components/ui/spinner"
 import {
   FileTextIcon,
   GitBranchIcon,

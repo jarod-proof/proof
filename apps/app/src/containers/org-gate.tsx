@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect } from "react"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 
 import type { WebAuth, WebOrganization } from "../lib/web-auth"
 import { useSessionQuery, useSetActiveOrganization } from "./shell-data"

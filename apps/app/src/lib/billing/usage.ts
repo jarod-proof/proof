@@ -1,6 +1,6 @@
 import { organizationFetch } from "../org-api"
 import { WebError } from "../web-auth"
-import { type PlanId, planDisplay, planIds } from "@starter/plans"
+import { type PlanId, planDisplay, planIds } from "@proof/plans"
 
 import type { BillingEntitlements, BillingUsage } from "./adapter"
 

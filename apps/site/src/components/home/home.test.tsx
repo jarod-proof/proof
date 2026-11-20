@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { expectNoA11yViolations } from "@starter/ui/a11y"
+import { expectNoA11yViolations } from "@proof/ui/a11y"
 import { describe, expect, it } from "vitest"
 
 import { homeFaqs } from "../../data/faqs"

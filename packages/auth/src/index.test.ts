@@ -36,7 +36,7 @@ describe("createAuth", () => {
       stripe: { secretKey: "sk_test_placeholder", webhookSecret: "whsec_x" }, // gitleaks:allow
     })
     expect(ids(billed)).toContain("stripe")
-    expect(ids(billed)).toEqual(expect.arrayContaining(["sso", "scim", "starter-owner-only"]))
+    expect(ids(billed)).toEqual(expect.arrayContaining(["sso", "scim", "proof-owner-only"]))
   })
 })
 
@@ -48,8 +48,8 @@ describe("passkeyRpID", () => {
 
   it("is the shared parent of portless and vite origins under *.localhost", () => {
     expect(passkeyRpID(["https://api-app.localhost", "https://web.localhost"])).toBe("localhost")
-    expect(passkeyRpID(["https://api.starter.localhost", "https://app.starter.localhost"])).toBe(
-      "starter.localhost",
+    expect(passkeyRpID(["https://api.proof.localhost", "https://app.proof.localhost"])).toBe(
+      "proof.localhost",
     )
   })
 

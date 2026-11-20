@@ -1,7 +1,7 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Alert, AlertAction, AlertDescription, AlertTitle } from "@starter/ui/components/ui/alert"
-import { Badge } from "@starter/ui/components/ui/badge"
-import { Button } from "@starter/ui/components/ui/button"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Alert, AlertAction, AlertDescription, AlertTitle } from "@proof/ui/components/ui/alert"
+import { Badge } from "@proof/ui/components/ui/badge"
+import { Button } from "@proof/ui/components/ui/button"
 import { CircleAlertIcon } from "lucide-react"
 
 export default function AlertExample() {

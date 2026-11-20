@@ -1,4 +1,4 @@
-import { baseConfig } from "@starter/config/vitest.base"
+import { baseConfig } from "@proof/config/vitest.base"
 import { getViteConfig } from "astro/config"
 import { mergeConfig } from "vitest/config"
 

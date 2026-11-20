@@ -11,7 +11,7 @@ import type { RunsApi } from "../lib/runs-api"
 import type { WebAuth, WebOrganization } from "../lib/web-auth"
 import { WebError } from "../lib/web-auth"
 import { RunViewPage, type RunViewState } from "../pages/run-view-page"
-import type { RenderLink } from "@starter/ui/dplus/shell/link"
+import type { RenderLink } from "@proof/ui/dplus/shell/link"
 import { memberRoleQuery, useSessionQuery } from "./shell-data"
 
 // The permissions the server checks (the catalog in packages/auth/src/access.ts). The page reads them

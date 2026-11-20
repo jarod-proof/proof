@@ -7,8 +7,8 @@
 // under a key derived from the server secret, the organization and the client's raw key. Replaying
 // needs the request that carries that key, so a dump of the table yields no secrets.
 import { createCipheriv, createDecipheriv, createHmac, hkdfSync, randomBytes } from "node:crypto"
-import type { CallerActsFor, Named, OrganizationId } from "@starter/auth-proofs"
-import { type Database, idempotencyKey } from "@starter/db"
+import type { CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import { type Database, idempotencyKey } from "@proof/db"
 import { and, eq, lt } from "drizzle-orm"
 
 const TTL_MS = 24 * 60 * 60 * 1000
@@ -26,7 +26,7 @@ export interface IdempotencyRef {
 }
 
 const derive = (secret: string, purpose: string, org: string, key: string) =>
-  Buffer.from(hkdfSync("sha256", secret, "starter-idempotency", `${purpose}\0${org}\0${key}`, 32))
+  Buffer.from(hkdfSync("sha256", secret, "proof-idempotency", `${purpose}\0${org}\0${key}`, 32))
 
 /** The stored form of a client's Idempotency-Key. */
 export function idempotencyLookup(secret: string, org: string, key: string): string {

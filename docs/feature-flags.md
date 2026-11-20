@@ -61,7 +61,7 @@ only adds organizations.
 ## Evidence
 
 Every evaluation is an **exposure**, counted per flag, value and UTC day. They are written every 30
-seconds and on SIGTERM, and kept 90 days (`pnpm --filter @starter/api-app cleanup`). The flags a
+seconds and on SIGTERM, and kept 90 days (`pnpm --filter @proof/api-app cleanup`). The flags a
 request evaluates are remembered for it. If it ends in a 5xx, each value it saw gets an `errors`
 count, and the error report carries `flags: { key: value }`. `get_feature_flag` returns the days.
 `list_feature_flags` returns the 7-day totals and the stale signals: `expired`, `inactive`,

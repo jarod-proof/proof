@@ -1,8 +1,4 @@
-import {
-  ANALYTICS_EVENTS_PATH,
-  type ClientEvent,
-  MAX_CLIENT_EVENTS,
-} from "@starter/analytics/events"
+import { ANALYTICS_EVENTS_PATH, type ClientEvent, MAX_CLIENT_EVENTS } from "@proof/analytics/events"
 import { useRouter, useRouterState } from "@tanstack/react-router"
 import { useEffect, useRef } from "react"
 

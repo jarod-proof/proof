@@ -1,5 +1,5 @@
-import { Meter } from "@starter/ui/dplus/meter"
-import { StatusIcon } from "@starter/ui/dplus/status"
+import { Meter } from "@proof/ui/dplus/meter"
+import { StatusIcon } from "@proof/ui/dplus/status"
 import type { ReactNode } from "react"
 
 import { site } from "../../site"

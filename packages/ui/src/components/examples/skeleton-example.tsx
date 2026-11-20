@@ -1,6 +1,6 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Card, CardContent, CardHeader } from "@starter/ui/components/ui/card"
-import { Skeleton } from "@starter/ui/components/ui/skeleton"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Card, CardContent, CardHeader } from "@proof/ui/components/ui/card"
+import { Skeleton } from "@proof/ui/components/ui/skeleton"
 
 export default function SkeletonExample() {
   return (

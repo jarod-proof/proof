@@ -11,7 +11,7 @@ Uploads are a person's **avatar** (`user.image`) and an organization's **logo**
 | `r2` | a Cloudflare R2 bucket | `STORAGE_PUBLIC_URL` (r2.dev or a custom domain) |
 | `vercel-blob` | a Vercel Blob store | `https://<store>.public.blob.vercel-storage.com` |
 
-Change the store by changing the env. No code changes. `@starter/env` refuses to start when a
+Change the store by changing the env. No code changes. `@proof/env` refuses to start when a
 chosen driver is missing a variable, and the error names the variable. `.env.example` lists them
 all.
 
@@ -23,7 +23,7 @@ all.
    - `set_my_avatar` and `remove_my_avatar` (`auth: "person"`: the web app's session only, never an
      API key or OAuth token, and not MCP tools).
 2. The API decodes it and reads its type from its bytes, not from the name or the claimed type. It
-   accepts only PNG, JPEG, WebP and GIF, up to 1 MB (`MAX_IMAGE_BYTES` in `@starter/storage`). SVG
+   accepts only PNG, JPEG, WebP and GIF, up to 1 MB (`MAX_IMAGE_BYTES` in `@proof/storage`). SVG
    is refused because it can carry script and the files are public. A request body over 2 MB is
    refused before it is read (`MAX_BODY_BYTES` in `apps/api/src/app.ts`).
 3. It stores the file under a new random key, such as `org/<id>/logo-<32 hex>.png`. Files never
@@ -95,7 +95,7 @@ The read-write token also covers `list`, which the sweep on deletion uses.
 ## When an organization or person is deleted
 
 Their files go too. Every key for an organization starts `org/<id>/` and every key for a person
-`user/<id>/` (`organizationFilesPrefix` and `personFilesPrefix` in `@starter/storage`; uploads
+`user/<id>/` (`organizationFilesPrefix` and `personFilesPrefix` in `@proof/storage`; uploads
 build their keys on them). When one is deleted, the API removes everything under that prefix with
 `FileStore.deletePrefix`, including files no row points at any more (`apps/api/src/file-sweep.ts`).
 
@@ -125,7 +125,7 @@ CSP use the same origin.
 - Add an operation beside the others in `apps/api/src/operations/uploads.ts`. Use `replaceImage`
   with a key prefix of its own, and record the URL through a data function in
   `apps/api/src/data/uploads.ts` (one that takes a proof when the row is tenant data).
-- For another file type, add its magic bytes beside `imageTypeOf` in `@starter/storage`. Never
+- For another file type, add its magic bytes beside `imageTypeOf` in `@proof/storage`. Never
   trust the type the client claims.
 - Build the key prefix on `organizationFilesPrefix` or `personFilesPrefix`, or the sweep on
   deletion misses the files.

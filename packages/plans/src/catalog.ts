@@ -1,5 +1,5 @@
 // The product's plans: what each one includes and how it is described. The one copy of the plan
-// promises: the API enforces it (@starter/auth mounts @byo-oss/entitlements with it), the web app's
+// promises: the API enforces it (@proof/auth mounts @byo-oss/entitlements with it), the web app's
 // billing page shows it, and the marketing site's pricing page is built from it. Prices are not here
 // (they live in Stripe; STRIPE_PLANS names the price ids). Browser-safe: it imports only the
 // package's `/catalog` entry, which imports nothing.
@@ -28,7 +28,7 @@ export const catalog = defineEntitlements<PlanDisplay>()({
     // Product API calls per organization per UTC day (the invoke hooks in apps/api consume it):
     // Free 10 000, Pro 100 000, Team unlimited (consumeUsage never refuses it, and the API sends
     // no ratelimit-* headers for it). Organizations nobody has claimed yet get a lower limit on any
-    // plan (resolveEntitlements in @starter/auth).
+    // plan (resolveEntitlements in @proof/auth).
     requests: { kind: "metered", period: "day" },
     // Members who hold a role other than viewer: viewers are free on every plan.
     seats: { kind: "capacity" },

@@ -53,6 +53,6 @@ export const securitySummary = createAuthEndpoint(
 
 export const securitySummaryPlugin = () =>
   ({
-    id: "starter-security-summary",
+    id: "proof-security-summary",
     endpoints: { securitySummary },
   }) satisfies BetterAuthPlugin

@@ -10,11 +10,11 @@
 - **TanStack lint**: Oxlint loads `@tanstack/eslint-plugin-query` and `@tanstack/eslint-plugin-router`
   as `jsPlugins` (`.oxlintrc.json`), every recommended rule as an error. `exhaustive-deps`
   allowlists the `BillingAdapter` type: a service whose `mode` stands for it in query keys.
-- **portless**: `pnpm dev` runs the apps' dev scripts on stable `*.localhost` URLs (`app.starter`,
-  `api.starter`, `site.starter`; `portless.json`). `"turbo": false` is set because portless's turbo mode runs the
+- **portless**: `pnpm dev` runs the apps' dev scripts on stable `*.localhost` URLs (`app.proof`,
+  `api.proof`, `site.proof`; `portless.json`). `"turbo": false` is set because portless's turbo mode runs the
   root `dev` script, which is portless itself.
-- **Web and CLI builds**: `pnpm --filter @starter/app build` writes `apps/app/dist`, which
-  `WEB_DIST_DIR` needs. `pnpm --filter @starter/cli build` writes `dist/bin.js`.
+- **Web and CLI builds**: `pnpm --filter @proof/app build` writes `apps/app/dist`, which
+  `WEB_DIST_DIR` needs. `pnpm --filter @proof/cli build` writes `dist/bin.js`.
 - **baseline** (`code-baseline`): bans, ratchets and design-system rules in `baseline.toml`.
   Warnings don't fail the run (localhost `http://`, inline styles, the React and a11y advice in
   `apps/app`); errors do. Presets: `shadcn-strict`, `dependency-hygiene`, `security` and
@@ -22,11 +22,11 @@
   size/useReducer/DOM-query opinions and `no-array-index-key`, see the comment there) and
   `accessibility` on `packages/ui/src/dplus`. Generated files (`*.gen.ts`), `scripts/`, `docs/` and
   the shadcn demos are excluded.
-  Our own rules (errors): `no-console-log` (every console method), `use-starter-logger` (no pino,
-  winston, ...), `use-cn` (no clsx, tailwind-merge, classnames), `use-starter-ui` (no Base UI, Radix
-  or other kits outside `packages/ui`), `use-starter-env` (no `process.env` outside `packages/env`),
+  Our own rules (errors): `no-console-log` (every console method), `use-proof-logger` (no pino,
+  winston, ...), `use-cn` (no clsx, tailwind-merge, classnames), `use-proof-ui` (no Base UI, Radix
+  or other kits outside `packages/ui`), `use-proof-env` (no `process.env` outside `packages/env`),
   `no-type-any` (type positions only; `operation.ts` is the one exception), `no-new-function`
-  (outside tests), `no-server-imports-in-client` (no `@starter/db`, `env`, `auth-proofs` or
+  (outside tests), `no-server-imports-in-client` (no `@proof/db`, `env`, `auth-proofs` or
   `observability` from `apps/app`, `packages/ui`, `sdk` or `cli`), `use-app-error` (no bare
   `new Error` in `apps/api`), `no-focused-tests`, `no-sleep-in-e2e`, `e2e-test-import`, the two
   `ui-css-*-import` rules (`styles.css` must keep its `shadcn/tailwind.css` and `tw-animate-css`
@@ -34,7 +34,7 @@
   `db.select(...)` or table imports in `apps/api` outside `src/data/`; elsewhere only
   `import type { Database }`). `no-cross-package-relative-imports` bans `../../packages/x/src`
   imports: export the thing from its package instead (the web app gets `roles` and `statements` from
-  `@starter/auth/client`, and its tests read `ORGANIZATION_HEADER` from `@starter/api/headers`).
+  `@proof/auth/client`, and its tests read `ORGANIZATION_HEADER` from `@proof/api/headers`).
   Ratchets (ceilings that only go down), all at 0: `ratchet-as-unknown-as` (outside tests and
   `*.types.ts`), `ratchet-vi-mock`, `ratchet-lint-disable`, `ratchet-ts-expect-error` (outside
   `*.types.ts`) and `ratchet-skipped-tests`. Never raise a ceiling to make room. In place of
@@ -82,11 +82,11 @@
 
 `turbo.jsonc` holds the task graph. The `transit` task carries the workspace dependency graph into
 each test task's hash. Without it, a test hash sees only its own package: editing
-`packages/auth/src/access.ts` left `@starter/app#test` unchanged. Migrations, vitest config and
+`packages/auth/src/access.ts` left `@proof/app#test` unchanged. Migrations, vitest config and
 every other file a dependency's tests read are inputs through the package graph.
 
 Some test inputs no workspace dependency reaches are listed per task:
-`apps/app/src/routeTree.gen.ts`, `server.json` and `skills/starter/SKILL.md` for the api-app tests;
+`apps/app/src/routeTree.gen.ts`, `server.json` and `skills/proof/SKILL.md` for the api-app tests;
 the CLI and SDK sources that `apps/api/src/onboarding.test.ts` runs as a process;
 `packages/api/src/headers.ts` for the web tests; and `apps/api/openapi.json` for the SDK tests. Add
 an input there when a test reads a file no dependency reaches.
@@ -117,7 +117,7 @@ an input there when a test reads a file no dependency reaches.
 
 ## Releasing
 
-`.github/workflows/release.yml` publishes `@starter/cli` and `@starter/sdk` to npm, with provenance,
+`.github/workflows/release.yml` publishes `@proof/cli` and `@proof/sdk` to npm, with provenance,
 and then `server.json` to the MCP registry with `mcp-publisher`. It runs on a `v*` tag push or a
 manual dispatch, and it refuses any ref that is not `v<version>` of both packages and of `server.json`.
 Nothing publishes until someone runs it.
@@ -127,7 +127,7 @@ To release version `X`:
 1. Set the version in `apps/api/src/product.ts`, `packages/cli/package.json` and
    `packages/sdk/package.json`.
 2. Regenerate the registry record:
-   `UPDATE_SERVER_JSON=1 pnpm --filter @starter/api-app exec vitest run src/discovery.test.ts`.
+   `UPDATE_SERVER_JSON=1 pnpm --filter @proof/api-app exec vitest run src/discovery.test.ts`.
 3. Commit the bump and push it to `main`.
 4. Tag the commit and push the tag: `git tag vX && git push origin vX`. The `release` environment
    may ask for a reviewer before the job runs.
@@ -150,15 +150,9 @@ Set up once, by a person:
   (`mcp-publisher login dns` with an Ed25519 key in DNS), and the workflow must change to match.
 - **Repository URL**: npm provenance refuses a package whose `repository.url` doesn't match the
   repository the workflow runs in. Keep it equal in both package.json files and `product.ts`.
-<!-- template:start -->
-- **Scope rename**: `pnpm init-project` renames `@starter` in the packages, `server.json` and the
-  registry name, so a new project publishes under its own scope. It sets the repository URL to
-  `github.com/<owner>/<name>`, so a repository named differently needs it edited by hand, and
-  `--domain` rewrites the public origin.
-<!-- template:end -->
 
 The CLI's default origin is the product's public URL (`PRODUCT.publicURL` in
-`apps/api/src/product.ts`). Local development sets `STARTER_URL` or `--base-url`.
+`apps/api/src/product.ts`). Local development sets `PROOF_URL` or `--base-url`.
 
 ## Catalog and lefthook
 
@@ -169,24 +163,6 @@ The CLI's default origin is the product's public URL (`PRODUCT.publicURL` in
 - lefthook's format step runs Biome over `ts`, `tsx`, `js`, `mjs`, `json` and `css` staged files.
   Markdown is not formatted by Biome in this version.
 
-<!-- template:start -->
-## Template setup
-
-`pnpm init-project <name>` renames the `@starter/` scope and package names, `name` fields, the
-`# starter` title, the database name (`.env.example`, compose, CI; dashes become underscores, so
-`my-app` gets `my_app` and `pnpm wt` can derive `my_app_wt_<branch>`), the portless and compose
-hostnames, the display name (for example `Starter API`), the MCP registry name, the SDK's public
-names (`StarterError`, `StarterClient`), the `STARTER_` env prefix, the CLI (bin, help, config dir),
-better-auth plugin ids, baseline rule ids, and the skill (`name:`, prose and the `skills/starter`
-folder). It leaves `RunStarter` and "the run's starter" alone: they mean who started a run. It skips
-local `.env` files (`.env.example` is still renamed) and the vendored skills in `skills-lock.json`.
-
-Text between a `template:start` and a `template:end` comment line (`#`, `//`, `<!--` or `{/*`) is
-about the template itself; init-project deletes it, along with `docs/prompts/`, its own script and the CI
-job that tests it. It then runs `pnpm install --no-frozen-lockfile` and `pnpm format`. The CI job
-`template` runs it on a scratch checkout as `smoke-app` and runs the done-checks on the result, so
-add a rename rule (or a `template:` block) whenever you add a template name it should not keep.
-<!-- template:end -->
 
 ## Worktrees
 
@@ -194,19 +170,19 @@ add a rename rule (or a `template:` block) whenever you add a template name it s
 so branches with different migrations don't share one schema. Start Postgres from any checkout with
 `docker compose up -d db`: compose's fixed `name:` makes every worktree use the same container.
 
-- `pnpm wt new <branch> [--base <ref>]` checks the branch out in `../starter.<name>` (`<name>` is
+- `pnpm wt new <branch> [--base <ref>]` checks the branch out in `../proof.<name>` (`<name>` is
   the branch's last path segment), creating it from the default branch, or tracking
   `origin/<branch>`, when it does not exist. Then it runs `setup` there.
 - `pnpm wt setup [path]` provisions a worktree made some other way (a bare `git worktree add`, or a
   Claude worktree whose hook could not finish setup), by default the one you are in. It links `.env`
   to the main checkout's, writes `.env.worktree`, runs `mise trust`, `mise install` and
-  `pnpm install --frozen-lockfile`, creates `starter_wt_<name>` and applies the worktree's own
+  `pnpm install --frozen-lockfile`, creates `proof_wt_<name>` and applies the worktree's own
   migrations to it with `scripts/release.mjs`. `--skip-install` skips mise and pnpm. Rerunning it is
   safe.
 - `.env.worktree` sets `DATABASE_URL` to that database and `WEB_ORIGINS` to the worktree's portless
-  URL (`https://<name>.app.starter.localhost`; portless prefixes worktrees with the branch).
+  URL (`https://<name>.app.proof.localhost`; portless prefixes worktrees with the branch).
   `.mise.toml` loads it after `.env`, so it wins. It also blanks `API_URL`, so the vite proxy
-  follows the prefix to `<name>.api.starter`. A branch whose `.mise.toml` predates this doesn't load
+  follows the prefix to `<name>.api.proof`. A branch whose `.mise.toml` predates this doesn't load
   the file, so `setup` leaves `.env` unlinked there (the app fails env validation rather than run on
   the main database) until you merge the default branch into it and rerun `setup`.
 - `pnpm wt reset-db [path]` drops, recreates and migrates the worktree's database, for when a branch
@@ -232,7 +208,7 @@ run every `pnpm wt` command themselves (`.claude/settings.json` allows it).
 Claude Code's own worktrees go through it too. `.claude/settings.json` sets the `WorktreeCreate` and
 `WorktreeRemove` hooks to `scripts/worktree.mjs hook-create` and `hook-remove`, which replace
 Claude's `git worktree add` and removal. So `claude --worktree <name>`, the EnterWorktree tool and a
-subagent's `isolation: "worktree"` get `../starter.<name>` on branch `<name>` with its own database,
+subagent's `isolation: "worktree"` get `../proof.<name>` on branch `<name>` with its own database,
 and leaving one (ExitWorktree, or choosing remove at the exit prompt) runs `rm --force`: Claude has
 already asked about uncommitted changes by then. Claude keeps a subagent's worktree when the
 subagent finishes; `pnpm wt prune --yes` removes it once its branch merges, or a day after it was
@@ -251,8 +227,5 @@ The API image (`Dockerfile`) runs `apps/api` from source with `tsx src/server.ts
 ## Repository notes
 
 - Biome skips `apps/api/openapi.json`, the committed contract.
-- Exceptions to baseline's `use-starter-env` rule are listed in `baseline.toml`.
+- Exceptions to baseline's `use-proof-env` rule are listed in `baseline.toml`.
 - The agent-graph working directory under .claude is gitignored: it is working state for graph runs.
-<!-- template:start -->
-- `docs/build-app/` keeps only the design boards; the build prompt is `docs/prompts/build-app.md`.
-<!-- template:end -->

@@ -2,7 +2,7 @@
 // request shapes match apps/api/src/device-flow.test.ts: a public client registered with
 // grant_types [device_code, refresh_token], the device code requested with `resource` set to the
 // MCP endpoint, and polling with a form-encoded token request.
-import { StarterError } from "@starter/sdk"
+import { ProofError } from "@proof/sdk"
 import type { Profile } from "./config"
 
 export const DEVICE_GRANT = "urn:ietf:params:oauth:grant-type:device_code"
@@ -14,7 +14,7 @@ export function withOfflineAccess(scope: string): string {
   const parts = scope.split(/\s+/).filter(Boolean)
   return parts.includes("offline_access") ? parts.join(" ") : [...parts, "offline_access"].join(" ")
 }
-const CLIENT_NAME = "starter CLI"
+const CLIENT_NAME = "proof CLI"
 /** Seconds added to the poll interval on each slow_down (RFC 8628 section 3.5). */
 const SLOW_DOWN_STEP_MS = 5000
 /** Refresh this long before the access token expires, so a call never races the expiry. */
@@ -26,12 +26,12 @@ export interface Deps {
   now: () => number
 }
 
-/** One request to the API origin. A connection failure becomes a StarterError like any other. */
+/** One request to the API origin. A connection failure becomes a ProofError like any other. */
 export async function send(deps: Deps, request: Request): Promise<Response> {
   try {
     return await deps.fetch(request)
   } catch (cause) {
-    throw new StarterError({
+    throw new ProofError({
       status: 0,
       code: "NETWORK_ERROR",
       message: `Could not reach ${request.url}`,
@@ -108,7 +108,7 @@ const num = (value: unknown) => (typeof value === "number" ? value : undefined)
 function tokenSetFrom(body: Record<string, unknown>, now: number, previous?: Profile): TokenSet {
   const accessToken = str(body.access_token)
   if (!accessToken) {
-    throw new StarterError({
+    throw new ProofError({
       status: 0,
       code: "LOGIN_FAILED",
       message: "The token response had no access_token",
@@ -180,11 +180,11 @@ export async function pollForTokens(
   let intervalMs = device.interval * 1000
   for (;;) {
     if (deps.now() >= deadline) {
-      throw new StarterError({
+      throw new ProofError({
         status: 0,
         code: "expired_token",
         message: "The sign-in code expired before it was approved",
-        hint: "Run starter login again.",
+        hint: "Run proof login again.",
       })
     }
     await deps.sleep(intervalMs)
@@ -194,7 +194,7 @@ export async function pollForTokens(
       client_id: clientId,
     }).catch((e: unknown) => {
       // A dropped connection mid-wait is not a refusal: poll again until the code expires.
-      if (e instanceof StarterError && e.code === "NETWORK_ERROR") return undefined
+      if (e instanceof ProofError && e.code === "NETWORK_ERROR") return undefined
       throw e
     })
     if (!res || res.status >= 500) continue
@@ -211,7 +211,7 @@ export async function pollForTokens(
         intervalMs += SLOW_DOWN_STEP_MS
         continue
       case "access_denied":
-        throw new StarterError({
+        throw new ProofError({
           status: res.status,
           code: "access_denied",
           message: "The sign-in was refused in the browser",
@@ -229,11 +229,11 @@ export async function refreshTokens(
   deps: Deps,
 ): Promise<TokenSet> {
   if (!profile.refreshToken) {
-    throw new StarterError({
+    throw new ProofError({
       status: 0,
       code: "NOT_LOGGED_IN",
       message: "The stored session has no refresh token",
-      hint: "Run starter login.",
+      hint: "Run proof login.",
     })
   }
   const res = await postForm(deps, `${baseUrl}/api/auth/oauth2/token`, {
@@ -246,11 +246,11 @@ export async function refreshTokens(
     throw failure(res.status, res.body, "The saved session could not be refreshed right now")
   }
   if (!res.ok) {
-    throw new StarterError({
+    throw new ProofError({
       status: res.status,
       code: "SESSION_EXPIRED",
       message: "The saved session could not be refreshed",
-      hint: "Run starter login again.",
+      hint: "Run proof login again.",
       cause: res.body,
     })
   }
@@ -275,5 +275,5 @@ export async function revokeRefreshToken(baseUrl: string, profile: Profile, deps
 function failure(status: number, body: Record<string, unknown>, fallback: string) {
   const code = str(body.error) ?? `HTTP_${status}`
   const description = str(body.error_description) ?? str(body.message)
-  return new StarterError({ status, code, message: description ?? fallback })
+  return new ProofError({ status, code, message: description ?? fallback })
 }

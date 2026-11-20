@@ -1,10 +1,10 @@
-import { catalog, planDisplay, planIds, type PlanId } from "@starter/plans"
+import { catalog, planDisplay, planIds, type PlanId } from "@proof/plans"
 
 import { site } from "../site"
 
 /**
  * The plans the pricing page and the home page teaser show. What each plan includes and its copy
- * come from the product's plan catalog (`@starter/plans`), the one the API enforces. Only the
+ * come from the product's plan catalog (`@proof/plans`), the one the API enforces. Only the
  * site's own parts are here: prices (placeholders: fill them in from your billing setup, STRIPE_PLANS
  * in the API, rather than inventing numbers), the price unit and the call to action.
  */

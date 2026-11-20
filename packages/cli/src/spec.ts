@@ -1,6 +1,6 @@
 // Operation names → HTTP method and path, read from the API's own openapi.json at runtime, so the
 // CLI follows whatever the server exposes without a rebuild.
-import { type Method, StarterError } from "@starter/sdk"
+import { type Method, ProofError } from "@proof/sdk"
 
 const HTTP_METHODS = ["get", "put", "post", "delete", "patch", "head", "options", "trace"] as const
 
@@ -69,7 +69,7 @@ export function findOperation(doc: OpenApiDocument, name: string): Operation | u
 }
 
 const usage = (message: string, hint?: string) =>
-  new StarterError({ status: 0, code: "USAGE", message, hint })
+  new ProofError({ status: 0, code: "USAGE", message, hint })
 
 /**
  * Splits one flat input object into what the request needs: path parameters fill the template,

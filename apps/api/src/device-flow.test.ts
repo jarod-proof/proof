@@ -2,7 +2,7 @@
 // code, a person approves it in the browser, and the client polls /oauth2/token. The tokens are
 // ordinary OAuth JWTs bound to the approving session's active organization, so resolvePrincipal
 // accepts them unchanged; refresh keeps the organization.
-import { resolvePrincipal } from "@starter/auth"
+import { resolvePrincipal } from "@proof/auth"
 import { decodeJwt } from "jose"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { BASE, createTestApp } from "./app.test.helpers"

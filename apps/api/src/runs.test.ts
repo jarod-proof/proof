@@ -1,7 +1,7 @@
 // Workspace agents and runs over REST and MCP: roles (viewer reads, member and admin act, only owners
 // reset two-factor), cross-tenant NOT_FOUND, the agent-side run protocol, and the 30-second approval
 // window. Time is injected (createTestApp's `now`), so the window is tested without sleeping.
-import { twoFactor, user as userTable } from "@starter/db"
+import { twoFactor, user as userTable } from "@proof/db"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 

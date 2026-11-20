@@ -1,10 +1,10 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Field, FieldDescription, FieldLabel } from "@starter/ui/components/ui/field"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Field, FieldDescription, FieldLabel } from "@proof/ui/components/ui/field"
 import {
   NativeSelect,
   NativeSelectOptGroup,
   NativeSelectOption,
-} from "@starter/ui/components/ui/native-select"
+} from "@proof/ui/components/ui/native-select"
 
 export default function NativeSelectExample() {
   return (

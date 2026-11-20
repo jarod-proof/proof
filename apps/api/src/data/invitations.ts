@@ -2,7 +2,7 @@
 // secret (random, sent only to the invited address), so there is no tenant proof here: nothing is
 // listed, and an unknown id answers the same as one that never existed. Whether the invited address
 // has an account is deliberately not said: this is readable by anyone who can invite someone.
-import { invitation, type Database, organization, user } from "@starter/db"
+import { invitation, type Database, organization, user } from "@proof/db"
 import { eq } from "drizzle-orm"
 
 export type InvitationPreviewStatus = "pending" | "accepted" | "rejected" | "canceled" | "expired"

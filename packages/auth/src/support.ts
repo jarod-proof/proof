@@ -15,7 +15,7 @@ import type { Mailer } from "@byo-oss/mailer"
 import { type DkimResolver, type SupportOptions, rawRelay, support } from "@byo-oss/support"
 import { wrapsInbound } from "@byo-oss/support/wraps"
 import type { WrapsSesOptions } from "@wraps.dev/better-auth"
-import { reportError } from "@starter/errors"
+import { reportError } from "@proof/errors"
 
 import { authMailer } from "./mailer"
 import { isImpersonated } from "./guards"

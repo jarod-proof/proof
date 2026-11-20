@@ -1,14 +1,8 @@
 // Workspace agents: the configured workers of an organization and their settings. Every function
 // takes the organization as a Named id plus a proof, and still filters by organizationId in SQL.
-import type {
-  AgentId,
-  AgentInOrg,
-  CallerActsFor,
-  Named,
-  OrganizationId,
-} from "@starter/auth-proofs"
-import { AppError } from "@starter/errors"
-import { type Database, agent, run } from "@starter/db"
+import type { AgentId, AgentInOrg, CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import { AppError } from "@proof/errors"
+import { type Database, agent, run } from "@proof/db"
 import { and, asc, eq, inArray } from "drizzle-orm"
 
 export type Agent = typeof agent.$inferSelect

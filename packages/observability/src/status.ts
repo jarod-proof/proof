@@ -1,7 +1,7 @@
 // What our third parties say about themselves. `/health` only says this process is up; it never pings
 // a dependency. This asks each vendor's own status page instead, caches the answer, and reports it,
 // so an outage upstream is visible without our servers probing anything.
-import type { Logger } from "@starter/logger"
+import type { Logger } from "@proof/logger"
 
 /** A vendor status source. */
 export type StatusProvider =

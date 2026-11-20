@@ -1,5 +1,5 @@
 {
-  "extends": "@starter/config/tsconfig.base.json",
+  "extends": "@proof/config/tsconfig.base.json",
   "include": ["src", "*.ts", ".storybook"],
   "compilerOptions": {
     "jsx": "react-jsx",

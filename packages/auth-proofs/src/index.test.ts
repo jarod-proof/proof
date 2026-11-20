@@ -1,5 +1,5 @@
-import { createTestDb } from "@starter/db/testing"
-import { agent, approval, featureFlag, member, organization, project, run, user } from "@starter/db"
+import { createTestDb } from "@proof/db/testing"
+import { agent, approval, featureFlag, member, organization, project, run, user } from "@proof/db"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import {
   agentInOrg,

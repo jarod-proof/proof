@@ -1,3 +1,3 @@
-import { baseConfig } from "@starter/config/vitest.base"
+import { baseConfig } from "@proof/config/vitest.base"
 
 export default baseConfig()

@@ -1,7 +1,7 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Button } from "@starter/ui/components/ui/button"
-import { Kbd } from "@starter/ui/components/ui/kbd"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@starter/ui/components/ui/tooltip"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Button } from "@proof/ui/components/ui/button"
+import { Kbd } from "@proof/ui/components/ui/kbd"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@proof/ui/components/ui/tooltip"
 import { InfoIcon, SaveIcon } from "lucide-react"
 
 export default function TooltipExample() {

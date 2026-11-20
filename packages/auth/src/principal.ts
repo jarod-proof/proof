@@ -1,5 +1,5 @@
-import { ORGANIZATION_HEADER, type PermissionSet } from "@starter/api"
-import { AppError } from "@starter/errors"
+import { ORGANIZATION_HEADER, type PermissionSet } from "@proof/api"
+import { AppError } from "@proof/errors"
 import { createLocalJWKSet, type JSONWebKeySet, jwtVerify } from "jose"
 
 import { API_KEY_PREFIX, AUTH_BASE_PATH, type Auth } from "./index"
@@ -16,7 +16,7 @@ export interface Principal {
   via: "session" | "api-key" | "oauth"
   /**
    * One grant per role, each narrowed to what the credential allows. A request is allowed when one
-   * grant covers all of it (better-auth's multi-role semantics). Use `allowed` from `@starter/api`.
+   * grant covers all of it (better-auth's multi-role semantics). Use `allowed` from `@proof/api`.
    */
   grants: PermissionSet[]
   /** OAuth client id, or the API key id. */
@@ -102,7 +102,7 @@ async function fromApiKey(auth: Auth, key: string): Promise<Principal | null> {
         "If this key came from signup, it stopped working when the person claimed the account " +
         "(opened the emailed link). Sign in with the device grant instead: POST " +
         "/api/auth/device/code, then the person approves at /device (see /llms.txt, or run " +
-        "`starter login`). Otherwise, ask an admin of the organization for a new key.",
+        "`proof login`). Otherwise, ask an admin of the organization for a new key.",
     })
   }
   if (res.error?.code === "RATE_LIMITED") {

@@ -1,7 +1,7 @@
 // Pure helpers for the run view and the org's run list. No network, no React.
 import { z } from "zod"
 
-import type { StatusState } from "@starter/ui/dplus/status"
+import type { StatusState } from "@proof/ui/dplus/status"
 
 import type { ApprovalDecision, RunStatus, RunStep, RunSummary } from "./runs-api"
 

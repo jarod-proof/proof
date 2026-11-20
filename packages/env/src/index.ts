@@ -63,7 +63,7 @@ export const env = createEnv({
     WEB_DIST_DIR: z.string().min(1).optional(),
     /**
      * Origins the web app runs on when it is not apps/api's own origin (`pnpm dev`, or a separate vite
-     * server). Comma-separated bare origins, e.g. `https://app.starter.localhost` under pnpm dev. Trusted for auth callbacks and
+     * server). Comma-separated bare origins, e.g. `https://app.proof.localhost` under pnpm dev. Trusted for auth callbacks and
      * passkeys, nothing else. Leave empty in production, where apps/api serves the web app itself.
      */
     WEB_ORIGINS: z

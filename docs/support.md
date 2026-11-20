@@ -27,7 +27,7 @@ SDK. The web app mounts the package's React components (see [Web app](#web-app))
 ## Web app
 
 `apps/app` depends on `@byo-oss/support` itself (the React import and Tailwind's `@source` in
-`app.css` need it there), and `supportClient()` is in `@starter/auth/client`, so `WebAuth.support`
+`app.css` need it there), and `supportClient()` is in `@proof/auth/client`, so `WebAuth.support`
 is the typed client the components take as is.
 
 - **Support widget** (`SupportWidget`, `containers/support-widget.tsx`): last in the top bar of
@@ -59,7 +59,7 @@ is the typed client the components take as is.
 | `OPERATOR_ORGANIZATION_ID` | The staff organization. Unset: every staff route answers 403. |
 | `SUPPORT_REPLY_DOMAIN` | Turns on thread mail: agent replies are mailed to the requester with `Reply-To: support+<token>@<domain>`. Unset: nothing is mailed. |
 | `SUPPORT_EMAIL_FROM` | The sender, verified in SES. Unset: `EMAIL_FROM`. |
-| `WRAPS_INBOUND_KEY`, `WRAPS_INBOUND_BUCKET` | Turn on inbound mail at `POST /api/auth/support/inbound`. Need `SUPPORT_REPLY_DOMAIN`; `@starter/env` names what is missing. Unset: 404 `INBOUND_NOT_CONFIGURED`. |
+| `WRAPS_INBOUND_KEY`, `WRAPS_INBOUND_BUCKET` | Turn on inbound mail at `POST /api/auth/support/inbound`. Need `SUPPORT_REPLY_DOMAIN`; `@proof/env` names what is missing. Unset: 404 `INBOUND_NOT_CONFIGURED`. |
 | `WRAPS_INBOUND_REGION` | The bucket's region. Default `us-east-1`. |
 | `SUPPORT_INBOUND_SECRET` | The other inbound source: any relay that POSTs the raw message (`message/rfc822`) with `Authorization: Bearer <secret>` (support's `rawRelay`: Postmark, Mailgun, a Cloudflare Email Worker). Needs `SUPPORT_REPLY_DOMAIN`; not with the Wraps variables. |
 | `SUPPORT_REPLY_DELAY_MS` | The delay before an agent's reply is mailed. Unset: support's 2 minutes. |

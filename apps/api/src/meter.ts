@@ -1,13 +1,13 @@
 // Metering: product API calls per organization per UTC day, against the plan's `requests` limit
-// (the plan catalog, @starter/plans, through @byo-oss/entitlements). An organization is "unclaimed"
-// while its owners' emails are unverified (provisional signups, see @starter/auth signup.ts); it gets
+// (the plan catalog, @proof/plans, through @byo-oss/entitlements). An organization is "unclaimed"
+// while its owners' emails are unverified (provisional signups, see @proof/auth signup.ts); it gets
 // the lower UNCLAIMED_ORG_DAILY_REQUEST_LIMIT until an owner claims the account (resolveEntitlements
-// in @starter/auth entitlements.ts). Counting is entitlements' consumeUsage: one guarded increment,
+// in @proof/auth entitlements.ts). Counting is entitlements' consumeUsage: one guarded increment,
 // and a refused call counts nothing.
-import type { Caller } from "@starter/api"
-import type { PlanEntitlements } from "@starter/auth"
-import type { Database } from "@starter/db"
-import { catalog } from "@starter/plans"
+import type { Caller } from "@proof/api"
+import type { PlanEntitlements } from "@proof/auth"
+import type { Database } from "@proof/db"
+import { catalog } from "@proof/plans"
 
 import { organizationClaimed } from "./data/organizations"
 

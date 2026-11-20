@@ -1,6 +1,6 @@
 // Audit trail: who (a user or an API key, possibly through an OAuth client) ran which operation in
 // an organization, and how it ended. Newest first, paginated on (at, id).
-import { personalSlug } from "@starter/auth"
+import { personalSlug } from "@proof/auth"
 import {
   type CallerActsFor,
   memberInOrg,
@@ -8,10 +8,10 @@ import {
   type Named,
   OrganizationId,
   UserId,
-} from "@starter/auth-proofs"
-import { auditEvent, type Database, organization } from "@starter/db"
-import type { ErrorCode } from "@starter/errors"
-import { createLogger } from "@starter/logger"
+} from "@proof/auth-proofs"
+import { auditEvent, type Database, organization } from "@proof/db"
+import type { ErrorCode } from "@proof/errors"
+import { createLogger } from "@proof/logger"
 import { and, desc, eq, lt, or } from "drizzle-orm"
 
 const logger = createLogger({ name: "audit" })

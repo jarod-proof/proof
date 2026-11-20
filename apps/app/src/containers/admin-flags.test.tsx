@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { anchorLink } from "@starter/ui/dplus/shell/link"
+import { anchorLink } from "@proof/ui/dplus/shell/link"
 import { screen, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 

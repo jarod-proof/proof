@@ -1,6 +1,6 @@
-import { Button } from "@starter/ui/components/ui/button"
-import { Status } from "@starter/ui/dplus/status"
-import { type RenderLink, anchorLink } from "@starter/ui/dplus/shell/link"
+import { Button } from "@proof/ui/components/ui/button"
+import { Status } from "@proof/ui/dplus/status"
+import { type RenderLink, anchorLink } from "@proof/ui/dplus/shell/link"
 
 import {
   formatWhen,

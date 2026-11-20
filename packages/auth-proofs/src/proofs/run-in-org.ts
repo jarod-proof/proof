@@ -1,5 +1,5 @@
 import { defineProof, type Named, type Proof } from "@gdp-ts/core"
-import { type Database, run } from "@starter/db"
+import { type Database, run } from "@proof/db"
 import { and, eq } from "drizzle-orm"
 import type { OrganizationId, RunId } from "../lib/ids"
 

@@ -2,9 +2,9 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
-import { Button } from "@starter/ui/components/ui/button"
-import { Input } from "@starter/ui/components/ui/input"
-import { Textarea } from "@starter/ui/components/ui/textarea"
+import { Button } from "@proof/ui/components/ui/button"
+import { Input } from "@proof/ui/components/ui/input"
+import { Textarea } from "@proof/ui/components/ui/textarea"
 
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (

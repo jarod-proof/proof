@@ -1,4 +1,4 @@
-import { oauthAccessToken, oauthClient, oauthConsent, oauthRefreshToken } from "@starter/db/schema"
+import { oauthAccessToken, oauthClient, oauthConsent, oauthRefreshToken } from "@proof/db/schema"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { createTestAuth } from "./auth.test.helpers"
 import { revokeGrants, revokeMemberGrants } from "./member-grants"

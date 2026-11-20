@@ -1,5 +1,5 @@
-import { TWO_FACTOR_PATH, createClient } from "@starter/auth/client"
-import type { SignInMethods, SocialProvider } from "@starter/auth/client"
+import { TWO_FACTOR_PATH, createClient } from "@proof/auth/client"
+import type { SignInMethods, SocialProvider } from "@proof/auth/client"
 import type { InboxFetchClient } from "@byo-oss/notifications/react"
 import type { SupportFetchClient } from "@byo-oss/support/react"
 
@@ -182,7 +182,7 @@ export function createWebAuth(baseURL?: string, fetchImpl?: typeof fetch): WebAu
 
   return {
     notifications: inboxFetchClient(client.inbox),
-    // The typed client already has support's shape (supportClient in @starter/auth/client).
+    // The typed client already has support's shape (supportClient in @proof/auth/client).
     support: client,
     async getSession() {
       const result = await client.getSession()

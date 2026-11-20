@@ -1,6 +1,6 @@
 // Uploaded files (avatars, organization logos), in the store the deployment chooses: S3, Cloudflare
 // R2, Vercel Blob, or a local directory. Reads no env itself: apps/api builds the config from
-// @starter/env (STORAGE_DRIVER and friends, docs/storage.md).
+// @proof/env (STORAGE_DRIVER and friends, docs/storage.md).
 import { createLocalStore, createMemoryStore, type LocalConfig, type MemoryConfig } from "./local"
 import { createS3Store, type R2Config, type S3Config } from "./s3"
 import type { FileStore } from "./store"

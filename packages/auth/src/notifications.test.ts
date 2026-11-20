@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 
 import { runWithTransaction } from "@better-auth/core/context"
 import { deleteMemberData } from "@byo-oss/notifications"
-import { notification } from "@starter/db/schema"
+import { notification } from "@proof/db/schema"
 import { eq } from "drizzle-orm"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 

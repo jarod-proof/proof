@@ -3,7 +3,7 @@ export interface ErrorBody {
   error: { code: string; message: string; hint?: string; docs?: string }
 }
 
-export interface StarterErrorInit {
+export interface ProofErrorInit {
   status: number
   code: string
   message: string
@@ -17,7 +17,7 @@ export interface StarterErrorInit {
  * A failed call. `status` is the HTTP status (0 when no response arrived). `code` is the API's
  * error code (e.g. FORBIDDEN, RATE_LIMITED) or a transport code (NETWORK_ERROR, HTTP_<status>).
  */
-export class StarterError extends Error {
+export class ProofError extends Error {
   readonly status: number
   readonly code: string
   readonly hint?: string
@@ -25,9 +25,9 @@ export class StarterError extends Error {
   /** Seconds the server asked us to wait (Retry-After), when it said so. */
   readonly retryAfter?: number
 
-  constructor(init: StarterErrorInit) {
+  constructor(init: ProofErrorInit) {
     super(init.message, init.cause === undefined ? undefined : { cause: init.cause })
-    this.name = "StarterError"
+    this.name = "ProofError"
     this.status = init.status
     this.code = init.code
     this.hint = init.hint
@@ -79,8 +79,8 @@ function isErrorBody(value: unknown): value is ErrorBody {
   )
 }
 
-/** Builds the StarterError for a non-2xx response, reading the API's error body when it has one. */
-export async function errorFromResponse(response: Response): Promise<StarterError> {
+/** Builds the ProofError for a non-2xx response, reading the API's error body when it has one. */
+export async function errorFromResponse(response: Response): Promise<ProofError> {
   const retryAfter = parseRetryAfter(response.headers.get("retry-after"))
   const text = await response.text().catch(() => "")
   let parsed: unknown
@@ -91,9 +91,9 @@ export async function errorFromResponse(response: Response): Promise<StarterErro
   }
   if (isErrorBody(parsed)) {
     const { code, message, hint, docs } = parsed.error
-    return new StarterError({ status: response.status, code, message, hint, docs, retryAfter })
+    return new ProofError({ status: response.status, code, message, hint, docs, retryAfter })
   }
-  return new StarterError({
+  return new ProofError({
     status: response.status,
     code: `HTTP_${response.status}`,
     message: response.statusText || `Request failed with status ${response.status}`,

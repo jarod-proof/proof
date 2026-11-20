@@ -3,7 +3,7 @@
 // connection whose provisioning domain is the organization, and returns the bearer credential once: only
 // its digest is stored. Impersonated sessions are refused (guards.ts), since a token outlives the session.
 import { createHmac, randomUUID } from "node:crypto"
-import { allowed } from "@starter/api"
+import { allowed } from "@proof/api"
 import type { BetterAuthPlugin } from "better-auth"
 import { APIError, createAuthEndpoint, getSessionFromCtx } from "better-auth/api"
 import { findMember } from "./membership"
@@ -21,7 +21,7 @@ export const SCIM_SCOPES = [
 const TOKEN_DAYS = 365
 
 /** The actor recorded when the product ends access on someone's behalf (a removal or a leave). */
-export const ACCESS_ENDED_ACTOR = "starter:access-ended"
+export const ACCESS_ENDED_ACTOR = "proof:access-ended"
 
 /**
  * The scim plugin's server-only managed-connection calls (see auth index.ts). A token is one
@@ -93,14 +93,14 @@ export interface ScimConnection {
  * from it under a label rather than configured separately.
  */
 export const scimCredentialHashSecret = (secret: string) =>
-  createHmac("sha256", secret).update("starter-scim-credential-hash").digest("hex")
+  createHmac("sha256", secret).update("proof-scim-credential-hash").digest("hex")
 
 export const scimTokenPlugin = (opts: {
   /** The scim plugin's server-only managed-connection call (see auth index.ts). */
   connect: (input: ScimConnectionInput) => Promise<ScimConnection>
 }) =>
   ({
-    id: "starter-scim-token",
+    id: "proof-scim-token",
     endpoints: {
       generateScimToken: createAuthEndpoint(
         "/scim/generate-token",

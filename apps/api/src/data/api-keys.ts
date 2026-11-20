@@ -1,8 +1,8 @@
 // The organization's API keys, as the API keys page shows them. Only the masked start of a key is
 // returned, never the key itself (better-auth stores it hashed). createdBy is kept in the key's
 // metadata at creation; keys made before that have none.
-import type { CallerActsFor, Named, OrganizationId } from "@starter/auth-proofs"
-import { apikey, type Database, user } from "@starter/db"
+import type { CallerActsFor, Named, OrganizationId } from "@proof/auth-proofs"
+import { apikey, type Database, user } from "@proof/db"
 import { and, desc, eq } from "drizzle-orm"
 
 export interface ApiKeyRow {

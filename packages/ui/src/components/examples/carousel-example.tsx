@@ -1,12 +1,12 @@
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Card, CardContent } from "@starter/ui/components/ui/card"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Card, CardContent } from "@proof/ui/components/ui/card"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@starter/ui/components/ui/carousel"
+} from "@proof/ui/components/ui/carousel"
 
 export default function CarouselExample() {
   return (

@@ -1,5 +1,5 @@
-import { memberGrants, provisionalSignup } from "@starter/auth"
-import { AppError } from "@starter/errors"
+import { memberGrants, provisionalSignup } from "@proof/auth"
+import { AppError } from "@proof/errors"
 import { z } from "zod"
 
 import { invitationPreview } from "../data/invitations"
@@ -12,7 +12,7 @@ export const signupInput = z.object({
   name: z.string().trim().min(1).max(100).optional().describe("Display name"),
 })
 
-/** whoami's `entitlements`: the organization's plan as the API enforces it (@starter/plans). */
+/** whoami's `entitlements`: the organization's plan as the API enforces it (@proof/plans). */
 const entitlementsOutput = z
   .object({
     plan: z.string().describe("The plan key: free, pro or team"),

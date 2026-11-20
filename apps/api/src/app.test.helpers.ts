@@ -5,20 +5,20 @@
 // acme is the operator organization (feature flag rollouts) unless a test says otherwise.
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js"
-import type { Analytics } from "@starter/analytics"
-import type { AnyOperation } from "@starter/api"
+import type { Analytics } from "@proof/analytics"
+import type { AnyOperation } from "@proof/api"
 import {
   type AuthEvent,
   type AuthOptions,
   type AuthRateLimitOptions,
   createAuth,
-} from "@starter/auth"
-import { createTestDb } from "@starter/db/testing"
-import { memorySource } from "@starter/auth/testing"
-import type { PlanId } from "@starter/plans"
-import type { FlagCatalog } from "@starter/flags"
-import { createLogger, type Logger } from "@starter/logger"
-import { createMemoryStore, type FileStore } from "@starter/storage"
+} from "@proof/auth"
+import { createTestDb } from "@proof/db/testing"
+import { memorySource } from "@proof/auth/testing"
+import type { PlanId } from "@proof/plans"
+import type { FlagCatalog } from "@proof/flags"
+import { createLogger, type Logger } from "@proof/logger"
+import { createMemoryStore, type FileStore } from "@proof/storage"
 import { captureSignUp } from "./analytics"
 import { type AppOptions, createApp } from "./app"
 import { recordAuthEvent } from "./data/audit"

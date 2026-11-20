@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { RESERVED_ORG_SLUGS } from "@starter/auth/client"
+import { RESERVED_ORG_SLUGS } from "@proof/auth/client"
 
 import { SLUG_MAX_LENGTH, slugProblem, slugify } from "./org-slug"
 

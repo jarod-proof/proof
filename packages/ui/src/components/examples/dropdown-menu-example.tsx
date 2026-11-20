@@ -1,8 +1,8 @@
 import * as React from "react"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
-import { Avatar, AvatarFallback, AvatarImage } from "@starter/ui/components/ui/avatar"
-import { Button } from "@starter/ui/components/ui/button"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
+import { Avatar, AvatarFallback, AvatarImage } from "@proof/ui/components/ui/avatar"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@starter/ui/components/ui/dialog"
+} from "@proof/ui/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -27,7 +27,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@starter/ui/components/ui/dropdown-menu"
+} from "@proof/ui/components/ui/dropdown-menu"
 import {
   UserIcon,
   CreditCardIcon,

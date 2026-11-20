@@ -17,7 +17,7 @@ const CHALLENGE_SECONDS = 600
 
 export const twoFactorMagicLink = (opts: { baseURL: string }) =>
   ({
-    id: "starter-magic-link-two-factor",
+    id: "proof-magic-link-two-factor",
     hooks: {
       after: [
         {

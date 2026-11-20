@@ -1,5 +1,5 @@
 {
-  "name": "@starter/ui",
+  "name": "@proof/ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@shadcn/lint": "catalog:",
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@storybook/addon-a11y": "^10.6.3",
     "@storybook/addon-docs": "^10.6.3",
     "@storybook/addon-mcp": "^10.6.3",

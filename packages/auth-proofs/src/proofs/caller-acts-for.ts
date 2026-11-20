@@ -1,5 +1,5 @@
 import { defineProof, type Named, type Proof } from "@gdp-ts/core"
-import type { Caller } from "@starter/api"
+import type { Caller } from "@proof/api"
 import type { OrganizationId } from "../lib/ids"
 
 const CallerActsFor = defineProof("CallerActsFor")

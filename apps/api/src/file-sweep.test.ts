@@ -1,5 +1,5 @@
-import { createLogger } from "@starter/logger"
-import { createMemoryStore, type FileStore } from "@starter/storage"
+import { createLogger } from "@proof/logger"
+import { createMemoryStore, type FileStore } from "@proof/storage"
 import { describe, expect, it } from "vitest"
 
 import { fileSweep } from "./file-sweep"

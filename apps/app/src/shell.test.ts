@@ -12,7 +12,7 @@ const shellPath = fileURLToPath(new URL("../dist/index.html", import.meta.url))
 
 describe("prerendered shell (dist/index.html)", () => {
   if (!existsSync(shellPath)) {
-    throw new Error("dist/index.html is absent: run `pnpm --filter @starter/app build` first")
+    throw new Error("dist/index.html is absent: run `pnpm --filter @proof/app build` first")
   }
   const html = readFileSync(shellPath, "utf8")
 
@@ -32,6 +32,6 @@ describe("prerendered shell (dist/index.html)", () => {
   it("keeps the document shell and its inline bootstrap", () => {
     expect(html).toMatch(/<html[\s>]/i)
     // The theme boot script is inline (apps/api's CSP allows it by hash), not an /assets file.
-    expect(html).toMatch(/<script>(?:(?!<\/script>)[\s\S])*starter\.theme/)
+    expect(html).toMatch(/<script>(?:(?!<\/script>)[\s\S])*proof\.theme/)
   })
 })

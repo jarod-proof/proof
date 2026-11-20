@@ -14,7 +14,7 @@ export const SESSION_NOT_FRESH_CODE = "SESSION_NOT_FRESH"
 /**
  * Whether a failed call was refused because the session is not fresh. Structural, so it covers the
  * shapes the web app sees: better-auth's client error and the app's own WebError or AccountError
- * (both carry `code`), a StarterError from the product client (`code`), and the raw product body
+ * (both carry `code`), a ProofError from the product client (`code`), and the raw product body
  * `{ error: { code } }`.
  */
 export function isSessionNotFresh(error: unknown): boolean {

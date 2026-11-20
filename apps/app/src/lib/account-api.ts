@@ -4,7 +4,7 @@ import {
   OWNS_ORGANIZATION_CODE,
   PASSWORD_COMPROMISED_CODE,
   PASSWORD_COMPROMISED_MESSAGE,
-} from "@starter/auth/client"
+} from "@proof/auth/client"
 
 import { SESSION_NOT_FRESH_CODE } from "./reauth"
 import { makeAuthClient, WebError } from "./web-auth"

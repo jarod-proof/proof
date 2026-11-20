@@ -15,7 +15,7 @@ WORKDIR /app
 # lockfile, so the dependency layer is reused until those change; `out/full` holds the sources.
 FROM base AS prepare
 COPY . .
-RUN pnpm dlx turbo@2.11.7 prune @starter/api-app @starter/app --docker
+RUN pnpm dlx turbo@2.11.7 prune @proof/api-app @proof/app --docker
 
 # The root `prepare` script installs git hooks, which the image has no repo for, so scripts are skipped
 # and only the dependency build approved in pnpm-workspace.yaml (esbuild) is run. turbo prune leaves
@@ -30,7 +30,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts && pnpm rebuild esbuild
 FROM deps AS builder
 COPY --from=prepare /app/out/full/ ./
 ENV NODE_OPTIONS=--dns-result-order=ipv4first
-RUN pnpm --filter @starter/app build
+RUN pnpm --filter @proof/app build
 
 FROM base AS runtime
 ENV NODE_ENV=production \

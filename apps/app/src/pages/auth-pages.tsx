@@ -8,10 +8,10 @@ import {
   PASSWORD_COMPROMISED_MESSAGE,
   type SignInMethods,
   type SocialProvider,
-} from "@starter/auth/client"
-import { Button } from "@starter/ui/components/ui/button"
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@starter/ui/components/ui/field"
-import { Input } from "@starter/ui/components/ui/input"
+} from "@proof/auth/client"
+import { Button } from "@proof/ui/components/ui/button"
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@proof/ui/components/ui/field"
+import { Input } from "@proof/ui/components/ui/input"
 
 import { AuthCard, ErrorAlert } from "../components/auth-card"
 import { messageOf } from "../lib/messages"

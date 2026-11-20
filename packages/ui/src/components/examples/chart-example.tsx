@@ -22,7 +22,7 @@ import {
   XAxis,
 } from "recharts"
 
-import { Example, ExampleWrapper } from "@starter/ui/components/examples/example"
+import { Example, ExampleWrapper } from "@proof/ui/components/examples/example"
 import {
   Card,
   CardContent,
@@ -30,13 +30,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@starter/ui/components/ui/card"
+} from "@proof/ui/components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@starter/ui/components/ui/chart"
+} from "@proof/ui/components/ui/chart"
 import { TrendingUpIcon } from "lucide-react"
 
 const areaChartData = [

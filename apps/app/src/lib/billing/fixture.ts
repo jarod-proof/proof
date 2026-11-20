@@ -11,7 +11,7 @@ import {
 
 // Fixture data shaped like the OrgBilling board. Every value here is sample data: the page labels
 // the whole snapshot [SAMPLE DATA], prices stay [PRICE], and no plan limit or amount is invented.
-// The plans are the catalog's (@starter/plans, what the API enforces) and the invoice dates are the
+// The plans are the catalog's (@proof/plans, what the API enforces) and the invoice dates are the
 // board's own words. Seats used are NOT here: the page takes the real member count from the
 // organization.
 

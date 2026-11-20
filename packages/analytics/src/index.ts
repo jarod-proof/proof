@@ -1,12 +1,12 @@
 // Product analytics behind one interface, so the provider is a config choice: `none`, `log` or
 // `posthog` today, and a new one is an adapter (`AnalyticsProvider`) beside them. Reads no env
-// itself: apps/api builds the config from @starter/env (ANALYTICS_PROVIDER, docs/analytics.md).
+// itself: apps/api builds the config from @proof/env (ANALYTICS_PROVIDER, docs/analytics.md).
 //
 // `capture` only queues: it never waits on the network and never throws, so it can sit on the
 // request path. The queue is sent in batches, on a timer and when it fills; `shutdown` sends what
 // is left. A failed send is reported (`onError`) and dropped, never retried.
-import { AppError, reportError } from "@starter/errors"
-import type { Logger } from "@starter/logger"
+import { AppError, reportError } from "@proof/errors"
+import type { Logger } from "@proof/logger"
 
 import type { AnalyticsEvent } from "./events"
 import { createPostHogProvider, type PostHogConfig } from "./posthog"

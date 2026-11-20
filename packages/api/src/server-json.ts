@@ -16,8 +16,8 @@ export interface RegistryMeta {
 
 /** Placeholder until a deployment names itself. The registry rejects this namespace on publish. */
 export const DEFAULT_REGISTRY_META: RegistryMeta = {
-  name: "io.github.example/starter",
-  description: "Starter API: projects, API keys, agent access and audit for people and agents.",
+  name: "io.github.jarod-proof/proof",
+  description: "Proof API: projects, API keys, agent access and audit for people and agents.",
 }
 
 /**

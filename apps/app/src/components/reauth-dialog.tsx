@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { type ReactNode, createContext, useCallback, useContext, useRef, useState } from "react"
 import { z } from "zod"
 
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@starter/ui/components/ui/dialog"
+} from "@proof/ui/components/ui/dialog"
 
 import { type AccountApi, getAccountApi } from "../lib/account-api"
 import { accountKeys } from "../lib/account-keys"

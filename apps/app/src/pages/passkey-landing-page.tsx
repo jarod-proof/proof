@@ -1,4 +1,4 @@
-import { Button } from "@starter/ui/components/ui/button"
+import { Button } from "@proof/ui/components/ui/button"
 
 import { AuthCard, ErrorAlert } from "../components/auth-card"
 

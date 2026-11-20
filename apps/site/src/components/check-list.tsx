@@ -1,4 +1,4 @@
-import { StatusIcon } from "@starter/ui/dplus/status"
+import { StatusIcon } from "@proof/ui/dplus/status"
 import { cn } from "cn"
 
 /** A list where every item carries the done mark. */

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 
-import { type RenderLink, anchorLink } from "@starter/ui/dplus/shell/link"
-import { PageBody } from "@starter/ui/dplus/shell/page-header"
-import { SettingsHeader } from "@starter/ui/dplus/shell/settings-header"
+import { type RenderLink, anchorLink } from "@proof/ui/dplus/shell/link"
+import { PageBody } from "@proof/ui/dplus/shell/page-header"
+import { SettingsHeader } from "@proof/ui/dplus/shell/settings-header"
 
 import type { PasskeyInfo, TotpSetup } from "../lib/account-api"
 import {

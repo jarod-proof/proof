@@ -1,11 +1,11 @@
 {
-  "name": "@starter/sdk",
+  "name": "@proof/sdk",
   "version": "0.0.0",
-  "description": "Typed TypeScript client for the Starter API, generated from its OpenAPI contract.",
+  "description": "Typed TypeScript client for the Proof API, generated from its OpenAPI contract.",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/example/starter.git",
+    "url": "git+https://github.com/jarod-proof/proof.git",
     "directory": "packages/sdk"
   },
   "engines": {
@@ -41,7 +41,7 @@
     "openapi-fetch": "^0.17.0"
   },
   "devDependencies": {
-    "@starter/config": "workspace:*",
+    "@proof/config": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "esbuild": "^0.28.2",

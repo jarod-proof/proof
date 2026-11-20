@@ -1,5 +1,5 @@
 import type { ByoAuth, ByoSweepResult } from "@byo-oss/core"
-import type { Logger } from "@starter/logger"
+import type { Logger } from "@proof/logger"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { startSupportSweep } from "./support-sweep"

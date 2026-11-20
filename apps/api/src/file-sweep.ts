@@ -2,9 +2,9 @@
 // or person is deleted"). Auth reports each deletion once its row is gone (createAuth's onDeleted);
 // this sweeps everything under the matching prefix, orphans included. Auth reports a throw from
 // here and never fails the deletion for it.
-import type { DeletedEvent } from "@starter/auth"
-import type { Logger } from "@starter/logger"
-import { type FileStore, organizationFilesPrefix, personFilesPrefix } from "@starter/storage"
+import type { DeletedEvent } from "@proof/auth"
+import type { Logger } from "@proof/logger"
+import { type FileStore, organizationFilesPrefix, personFilesPrefix } from "@proof/storage"
 
 /** The onDeleted callback: sweeps the deleted organization's or person's files from `files`. */
 export function fileSweep(
