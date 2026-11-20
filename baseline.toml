@@ -110,6 +110,9 @@ exclude_glob = [
   "**/scripts/**",
   "**/*.test.{ts,tsx}",
   "**/*.e2e.ts",
+  # The acceptance journeys and their shared support.ts are test code, run by hand against a deployed
+  # org with the vault's env (`op run`), like the *.e2e.ts files above; the app's env never loads there.
+  "e2e/acceptance/**",
   "**/*.config.{ts,mts,js,mjs}",
   "packages/logger/src/index.ts",
   "packages/db/src/index.ts",

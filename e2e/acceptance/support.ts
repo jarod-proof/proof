@@ -4,13 +4,12 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 import { uniqueId } from "../support/unique"
-import { acceptanceSkip, need } from "./acceptance.config"
-
-export { acceptanceSkip, need }
 
 // Shared by the acceptance journeys (e2e/acceptance/*.e2e.ts): the Phase 1 completion check of a
 // deployed org, run by hand against the org's real hq. Not a test file. Every value comes from the
 // environment (`op run --env-file <vault env file> -- ...`); nothing here is a host or a secret.
+// It reads process.env directly: the org's baseline excludes e2e/acceptance/** from the rule that
+// sends env reads through @<org>/env, because this is test code and never runs with the app's env.
 //
 // THE SAFE RUN COMMAND, from the org's checkout (the journeys spend, grant and open pull requests
 // on the real org, so never `pnpm e2e`, and never two targets):
@@ -32,6 +31,12 @@ export { acceptanceSkip, need }
 //   FOUNDER_EMAIL, HQ_FOUNDER_PASSWORD   the founder account made by create-founder
 //   SLACK_SIGNING_SECRET, HQ_SLACK_TEAM_ID, HQ_FOUNDERS   the slack journey
 //   ACCEPTANCE_GITHUB_REPO  owner/name, the review journey (the gh CLI must be logged in)
+
+/** Why the journeys skip, or false when they run. Evaluated when a file registers its test. */
+export const acceptanceSkip: string | false =
+  process.env.FACTORY_ACCEPTANCE === "1" && process.env.HQ_BASE_URL
+    ? false
+    : "acceptance runs only against a deployed org: set FACTORY_ACCEPTANCE=1 and HQ_BASE_URL"
 
 /**
  * Claims a journey for this run, before it writes anything: throws when the same journey was
@@ -58,6 +63,13 @@ export function claimRun(journey: string): void {
         "--target desktop --workers 1 (one target), and without retries",
     )
   }
+}
+
+/** The value of a required environment variable; the error names it and never its value. */
+export function need(name: string): string {
+  const value = process.env[name]
+  if (!value) throw new Error(`${name} is not set (the acceptance run reads it from the vault)`)
+  return value
 }
 
 /** hq's base URL without a trailing slash. */
