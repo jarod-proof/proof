@@ -12,6 +12,11 @@
 - Database tests use `createTestDb()` from `@proof/db/testing`: in-process Postgres (PGlite) with
   the real migrations applied. Regenerate the migration after any schema change, or those tests run
   against a stale schema.
+- hq's daily-cap race (`apps/hq/src/data/spend.test.ts`) needs real Postgres and real, separate
+  connections, which PGlite cannot give. It runs against a worktree's database (`DATABASE_URL`, a
+  `*_wt_*` name) or `HQ_TEST_DATABASE_URL` (a `*_test` name), with hq's tables migrated (`pnpm wt`
+  or `pnpm wt reset-db`), and is skipped anywhere else. It writes and deletes rows dated in 2200.
+  `turbo.jsonc` lists both variables for `@proof/hq#test` so turbo's strict env mode passes them.
 - The shared config allows 30 seconds per test and 60 seconds per hook, because PGlite startup is
   slow on cold CI runners.
 - **Workers:** `packages/config/vitest.base.ts` caps `maxWorkers` at a quarter of the cores per

@@ -27,6 +27,46 @@ function isBareHttpOrigin(value: string): boolean {
 export const env = createEnv({
   server: {
     DATABASE_URL: z.url(),
+    /**
+     * apps/hq (the org brain) only: its own database, which also takes starter's migrations (auth
+     * tables); its own tables live in the `hq` schema. apps/hq refuses to start without it.
+     */
+    HQ_DATABASE_URL: z.url().optional(),
+    /** apps/hq only: its public base URL (OAuth issuer, docs links). Unset, http://127.0.0.1:<port>. */
+    HQ_BASE_URL: z.url().optional(),
+    /**
+     * apps/hq only: the founders, who alone decide proposals, edit entries and click Approve in
+     * Slack. Comma-separated `<email>=<slack user id>` pairs (an email counts once its account has
+     * verified the address; `id:<user id>=<slack user id>` names a user by id). hq writes them to
+     * its `founders` table at boot and removes any row not listed, so this is the only way a
+     * founder is added or removed; empty, nobody is a founder. Nothing in the API writes it.
+     */
+    HQ_FOUNDERS: z.string().optional(),
+    /** apps/hq only: the Slack workspace (team id) whose clicks hq accepts. Unset, hq refuses every click. */
+    HQ_SLACK_TEAM_ID: z.string().min(1).optional(),
+    /**
+     * apps/hq only: the most, in dollars, that Slack grant clicks may add to the allowance in one
+     * UTC day, in total (a click that would pass it is refused and grants nothing). Unset, $50.
+     * grant_spend by a signed-in founder is outside it.
+     */
+    HQ_SLACK_DAILY_GRANT_CAP_USD: z.preprocess(
+      (value) => (value === "" ? undefined : value),
+      z.coerce.number().positive().max(1000).optional(),
+    ),
+    /** The Slack app's signing secret: hq verifies the forwarded click over the exact bytes (apps/hq, apps/agent). */
+    SLACK_SIGNING_SECRET: z.string().min(1).optional(),
+    /**
+     * apps/hq only: whether anyone may create an account on hq. Off by default: hq's people are the
+     * founders, so a stranger cannot self-register. For the e2e and test stacks only (NODE_ENV
+     * development or test, which seed their founder by signing up): a deployed hq refuses to boot
+     * with it on, and makes its founders with `create-founder` on the server instead.
+     */
+    HQ_ALLOW_SIGNUP: z.stringbool().default(false),
+    /**
+     * Tests only (apps/hq's real-Postgres spend race, apps/hq/src/data/spend.test.ts, which reads
+     * it directly): a database named `*_test` it may write to. Nothing in the app reads it.
+     */
+    HQ_TEST_DATABASE_URL: z.url().optional(),
     BETTER_AUTH_SECRET: z.string().min(32),
     BETTER_AUTH_URL: z.url(),
     EMAIL_FROM: z.string().min(1),

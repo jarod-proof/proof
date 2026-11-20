@@ -125,7 +125,7 @@ jobs:
           echo "::add-mask::$secret"
           echo "BETTER_AUTH_SECRET=$secret" >> "$GITHUB_ENV"
       - run: pnpm exec e2e-web install chromium --with-deps
-      - run: pnpm exec e2e run --exclude-tag visual --reporter list,junit
+      - run: pnpm exec e2e run --target desktop,phone --exclude-tag visual --reporter list,junit
       # Uploaded on failure too: the app log is the only evidence when the stack fails to boot.
       - name: Upload the report and logs
         if: ${{ !cancelled() }}

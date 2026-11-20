@@ -1,0 +1,50 @@
+{
+  "name": "@proof/agent",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The org's eve agent: Slack, hq memory and the daily spend cap. Built from Foreman (vercel-labs/eve-software-factory-template, MIT, commit 2e1652f).",
+  "license": "MIT",
+  "type": "module",
+  "imports": {
+    "#*": "./agent/*",
+    "#evals/*": "./evals/*",
+    "#tests/*": "./tests/*"
+  },
+  "scripts": {
+    "dev": "eve dev",
+    "build": "tsx scripts/run.ts build",
+    "start": "eve start",
+    "typecheck": "tsc",
+    "lint": "oxlint --type-aware -c ../../.oxlintrc.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "eval": "tsx scripts/run.ts eval",
+    "eval:live": "eve eval --exclude-tag offline",
+    "discovery": "node scripts/check-discovery.ts",
+    "test:cli": "AGENT_CLI_TESTS=1 vitest run tests/github/gh-contract.test.ts",
+    "build:deploy": "eve build"
+  },
+  "dependencies": {
+    "@proof/env": "workspace:*",
+    "@proof/logger": "workspace:*",
+    "@vercel/blob": "^2.9.0",
+    "ai": "7.0.173",
+    "eve": "1.0.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^2.1.8",
+    "@proof/config": "workspace:*",
+    "@proof/hq": "workspace:*",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "oxlint": "catalog:",
+    "tsx": "^4.23.15",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

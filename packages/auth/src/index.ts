@@ -82,6 +82,7 @@ import { twoFactorMagicLink } from "./magic-link-two-factor"
 import { passkeySignupPlugin } from "./passkey-signup"
 import { type AuthRateLimitOptions, authIpAddress, authRateLimit } from "./rate-limit"
 import { resumeMagicLinkAuthorization } from "./resume"
+import { endCredentialsOnReset } from "./reset-credentials"
 import { endProvisionalKeys } from "./signup"
 import { scimProjection } from "./scim-projection"
 import { type SupportConfig, supportPlugin } from "./support"
@@ -205,6 +206,12 @@ export interface AuthOptions {
    * Off by default so tests make no network calls; server.ts turns it on.
    */
   passwordBreachCheck?: boolean
+  /**
+   * Whether anyone may create an account (default true, the product's behaviour). `false` closes
+   * every path that makes a user (email sign-up, social, passkey, provisional) with FORBIDDEN
+   * `SIGNUP_CLOSED`: hq, whose people are the founders, runs closed and opens it only to bootstrap.
+   */
+  allowSignUp?: boolean
   /**
    * Stripe billing, in test mode only: the secret key must be an `sk_test_` key (a live key is refused
    * here and in packages/env). Unset, the stripe plugin is not mounted at all. Plans are the app's own
@@ -517,17 +524,27 @@ export function createAuth(opts: AuthOptions) {
     // A reset means the password may be compromised: sign out every session, not just future ones.
     emailAndPassword: {
       enabled: true,
+      // The databaseHooks.user.create.before guard below is the real gate; this gives email
+      // sign-up its own clean refusal.
+      disableSignUp: opts.allowSignUp === false,
       revokeSessionsOnPasswordReset: true,
       // Wraps fills this gap only when it is unset, so the reset's side effects run here. Resetting
       // through an emailed link proves the mailbox, so the address counts as verified: provisional
       // signups (see signup.ts) are claimed this way.
       onPasswordReset: async ({ user }) => {
+        const db = await adapter()
+        // Read before the write below: `user` is the row as it was before the reset, so this says
+        // whether the reset is a reclaim (the address was unverified: someone else may have signed
+        // up with it first and planted credentials).
+        const reclaimed = !user.emailVerified
         // Verified first: a failing notice must not leave the claim unrecorded. This write skips
         // the user update hook, so the provisional key is ended here too.
-        const db = await adapter()
         await setUserFields(db, user.id, { emailVerified: true })
         await endProvisionalKeys(db, user.id)
         await invalidateOwned(db, user.id)
+        // Whatever predates the reset stops working: the person's OAuth grants always (as their
+        // sessions already do), and, on a reclaim, the keys of every organization they own.
+        await endCredentialsOnReset(db, user.id, { keys: reclaimed })
         // The "password changed" email is this notification's email route (cancelIfRead: false), as
         // for /change-password, so it is not also sent from here.
         await notifications.personal({ type: "account.password_changed", userId: user.id })
@@ -606,6 +623,16 @@ export function createAuth(opts: AuthOptions) {
       // A verified address is a claimed account (verify-email, or any other path that sets it).
       user: {
         create: {
+          // The one choke point every account-creating path passes through (email, social,
+          // passkey, provisional), so closing sign-up here closes all of them.
+          before: async () => {
+            if (opts.allowSignUp === false) {
+              throw APIError.from("FORBIDDEN", {
+                message: "Sign-up is closed",
+                code: "SIGNUP_CLOSED",
+              })
+            }
+          },
           after: async (user) => {
             const organizationId = await personalOrganization(await adapter(), user)
             try {
@@ -986,6 +1013,21 @@ function stripeBilling(
 }
 
 export type Auth = ReturnType<typeof createAuth>
+
+/**
+ * Removes an account that was made on the server and never handed to anyone (a script that failed
+ * halfway), with its personal organization and that organization's entitlements rows: the pieces
+ * sign-up made. `internalAdapter.deleteUser` alone leaves the organization behind, because only the
+ * deleteUser endpoint's `beforeDelete` removes it. Not for a live account: it skips the checks that
+ * endpoint makes (billing, SCIM). There is no subscription model to clear unless Stripe is on.
+ */
+export async function removeUnusedAccount(auth: Auth, userId: string): Promise<void> {
+  const ctx = await auth.$context
+  await removePersonalOrganization(ctx.adapter, userId, false, (organizationId) =>
+    deleteOrganizationData(auth, organizationId),
+  )
+  await ctx.internalAdapter.deleteUser(userId)
+}
 
 export {
   oauthProviderAuthServerMetadata,

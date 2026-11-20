@@ -5,7 +5,8 @@
 //                                when it does not exist) in ../<repo>.<name>, then run setup there.
 //   setup [path]                 provision an existing worktree (default: the one you are in): link
 //                                the main checkout's .env, write .env.worktree, mise, pnpm install,
-//                                create the worktree's database and apply the migrations to it.
+//                                create the worktree's database and apply the migrations to it
+//                                (starter's, then hq's).
 //   ls                           list worktrees with their database and pull request state.
 //   rm <branch|path> [--force]   remove a worktree and drop its database. The branch is deleted
 //                                only when it is merged. --force removes a worktree with changes.
@@ -192,8 +193,15 @@ async function managedDatabases() {
 }
 
 // The worktree's own migrations, so a branch's new migration applies to its database only.
+// hq (apps/hq) keeps its tables in the `hq` schema with migrations of their own, applied to the same
+// database here (in production hq has a database of its own; see docs/database.md).
 function migrate(path, dbName) {
-  run("node", ["scripts/release.mjs"], path, { ...process.env, DATABASE_URL: databaseUrl(dbName) })
+  const url = databaseUrl(dbName)
+  run("node", ["scripts/release.mjs"], path, { ...process.env, DATABASE_URL: url })
+  run("pnpm", ["--filter", "@proof/hq", "exec", "drizzle-kit", "migrate"], path, {
+    ...process.env,
+    HQ_DATABASE_URL: url,
+  })
 }
 
 // --- commands ---

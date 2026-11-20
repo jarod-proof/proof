@@ -275,6 +275,21 @@ id = "ratchet-vi-mock"
 type = "ratchet"
 severity = "error"
 glob = "**/*.test.{ts,tsx}"
+# Exactly the nine vendored Foreman test files (vercel-labs/eve-software-factory-template, commit
+# 2e1652f) that mock the Vercel SDK boundaries (@vercel/blob) and sibling modules.
+# They are upstream's tests, kept so Foreman's behaviour stays proven. Our own tests in apps/agent
+# (tests/hq, tests/spend, evals) stay under the rule and use injected fakes. The ceiling is unchanged.
+exclude_glob = [
+  "apps/agent/tests/github/body-file-guard.test.ts",
+  "apps/agent/tests/github/channel-token.test.ts",
+  "apps/agent/tests/github/checkout.test.ts",
+  "apps/agent/tests/github/egress.test.ts",
+  "apps/agent/tests/github/hooks.test.ts",
+  "apps/agent/tests/github/sandbox-init.test.ts",
+  "apps/agent/tests/lib/blob.test.ts",
+  "apps/agent/tests/lib/bot-name.test.ts",
+  "apps/agent/tests/triage/pretriage-instruction.test.ts",
+]
 pattern = "vi.mock("
 max_count = 0
 message = "Prefer the real module (PGlite, fake SES, in-process app) over vi.mock"

@@ -1,0 +1,48 @@
+{
+  "name": "@proof/hq",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_ENV=development tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc",
+    "lint": "oxlint --type-aware -c ../../.oxlintrc.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "create-founder": "tsx src/create-founder.ts",
+    "predeploy": "tsx src/predeploy.ts",
+    "founders:principals": "tsx src/founder-principals.ts",
+    "mint-agent-key": "tsx src/mint-agent-key.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.8",
+    "@proof/api": "workspace:*",
+    "@proof/auth": "workspace:*",
+    "@proof/db": "workspace:*",
+    "@proof/env": "workspace:*",
+    "@proof/errors": "workspace:*",
+    "@proof/logger": "workspace:*",
+    "@proof/mcp": "workspace:*",
+    "@proof/observability": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "hono": "^4.13.18",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@proof/config": "workspace:*",
+    "@proof/ui": "workspace:*",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "drizzle-kit": "^0.31.11",
+    "esbuild": "0.28.2",
+    "jsdom": "catalog:",
+    "oxlint": "catalog:",
+    "tsx": "^4.23.15",
+    "vitest": "catalog:"
+  }
+}

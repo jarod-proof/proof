@@ -171,6 +171,27 @@ describe("OAuth scopes", () => {
     }
   })
 
+  it("keeps the person-only actions the trust rules name (a key never holds them)", () => {
+    // Pinned by name: OAUTH_EXCLUDED drops every hq resource whole, so the test below can't tell
+    // when one of these entries is removed.
+    expect(PERSON_ONLY_ACTIONS.run).toEqual(["approve"])
+    expect(PERSON_ONLY_ACTIONS.entitlements).toEqual(["override"])
+    expect(PERSON_ONLY_ACTIONS.hq_entry).toEqual(["update"])
+    expect(PERSON_ONLY_ACTIONS.hq_proposal).toEqual(["decide"])
+    expect(PERSON_ONLY_ACTIONS.hq_spend).toEqual(["grant"])
+  })
+
+  it("lets a key record spend (reserve, settle, record) but never grant it", () => {
+    expect(statements.hq_spend).toContain("record")
+    expect(PERSON_ONLY_ACTIONS.hq_spend).not.toContain("record")
+  })
+
+  it("lets a key ask for a spend grant (request), which grants nothing, but never grant it", () => {
+    expect(statements.hq_spend).toContain("request")
+    expect(PERSON_ONLY_ACTIONS.hq_spend).not.toContain("request")
+    expect(PERSON_ONLY_ACTIONS.hq_spend).toContain("grant")
+  })
+
   it("exclude every action of the person-only resources and actions", () => {
     for (const resource of PERSON_ONLY_RESOURCES) {
       for (const action of statements[resource]) {

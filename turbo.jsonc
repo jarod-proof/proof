@@ -59,6 +59,20 @@
       ],
       "outputs": ["coverage/**"]
     },
+    // hq's spend tests include the daily cap's race, which needs real Postgres with real, separate
+    // connections (spend.test.ts). They run when DATABASE_URL (a worktree's `*_wt_*` database) or
+    // HQ_TEST_DATABASE_URL (a `*_test` database) is set, and skip otherwise. Turbo's strict env mode
+    // hides both unless they are listed here, and listing them in `env` puts them in the task hash,
+    // so a cached run from a shell without a database is never replayed as one with a database.
+    "@proof/hq#test": {
+      "dependsOn": ["transit"],
+      "env": ["DATABASE_URL", "HQ_TEST_DATABASE_URL"]
+    },
+    "@proof/hq#test:coverage": {
+      "dependsOn": ["transit"],
+      "env": ["DATABASE_URL", "HQ_TEST_DATABASE_URL"],
+      "outputs": ["coverage/**"]
+    },
     // shell.test.ts reads the prerendered shell (dist/index.html), so the web tests run after the
     // web build.
     "@proof/app#test": {
@@ -70,6 +84,12 @@
     },
     // sdk's schema.test.ts checks the generated client against the API's committed contract. The
     // SDK does not depend on apps/api, so openapi.json is not in its graph.
+    // apps/agent builds with `eve build` (through scripts/run.ts, which sets the inert placeholders
+    // eve's compile needs, because turbo strips the environment): its output is .output.
+    "@proof/agent#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".output/**"]
+    },
     "@proof/sdk#test": {
       "dependsOn": ["transit"],
       "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/api/openapi.json"]

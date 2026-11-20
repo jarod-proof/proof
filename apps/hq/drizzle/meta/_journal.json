@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794945126518,
+      "tag": "0000_entries_and_proposals",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794945127251,
+      "tag": "0001_entry_versions_append_only",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794947840031,
+      "tag": "0002_runs_and_spend",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794961992489,
+      "tag": "0003_slack_approvals",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794967936360,
+      "tag": "0004_spend_grant_requests",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794970894262,
+      "tag": "0005_grant_request_amount_max",
+      "breakpoints": true
+    }
+  ]
+}

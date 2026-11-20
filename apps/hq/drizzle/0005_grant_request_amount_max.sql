@@ -1,0 +1,1 @@
+ALTER TABLE "hq"."spend_grant_requests" ADD CONSTRAINT "spend_grant_requests_amount_max" CHECK ("hq"."spend_grant_requests"."amount_usd" <= 25);

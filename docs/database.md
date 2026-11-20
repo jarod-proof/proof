@@ -11,6 +11,26 @@
   branch's migrations applied. `pnpm wt reset-db` rebuilds it. Agents run these; the main database
   stays the user's. See `docs/tooling.md` (Worktrees).
 
+## hq's tables
+
+`apps/hq` (the org brain) has its own database, `HQ_DATABASE_URL`, which takes starter's migrations
+(the auth tables) and hq's own: tables in `pgSchema("hq")` (`apps/hq/src/db/schema.ts`), SQL in
+`apps/hq/drizzle/`, recorded in their own table (`drizzle.__hq_migrations`) so the two histories
+never mix. New migration: `pnpm --filter @proof/hq db:generate`, then commit the SQL. `pnpm wt`
+applies both sets to a worktree's database (`hq`'s tests get both from `createHqTestDb`,
+`apps/hq/src/testing.ts`). `entry_versions` is append-only: a trigger refuses any update or delete.
+`founders` (0003_slack_approvals) is the one source of who the founders are: hq writes it from
+`HQ_FOUNDERS` at every boot and nothing in the API does. `slack_actions` records what a Slack click
+already did, so a replayed grant click grants nothing twice.
+Applying hq's migrations anywhere else (`pnpm --filter @proof/hq db:migrate`) is denied for agents like
+the rest; `scripts/release.mjs` does not run them yet.
+
+The spend ledger (`runs`, `spend`, `spend_grants`, `spend_holds`) stores money as `numeric(10,4)` and
+reads it back as text; hq computes on integer units of $0.0001 (`apps/hq/src/data/money.ts`), never on
+JS floats, and rounds a finer cost up. Day boundaries are UTC, derived from the app's clock. Reserving
+(`reserve_spend`) takes a per-day `pg_advisory_xact_lock`, so two turns at the edge of the cap cannot
+both fit. That race is tested on real Postgres only (`docs/testing.md`).
+
 ## Migrations
 
 - `0001_agent_auth` adds the API key, JWKS and OAuth tables (apikey, jwks, oauth_*).

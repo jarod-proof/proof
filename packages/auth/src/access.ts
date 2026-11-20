@@ -23,6 +23,15 @@ export const statements = {
   // requests); `approve` is a person's decision (never granted to a key or an OAuth token);
   // `steer` covers the messages and deferrals a person sends to a run.
   run: ["create", "read", "update", "approve", "steer"],
+  // The org brain (apps/hq). Prefixed because `run` above is the product's runs. `hq_entry` is
+  // the brain's facts, voice, decisions and playbooks; `hq_proposal` is a change waiting for a
+  // founder; `hq_run` is a build, review or chat the factory ran; `hq_spend` is the daily model
+  // spend ledger and its grants (`record` is what a key does: reserve, settle and record spend;
+  // `request` is asking for a grant: hq records a pending request a founder may redeem in Slack).
+  hq_entry: ["read", "update"],
+  hq_proposal: ["read", "create", "decide"],
+  hq_run: ["read", "create", "update"],
+  hq_spend: ["read", "record", "request", "grant"],
   // Feature flag rollouts. Owners and admins hold it in every organization, but the operations
   // using it are for the operator organization only (audience "operator"), refused anywhere else.
   featureFlag: ["read", "update", "delete"],
@@ -63,10 +72,20 @@ export const PERSON_ONLY_RESOURCES = [...OWNER_ONLY_RESOURCES, "subscription", "
 
 /**
  * Actions a person holds but no API key or OAuth token may. Approving a run is a person's decision
- * (the approval is theirs, not an agent's); so is a staff override of another organization's plan. Keys are refused these in create_api_key, and OAuth
+ * (the approval is theirs, not an agent's); so is a staff override of another organization's plan,
+ * and editing an hq entry, deciding an hq proposal or granting hq spend. Keys are refused these in create_api_key, and OAuth
  * scopes never reach them (OAUTH_EXCLUDED in permissions.ts is built from this).
  */
-export const PERSON_ONLY_ACTIONS = { run: ["approve"], entitlements: ["override"] } as const
+export const PERSON_ONLY_ACTIONS = {
+  run: ["approve"],
+  entitlements: ["override"],
+  // The brain's trust rule: keys write proposals and run logs only. Only a signed-in founder edits
+  // an entry, decides a proposal or grants spend. hq strips these from any caller that is not a
+  // session (apps/hq/src/app.ts), whoever minted the key.
+  hq_entry: ["update"],
+  hq_proposal: ["decide"],
+  hq_spend: ["grant"],
+} as const
 
 const adminStatements = Object.fromEntries(
   Object.entries(all).filter(
