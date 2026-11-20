@@ -233,7 +233,10 @@ stale one fails.
 - `personalSlug(userId)` (`packages/auth/src/membership.ts`) builds a personal organization's slug.
   It is used by `apps/api/src/data/members.ts`.
 - `PERSON_ONLY_ACTIONS` (`packages/auth/src/access.ts`) lists the actions no API key may hold:
-  `run: ["approve"]`. `PERSON_ONLY_RESOURCES` is the owner-only resources plus `subscription` and
+  `run: ["approve"]`, `entitlements: ["override"]` and the brain's `hq_entry: ["update"]`,
+  `hq_proposal: ["decide"]`, `hq_spend: ["grant"]`. A key records spend with `hq_spend: ["record"]` (reserve, settle, record) and asks for a grant with
+  `hq_spend: ["request"]` (`request_spend_grant`: a pending request, nothing granted until a
+  founder clicks its Slack card). `PERSON_ONLY_RESOURCES` is the owner-only resources plus `subscription` and
   `support` (`docs/support.md`).
 - `provisionalSignup` (`packages/auth/src/signup.ts`) reads the database from `auth.db`. It has no
   WeakMap registry.

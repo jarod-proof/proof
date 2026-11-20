@@ -519,6 +519,9 @@ describe("workspace agents and runs", () => {
         { subscription: ["read"] },
         { twoFactor: ["reset"] },
         { run: ["approve"] },
+        { hq_entry: ["update"] },
+        { hq_proposal: ["decide"] },
+        { hq_spend: ["grant"] },
       ]) {
         const res = await json(
           await call(t.owner.cookie, "/v1/api-keys", "POST", { name: "x", permissions }),

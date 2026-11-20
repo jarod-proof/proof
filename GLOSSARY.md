@@ -135,6 +135,63 @@ everywhere: a new concept gets a line here before it gets code. Keep each entry 
 - **Support queue** — the staff's list of tickets (the package's `SupportInbox`). Not the **Inbox**.
 - **Internal note** — a staff-only message on a ticket. Never shown, mailed or notified to a customer.
 
+## The brain (`apps/hq`)
+
+- **Founder** — a row of hq's `founders` table: an hq account and its Slack user. The table is the one
+  source of who the founders are. It is set from `HQ_FOUNDERS` at every boot (the listed are added, the
+  rest removed; an unverified or unknown address is skipped) and nothing in the API writes it, so no key
+  can add one. hq's sign-up is closed unless `HQ_ALLOW_SIGNUP` (local and e2e stacks only: a deployed hq,
+  one whose `NODE_ENV` is not development or test, refuses to boot with it on), and signing up makes no
+  one a founder. In a deployed hq the account is made on the server by `pnpm --filter @proof/hq
+  create-founder --email <e> --slack-id <U..> --password-out <file>` (verified address, generated
+  password written only to that 0600 file), and is a founder because `HQ_FOUNDERS` pins it by id
+  (`id:<user id>=<slack user id>`, which the script prints): an email entry is not honoured there, so an
+  account someone else registered with the founder's address is never one, even after the founder
+  verifies it. Only a founder uses hq, and only a founder decides a proposal, edits an entry, grants
+  spend or clicks Approve in Slack. The agent's `AGENT_FOUNDER_PRINCIPALS` is derived from the table
+  (`pnpm --filter @proof/hq founders:principals`, with `--check` to fail on drift; `pnpm hq:predeploy`
+  runs the check before a deploy).
+- **Card** — a Slack message block with buttons a founder clicks: a **proposal** card (Approve, Reject;
+  its button ids carry the proposal and the version it was proposed against) or a **grant** card. The
+  agent forwards the click, unchanged, to hq, which verifies Slack's signature over the same bytes and
+  decides it as the founder the Slack user maps to. A replayed or stale click changes nothing.
+- **Digest** — the nightly 07:00 UTC Slack message: yesterday's runs and spend and one card per pending
+  proposal. Posted by the agent without a model call; its own run and a zero cost are recorded in hq.
+- **Installation token** — a short-lived GitHub App token the agent mints from the app's private key
+  (`apps/agent/agent/lib/github/app-token.ts`), narrowed to one repository and the permissions a lease
+  needs.
+- **Entry** — one thing the org knows: a `fact`, `voice`, `decision`, `playbook` or `customer`, named by
+  a slug unique within its kind. Its content is in its **versions**.
+- **Version** — one numbered, dated state of an entry, with its author (a person or an agent) and where it
+  came from. An edit adds a version; none is ever updated or deleted.
+- **Proposal** — an agent's or an outside write's request to add or change an entry. It stays `pending`
+  until a founder approves (which writes the next version) or rejects it; the **base version** it was
+  made against must still be the entry's newest, or approving is a CONFLICT.
+- **HQ run** — one execution the factory ran and hq logged (`record_run`, `finish_run`): a chat or
+  schedule on Eve, a build in a sandbox, a review on the box. Its cost is the sum of its spend. Not the
+  product's **run** (a workspace agent's execution).
+- **Spend** — one model charge in the ledger, by source (`eve`, `build`, `box`). `estimated` marks a cost
+  the provider did not report, stored at the caller's estimate. Money is exact: integer units of $0.0001.
+- **Daily cap** — $10.00 per UTC day on Eve chat and schedules (source `eve`) only; builds and box runs
+  record their cost but sit outside it.
+- **Hold** — a turn's estimated cost, reserved (`reserve_spend`) before it starts and settled
+  (`settle_spend`) when it ends. A hold nobody settles in 15 minutes counts as spent at its estimate.
+- **Allowance** — what is left of today's cap: cap plus **spend grants**, less settled spend and holds.
+- **Spend grant** — a founder's extra allowance for one day (`grant_spend`, or a click on a **grant
+  request**'s card). A person's action, never a key's. Not an auth **grant**.
+- **Grant request** — what a Slack grant card is bound to: a pending row hq recorded when a key called
+  `request_spend_grant` (up to $25, ten a UTC day), with the amount fixed in hq. A founder's click redeems
+  it by id, once, within 24 hours, for that amount (the click's own amount is never read); an id hq never
+  recorded, a replay or an expired request grants nothing. `SLACK_SIGNING_SECRET` is still a
+  founder-level credential: with it, a click can approve any pending proposal, and whoever holds both
+  it and the agent's hq key can request a grant and redeem it, so grants through Slack are bounded: at
+  most $25 a request, 10 requests a UTC day, and $50 a UTC day in all (`HQ_SLACK_DAILY_GRANT_CAP_USD`;
+  a click that would pass it is refused and the request stays pending). Treat the secret as a
+  founder's.
+- **Bigger-model request** — the agent's `request_bigger_model` tool: it asks a founder, in Slack, to
+  approve a dearer model for one hard question, with an estimate. Nothing runs on the bigger model
+  before a listed founder approves.
+
 ## The web app
 
 - **App** — the signed-in product (`apps/app`, `@proof/app`) at `app.` on the product domain.

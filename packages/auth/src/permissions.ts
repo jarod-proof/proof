@@ -87,6 +87,18 @@ const personOnlyResources = Object.fromEntries(
 ) as Permissions
 
 /**
+ * The org brain's resources (apps/hq). No OAuth scope reaches them yet: an API key carries them,
+ * and which scope an MCP client gets is decided with the brain's operations (a change to
+ * OAUTH_SCOPE_GRANTS is a change to the public contract, see apps/api/openapi.json).
+ */
+const hqResources = {
+  hq_entry: statements.hq_entry,
+  hq_proposal: statements.hq_proposal,
+  hq_run: statements.hq_run,
+  hq_spend: statements.hq_spend,
+} as Permissions
+
+/**
  * Actions no OAuth token can ever get: an agent should not delete orgs or edit roles. The
  * person-only part (SSO, SCIM, billing, 2FA reset, approvals) is derived from the catalog, so an
  * agent never sets up SSO, mints SCIM tokens, changes the subscription, decides an approval or
@@ -98,6 +110,8 @@ export const OAUTH_EXCLUDED: Permissions = {
   team: ["create", "update", "delete"],
   ...personOnlyResources,
   ...PERSON_ONLY_ACTIONS,
+  // After the person-only actions: the whole resource is out, not just its person-only action.
+  ...hqResources,
 }
 
 /** What a set of granted OAuth scopes allows (unknown scopes such as `openid` allow nothing). */
