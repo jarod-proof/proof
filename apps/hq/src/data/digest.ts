@@ -29,6 +29,7 @@ import {
   type SpendSource,
   spend,
 } from "../db/schema"
+import { type DigestPipelineRow, readDigestPipeline } from "./digest-pipeline"
 import { parseUnits, type Units } from "./money"
 import { dayOf } from "./spend"
 
@@ -67,6 +68,8 @@ export interface DigestRow {
     bySource: { source: SpendSource; amount: Units }[]
   }
   health: { stuckRuns: number; lastRunStartedAt: Date | null }
+  /** The work pipeline's part; null when the work tables do not exist yet (data/digest-pipeline.ts). */
+  pipeline: DigestPipelineRow | null
 }
 
 /** A run that closes its runs: its `endedAt` and `outcome` mean something. */
@@ -240,5 +243,6 @@ export async function readDigest(
       bySource,
     },
     health: { stuckRuns: stuck?.count ?? 0, lastRunStartedAt: last?.at ?? null },
+    pipeline: await readDigestPipeline(db, { since, until }),
   }
 }

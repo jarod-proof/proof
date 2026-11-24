@@ -328,8 +328,8 @@ describe("onCheckSuite: red CI on the factory's own pull requests", () => {
       ...overrides,
     }) as never
 
-  test("a failed suite on a factory branch dispatches an unattended fix run on that pull request", () => {
-    const result = onCheckSuite(context().ctx, suite())
+  test("a failed suite on a factory branch dispatches an unattended fix run on that pull request", async () => {
+    const result = await onCheckSuite(context().ctx, suite())
     expect(result?.context).toEqual([CI_FIX_TASK])
     expect(isAutonomous(result?.auth ?? null)).toBe(true)
     expect(isTrusted(result?.auth ?? null)).toBe(false)
@@ -343,13 +343,15 @@ describe("onCheckSuite: red CI on the factory's own pull requests", () => {
     expect(can(result?.auth, "pr", "comment", "35", "--body", "x")).toBe("denied")
   })
 
-  test("a suite on several pull requests is anchored to the first", () => {
-    const result = onCheckSuite(context().ctx, suite({ pullRequests: [34, 35] }))
+  test("a suite on several pull requests is anchored to the first", async () => {
+    const result = await onCheckSuite(context().ctx, suite({ pullRequests: [34, 35] }))
     expect(intakeIssueNumber(result?.auth ?? null)).toBe(34)
   })
 
-  test("the branch name is also read from the top level of the payload", () => {
-    expect(onCheckSuite(context().ctx, suite({ raw: { head_branch: "agent/x" } }))).not.toBeNull()
+  test("the branch name is also read from the top level of the payload", async () => {
+    expect(
+      await onCheckSuite(context().ctx, suite({ raw: { head_branch: "agent/x" } })),
+    ).not.toBeNull()
   })
 
   test.each<[string, Record<string, unknown>]>([
@@ -371,8 +373,8 @@ describe("onCheckSuite: red CI on the factory's own pull requests", () => {
     ["a suite with no pull request", { pullRequests: [] }],
     ["a payload with no branch", { raw: {} }],
     ["a non-string branch", { raw: { check_suite: { head_branch: 7 } } }],
-  ])("%s dispatches nothing", (_name, overrides) => {
-    expect(onCheckSuite(context().ctx, suite(overrides))).toBeNull()
+  ])("%s dispatches nothing", async (_name, overrides) => {
+    expect(await onCheckSuite(context().ctx, suite(overrides))).toBeNull()
   })
 
   test("the task caps the loop and routes through diagnosis first", () => {
@@ -387,8 +389,8 @@ describe("onPullRequest: the summary comment", () => {
   const pullRequest = (action: string) =>
     ({ action, headSha: "abc", pullRequestNumber: 34, raw: {} }) as never
 
-  test("a pull request opened by anyone dispatches a summary-only run on that pull request", () => {
-    const result = onPullRequest(context().ctx, pullRequest("opened"))
+  test("a pull request opened by anyone dispatches a summary-only run on that pull request", async () => {
+    const result = await onPullRequest(context().ctx, pullRequest("opened"))
     expect(result?.context).toEqual([PR_SUMMARY_TASK])
     expect(isSummaryOnly(result?.auth ?? null)).toBe(true)
     expect(isTrusted(result?.auth ?? null)).toBe(false)
@@ -396,8 +398,8 @@ describe("onPullRequest: the summary comment", () => {
     expect(result?.auth?.principalId).toBe(AUTONOMOUS_PRINCIPAL)
   })
 
-  test("whatever the pull request says, that run can only read and comment on it", () => {
-    const auth = onPullRequest(context().ctx, pullRequest("opened"))?.auth
+  test("whatever the pull request says, that run can only read and comment on it", async () => {
+    const auth = (await onPullRequest(context().ctx, pullRequest("opened")))?.auth
     expect(can(auth, "pr", "diff", "34")).toBe("not-applicable")
     expect(can(auth, "pr", "comment", "34", "--body", "Summary")).toBe("not-applicable")
     expect(can(auth, "pr", "comment", "35", "--body", "x")).toBe("denied")
@@ -412,10 +414,12 @@ describe("onPullRequest: the summary comment", () => {
     ).toBe("denied")
   })
 
-  test("bot-opened pull requests and other actions dispatch nothing", () => {
-    expect(onPullRequest(context({ senderType: "Bot" }).ctx, pullRequest("opened"))).toBeNull()
+  test("bot-opened pull requests and other actions dispatch nothing", async () => {
+    expect(
+      await onPullRequest(context({ senderType: "Bot" }).ctx, pullRequest("opened")),
+    ).toBeNull()
     for (const action of ["synchronize", "closed", "reopened", "edited", "ready_for_review"]) {
-      expect(onPullRequest(context().ctx, pullRequest(action))).toBeNull()
+      expect(await onPullRequest(context().ctx, pullRequest(action))).toBeNull()
     }
   })
 })

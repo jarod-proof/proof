@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import type { ReactNode } from "react"
 
 import { hqKeys } from "../api/query-keys"
+import type { FactoryStatus } from "../api/schemas"
 import { RunnerCard } from "../components/runner-card"
 import { Sidebar } from "../components/sidebar"
 import { type NavKey, NAV_ITEMS } from "../lib/nav"
@@ -9,6 +10,15 @@ import { useHq } from "../lib/use-hq"
 
 /** How often the sidebar asks hq again, while the tab is visible (a hidden tab does not poll). */
 export const STATUS_POLL_MS = 30_000
+
+/**
+ * What waits for a founder on Approvals: the pending proposals plus what the pipeline waits on
+ * (`work.needsYou`). `work` is null before hq's work tables exist and absent from an older hq:
+ * both count 0, so the badge is the proposals alone. Nothing before the first read.
+ */
+function approvalsBadge(status: FactoryStatus | undefined): number | undefined {
+  return status === undefined ? undefined : status.pendingProposals + (status.work?.needsYou ?? 0)
+}
 
 /**
  * The live sidebar: the nav badge and the runner card both read `get_factory_status`. A failed
@@ -33,7 +43,7 @@ export function ShellStatus({
     <Sidebar
       items={NAV_ITEMS}
       activeKey={activeKey}
-      badges={{ pendingProposals: status.data?.pendingProposals }}
+      badges={{ pendingProposals: approvalsBadge(status.data) }}
       runner={<RunnerCard status={status.data} state={state} />}
       account={account}
     />

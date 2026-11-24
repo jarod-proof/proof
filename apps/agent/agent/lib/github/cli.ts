@@ -1,4 +1,5 @@
-import { FACTORY_REPO } from "../constants.js"
+import { FACTORY_BRANCH_PREFIX, FACTORY_REPO } from "../constants.js"
+import { validateBranch } from "./git-remote.js"
 
 /**
  * What a `gh` invocation does to the repository, as far as authorization is
@@ -23,8 +24,10 @@ import { FACTORY_REPO } from "../constants.js"
  * - `comment`: posts or edits the factory's own comment on one thread.
  * - `state`: closes or reopens an issue (reversible triage).
  * - `draft-pr`: opens a draft pull request, which cannot merge.
+ * - `open-pr`: opens a pull request ready for review on a factory branch; it cannot merge.
  * - `write`: every other reversible write (new issue, edits, assignees, ...).
- * - `ship`: anything that can put code in front of reviewers as ready.
+ * - `ship`: anything else that can put code in front of reviewers as ready (taking a pull request
+ *   out of draft, a ready pull request from any other branch, one that requests people).
  * - `forbidden`: never runs, for any caller.
  */
 export type GhEffect =
@@ -38,6 +41,7 @@ export type GhEffect =
       readonly withComment: boolean
     }
   | { readonly kind: "draft-pr" }
+  | { readonly kind: "open-pr" }
   | { readonly kind: "write" }
   | { readonly kind: "ship" }
   | { readonly kind: "forbidden"; readonly reason: string }
@@ -107,6 +111,18 @@ const WRITE: GhEffect = { kind: "write" }
 const JSON_FLAGS = ["json", "q|jq", "t|template"] as const
 
 const [FACTORY_OWNER = "", FACTORY_NAME = ""] = FACTORY_REPO.split("/")
+
+/**
+ * Whether a `--head` value names one of the factory's own branches: the branch the push guard would
+ * accept (`validateBranch`: plain name, the factory prefix, never `main` or `master`) and not an
+ * `owner:branch` head from a fork. A prefix that is empty makes nothing a factory branch.
+ */
+const isFactoryHead = (head: string | undefined): boolean =>
+  head !== undefined &&
+  FACTORY_BRANCH_PREFIX !== "" &&
+  head.length > FACTORY_BRANCH_PREFIX.length &&
+  !head.includes(":") &&
+  validateBranch(head) === null
 
 const NUMBER_PATTERN = /^#?(\d{1,10})$/
 const THREAD_URL_PATTERN =
@@ -380,7 +396,15 @@ const COMMANDS: Readonly<Record<string, CommandSpec>> = {
         )
       }
       if (!parsed.flags.has("draft")) {
-        return { kind: "ship" }
+        // Ready for review. Only a factory branch, with nobody requested, may be opened by an
+        // unattended run; every other ready pull request is the ship gate, as it always was. A
+        // request for people stays `ship` (not `write`): a notification is no reason to move an
+        // attended caller's cell from waiting to running.
+        return isFactoryHead(parsed.flags.get("head")?.[0]) &&
+          !parsed.flags.has("reviewer") &&
+          !parsed.flags.has("assignee")
+          ? { kind: "open-pr" }
+          : { kind: "ship" }
       }
       // Requesting people on a draft notifies them, which is a write of its own.
       return parsed.flags.has("reviewer") || parsed.flags.has("assignee")

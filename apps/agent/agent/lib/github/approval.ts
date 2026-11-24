@@ -33,8 +33,12 @@ import type { ShellRole } from "./shims.js"
  * - Everyone else (the dev TUI, an unstamped session). Writes wait for a
  *   person.
  *
- * Shipping (anything that takes a pull request out of draft) waits for a
- * person no matter who asks, and is denied outright when nobody is watching.
+ * Shipping (taking a pull request out of draft, or presenting one as ready from
+ * any branch but the factory's) waits for a person no matter who asks, and is
+ * denied outright when nobody is watching. An unattended run may open a pull
+ * request ready for review on a factory branch, and nothing more: merging is
+ * never available, and marking an existing pull request ready is a person's
+ * call.
  */
 
 type Auth = SessionAuthContext | null
@@ -51,7 +55,7 @@ const SUMMARY_ONLY =
 export function writeDecision(auth: Auth): ApprovalStatus {
   if (isAutonomous(auth)) {
     return denied(
-      "Unattended factory runs may only apply labels, comment on the thread they were dispatched from, close or reopen issues, and open draft pull requests.",
+      "Unattended factory runs may only apply labels, comment on the thread they were dispatched from, close or reopen issues, and open pull requests.",
     )
   }
   if (isTrusted(auth) || isScheduleAppAuth(auth)) {
@@ -97,15 +101,37 @@ export function labelDecision(auth: Auth): ApprovalStatus {
 }
 
 /**
- * The ship gate: anything that presents a pull request as ready. A person
- * approves it every time, and an unattended run is denied, because a draft
- * is the most the factory delivers on its own.
+ * The ship gate: anything that presents a pull request as ready other than
+ * opening one on a factory branch ({@link openPrDecision}). A person approves
+ * it every time, and an unattended run is denied.
  */
 export function shipDecision(auth: Auth): ApprovalStatus {
   if (isAutonomous(auth)) {
-    return denied("Unattended factory runs stop at a draft pull request; a person marks it ready.")
+    return denied(
+      "Unattended factory runs may open a pull request ready for review, but taking an existing pull request out of draft is a person's call.",
+    )
   }
   return "user-approval"
+}
+
+/**
+ * Opening a pull request ready for review on a factory branch. An unattended
+ * run (label intake, a CI fix, an API ticket) may do it: the pull request
+ * cannot merge itself and a person decides that. Every other caller is held
+ * to the ship gate exactly as before, so nothing an attended caller does
+ * changes.
+ *
+ * @remarks
+ * A summary-only run is the unattended principal narrowed further and is
+ * denied here as well as in {@link ghEffectDecision}. `isAutonomous` is the test, so a forged
+ * `trusted` attribute on the unattended principal gains nothing and an
+ * attended caller gains nothing from the effect's name.
+ */
+export function openPrDecision(auth: Auth): ApprovalStatus {
+  if (isSummaryOnly(auth)) {
+    return denied(SUMMARY_ONLY)
+  }
+  return isAutonomous(auth) ? "not-applicable" : shipDecision(auth)
 }
 
 /**
@@ -147,6 +173,8 @@ export function stationPolicy(ctx: ApprovalContext): ApprovalStatus {
  * - A summary-only run is held to `summaryDecision` instead.
  * - Otherwise reads, closing or reopening an issue (reversible triage), and
  *   opening a draft pull request (it cannot merge) run for every caller.
+ * - Opening a pull request ready for review on a factory branch runs for an
+ *   unattended run and is held to the ship gate for everyone else.
  * - A close or reopen that also posts a comment is held to the comment
  *   policy, so neither the approval a comment needs nor an unattended run's
  *   comment scope can be sidestepped through `--comment`.
@@ -167,6 +195,8 @@ export function ghEffectDecision(effect: GhEffect, auth: Auth): ApprovalStatus {
       return effect.withComment ? commentDecision(auth, effect.commentThread) : "not-applicable"
     case "write":
       return writeDecision(auth)
+    case "open-pr":
+      return openPrDecision(auth)
     case "ship":
       return shipDecision(auth)
     case "forbidden":

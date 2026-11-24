@@ -27,7 +27,9 @@ describe("ShellStatus: the live sidebar", () => {
   })
 
   it("the sidebar badge shows the pending count from get_factory_status and drops to none at 0", async () => {
-    const hq = createFakeHq({ factoryStatus: factoryStatusFixture({ pendingProposals: 3 }) })
+    const hq = createFakeHq({
+      factoryStatus: factoryStatusFixture({ pendingProposals: 3, work: null }),
+    })
     const app = await renderApp({ path: "/app/digest", hq })
     await app.findByRole("navigation", { name: "Primary" })
     const link = navApprovals(app)
@@ -39,7 +41,7 @@ describe("ShellStatus: the live sidebar", () => {
     await app.findByRole("progressbar", { name: "Eve spend cap left" })
     const liveSidebar = app.container.innerHTML
 
-    hq.state.factoryStatus = factoryStatusFixture({ pendingProposals: 0 })
+    hq.state.factoryStatus = factoryStatusFixture({ pendingProposals: 0, work: null })
     await act(() => app.queryClient.invalidateQueries({ queryKey: hqKeys.factoryStatus() }))
     await vi.waitFor(() => {
       expect(navApprovals(app).textContent).toBe("Approvals")
@@ -50,7 +52,7 @@ describe("ShellStatus: the live sidebar", () => {
   it("approving a proposal elsewhere refreshes the badge on invalidate", async () => {
     const hq = createFakeHq({
       proposals: [proposalFixture({ id: "proposal-1" })],
-      factoryStatus: factoryStatusFixture({ pendingProposals: 1 }),
+      factoryStatus: factoryStatusFixture({ pendingProposals: 1, work: null }),
     })
     const app = await renderApp({ path: "/app/digest", hq })
     await within(await app.findByRole("navigation", { name: "Primary" })).findByText("1")

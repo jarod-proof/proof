@@ -17,9 +17,10 @@ describe("renderApp", () => {
     expect(hq.sent.length).toBe(before + 1)
     expect(hq.sent.at(-1)?.path).toBe("/v1/status")
     // The gate's probe, the sidebar's session lookup and runner card, and the call above (the
-    // Approvals screen's own list reads are not counted here).
+    // Approvals screen's own list reads, proposals and the pipeline's work board, are not counted
+    // here).
     await app.findByText("eve · last run 4h ago")
-    const own = (path: string) => path !== "/v1/proposals"
+    const own = (path: string) => path !== "/v1/proposals" && path !== "/v1/work/board"
     expect(
       hq.sent
         .map((s) => s.path)

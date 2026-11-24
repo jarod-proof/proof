@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Fails unless hq's real-Postgres tests ran and passed: usage `node scripts/assert-hq-real-postgres.mjs
-// <vitest json report>`. Those blocks (apps/hq/src/data/spend.test.ts, grant-requests.test.ts and
-// founders-concurrency.test.ts) skip themselves when no `*_test` or `*_wt_*` database is
-// configured, and vitest reports a skip as success. In CI a skip means the service database or
+// <vitest json report>`. Those blocks (apps/hq/src/data/spend.test.ts, grant-requests.test.ts,
+// founders-concurrency.test.ts, signals-race.test.ts and attempts-race.test.ts) skip themselves
+// when no `*_test` or `*_wt_*` database is configured, and vitest reports a skip as success. In CI a skip means the service database or
 // HQ_TEST_DATABASE_URL is wrong.
 import { readFileSync } from "node:fs"
 
@@ -10,6 +10,8 @@ const FILES = [
   /src[\\/]data[\\/]spend\.test\.ts$/,
   /src[\\/]data[\\/]grant-requests\.test\.ts$/,
   /src[\\/]data[\\/]founders-concurrency\.test\.ts$/,
+  /src[\\/]data[\\/]signals-race\.test\.ts$/,
+  /src[\\/]data[\\/]attempts-race\.test\.ts$/,
 ]
 const BLOCK = /real Postgres/
 
@@ -55,6 +57,6 @@ if (problems.length > 0) {
   process.exit(1)
 }
 console.log(
-  "The real-Postgres tests ran and passed in spend.test.ts, grant-requests.test.ts and " +
-    "founders-concurrency.test.ts.",
+  "The real-Postgres tests ran and passed in spend.test.ts, grant-requests.test.ts, " +
+    "founders-concurrency.test.ts, signals-race.test.ts and attempts-race.test.ts.",
 )

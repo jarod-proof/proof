@@ -68,6 +68,8 @@ export async function createHqHarness(
     allowSignUp?: boolean
     /** The cap on what Slack clicks may grant in a UTC day in all; unset, hq's default ($50). */
     slackDailyGrantCapUsd?: number
+    /** How an attempt starts; unset, hq's default (`label`). */
+    dispatchMode?: "label" | "claim"
   } = {},
 ) {
   const founderEmails = opts.founderEmails ?? []
@@ -93,6 +95,7 @@ export async function createHqHarness(
     auth,
     now,
     baseURL: BASE,
+    dispatchMode: opts.dispatchMode,
     slack: {
       signingSecret: TEST_SLACK_SECRET,
       teamId: TEST_SLACK_TEAM,

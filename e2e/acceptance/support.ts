@@ -7,6 +7,7 @@ import type { App, Locator, Screen } from "e2e"
 import { expect } from "e2e"
 
 import { uniqueId } from "../support/unique"
+import { workRepoOf } from "./work-repo"
 
 // Shared by the acceptance journeys (e2e/acceptance/*.e2e.ts): the Phase 1 completion check of a
 // deployed org, run by hand against the org's real hq. Not a test file. Every value comes from the
@@ -140,6 +141,13 @@ export const runTag = (): string =>
   `acceptance-${uniqueId()
     .replace(/[^a-z0-9]/gi, "")
     .toLowerCase()}`
+
+/**
+ * The synthetic repository for this run's work items and pull requests: `acceptance/<runTag()>`,
+ * lower-cased, the characters hq's repo pattern does not take replaced by dashes (see work-repo.ts).
+ * A pure function of the run's tag: nothing is sent or created.
+ */
+export const workRepo = (): string => workRepoOf(runTag())
 
 /** One hq reply: the status and the JSON body (null when the body was not JSON). */
 export interface Reply {

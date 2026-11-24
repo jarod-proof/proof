@@ -82,3 +82,14 @@ export const BOX_REVIEW_LABEL = "factory:review"
 
 /** The branch prefix of dependency-update pull requests (another system). Never a trigger here. */
 export const DEPS_BRANCH_PREFIX = "deps/"
+
+/**
+ * How many fix attempts one work item gets in one cycle before the factory stops and says so.
+ *
+ * @remarks
+ * Sent to hq as `attemptLimit` on the first fix attempt of an item (hq stores the first value it is
+ * given and enforces it; Phase 5's policy may lower it). It counts the current cycle's fix attempts
+ * only: an investigation never counts, and a fix that ended by asking a question does not either.
+ * Pinned by a literal in `tests/work/attempts.test.ts`.
+ */
+export const MAX_ATTEMPTS_PER_ITEM = 3

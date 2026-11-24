@@ -9,6 +9,10 @@ import { runOperations } from "./runs"
 import { defineOperation, type HqDeps } from "./shared"
 import { spendOperations } from "./spend"
 import { statusOperations } from "./status"
+import { workAttemptOperations } from "./work-attempts"
+import { workFounderOperations } from "./work-founder"
+import { workReadOperations } from "./work-read"
+import { workSignalOperations } from "./work-signals"
 
 export type { HqDeps } from "./shared"
 
@@ -45,5 +49,9 @@ export function createHqOperations(deps: HqDeps) {
     ...runOperations(deps),
     ...spendOperations(deps),
     ...statusOperations(deps),
+    ...workAttemptOperations(deps),
+    ...workFounderOperations(deps),
+    ...workReadOperations(deps),
+    ...workSignalOperations(deps),
   ])
 }

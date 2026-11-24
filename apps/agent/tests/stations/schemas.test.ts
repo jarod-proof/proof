@@ -107,6 +107,7 @@ const SAMPLES: Record<string, JsonObject> = {
         pass: true,
       },
     ],
+    head_sha: "0123456789abcdef0123456789abcdef01234567",
     suggestions: ["Consider logging the null case."],
     summary: "Approve: both criteria pass and the change is minimal.",
     verdict: "approve",
@@ -445,6 +446,20 @@ describe("station output schemas: specific contracts", () => {
     expect(withPass("true")).toBe(false)
     expect(withPass(1)).toBe(false)
     expect(withPass(null)).toBe(false)
+  })
+
+  test("the reviewer reports the commit it read as text or null, and nothing else", () => {
+    const validator = validatorFor(stationSchemas.REVIEWER_OUTPUT_SCHEMA)
+    const sample = sampleFor("REVIEWER_OUTPUT_SCHEMA")
+    const withSha = (head_sha: Json) => validator.safeParse({ ...sample, head_sha }).success
+
+    expect(withSha("0123456789abcdef0123456789abcdef01234567")).toBe(true)
+    expect(withSha(null)).toBe(true)
+    expect(withSha(7)).toBe(false)
+    expect(withSha(false)).toBe(false)
+    // It is required: a reviewer that says nothing is a reviewer that did not answer.
+    const { head_sha: _sha, ...without } = sample
+    expect(validator.safeParse(without).success).toBe(false)
   })
 
   test("the implementer must say whether it pushed, as a boolean", () => {

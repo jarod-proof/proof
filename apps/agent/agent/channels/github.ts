@@ -48,7 +48,7 @@ import { log } from "../lib/log.js"
  *   runs unattended: the auth is rewritten to the constructed autonomous
  *   principal with the intake issue number stamped in, and the approval
  *   policies deny it everything except labels, progress comments on that one
- *   issue, closing or reopening issues, and draft pull requests.
+ *   issue, closing or reopening issues, and pull requests ready for review.
  * - `onPullRequest` dispatches only on the `opened` action and skips PRs
  *   opened by bots, which covers Dependabot and the factory's own
  *   `foreman[bot]` pull requests. It is deliberately not gated by

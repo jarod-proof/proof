@@ -2854,7 +2854,9 @@ describe("what the model is told", () => {
   test("the orchestrator is told how to write, and that merging and pushing are not available", () => {
     const text = notes("orchestrator")
     expect(text).toMatch(/Merging and pushing are not available\.$/)
-    expect(text).toContain("gh pr create --draft")
+    expect(text).toContain("gh pr create --head")
+    expect(text).not.toContain("gh pr create --draft")
+    expect(text).not.toContain("gh pr ready")
     expect(text).toContain(
       'gh issue edit 12 --add-label bug && gh issue comment 12 --body "Labeled."',
     )

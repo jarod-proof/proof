@@ -10,8 +10,8 @@ import { modelFor } from "../../lib/models.js"
  * implementer's idiom or blind spots. It fetches the pushed branch into its
  * own checkout and judges the real diff against the analyst's acceptance
  * criteria; it never modifies code. Its verdict routes the pipeline: approve
- * ships a draft PR, request_changes loops back to the implementer (at most
- * twice), reject stops the line.
+ * lets the orchestrator open a pull request ready for review, request_changes
+ * loops back to the implementer (at most twice), reject stops the line.
  *
  * `tool: false` hides the station from the orchestrator, which runs it
  * through the `run_reviewer` workflow tool

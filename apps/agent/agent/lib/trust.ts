@@ -10,7 +10,7 @@ import type { SessionAuthContext } from "eve/context"
  * fixed login can never collide with one. The GitHub and intake channels
  * stamp it at dispatch; the approval policies (`github/approval.ts`) deny it
  * everything except labels, progress comments on its own intake issue,
- * closing or reopening issues, and draft pull requests, because an
+ * closing or reopening issues, and opening pull requests, because an
  * unattended turn has nobody to answer an approval card and would park
  * forever.
  */
@@ -190,8 +190,8 @@ export const INTAKE_CALLER_ATTRIBUTE = "intakeCaller"
  * ticket id alone. Nothing in the request body reaches it, so a ticket can't
  * choose who its run acts as. It carries no intake issue number, which means
  * the approval policies give it no thread to comment on: an API run can read
- * the repository, apply labels, close or reopen an issue, and open a draft
- * pull request, and nothing else.
+ * the repository, apply labels, close or reopen an issue, and open a pull
+ * request ready for review on a factory branch, and nothing else.
  *
  * @param ticketId - The id the server made for the ticket.
  * @param callerId - The verified API caller's principal id.

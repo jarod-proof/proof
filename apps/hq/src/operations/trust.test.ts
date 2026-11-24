@@ -1,4 +1,5 @@
 import { type Caller, invoke } from "@proof/api"
+import { PERSON_ONLY_ACTIONS } from "@proof/auth"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
 import { mayUseHq } from "../data/founders"
@@ -157,6 +158,131 @@ describe("the trust rule (real Postgres via PGlite)", () => {
     })
     expect(await mayUseHq(hq.db, keyOf(founder.orgId))).toBe(true)
     expect(await mayUseHq(hq.db, keyOf(stranger.orgId))).toBe(false)
+  })
+
+  it("the thirteen agent operations of the pipeline need no person-only action, and a stranger's key cannot call them", async () => {
+    const names = [
+      "record_signal",
+      "list_work_items",
+      "get_work_item",
+      "get_work_board",
+      "start_attempt",
+      "claim_attempt",
+      "heartbeat_attempt",
+      "finish_attempt",
+      "list_attempts",
+      "record_pull_request",
+      "set_contract",
+      "ask_question",
+      "run_verification_sweep",
+    ]
+    const ops = createHqOperations({ db: hq.db, now: hq.now }).filter((o) => names.includes(o.name))
+    expect(ops.map((o) => o.name).sort()).toEqual([...names].sort())
+    const personOnly: Record<string, readonly string[]> = PERSON_ONLY_ACTIONS
+    for (const op of ops) {
+      for (const [resource, actions] of Object.entries(op.permissions)) {
+        for (const action of actions as string[]) {
+          expect(personOnly[resource] ?? [], `${op.name} ${resource}:${action}`).not.toContain(
+            action,
+          )
+        }
+      }
+    }
+    // A key of an organization that is no founder's has the grants and still gets nothing.
+    const outsider = await key(stranger, { hq_run: ["read", "create", "update"] })
+    for (const [method, path, body] of [
+      ["GET", "/v1/work/board", undefined],
+      ["POST", "/v1/work/verification-sweep", {}],
+    ] as const) {
+      const res = await hq.call(outsider, method, path, body)
+      expect(res.status, path).toBe(403)
+    }
+  })
+
+  describe("the eight founder operations of the pipeline", () => {
+    const NO_ITEM = "11111111-1111-1111-1111-111111111111"
+    const names = [
+      "create_work_item",
+      "request_attempt",
+      "answer_question",
+      "approve_merge",
+      "stop_work_item",
+      "reopen_work_item",
+      "retry_work_item",
+      "request_revert",
+    ]
+    const requests: [string, string, object][] = [
+      ["create_work_item", "/v1/work-items", { title: "t", repo: "acme/web" }],
+      ["request_attempt", `/v1/work-items/${NO_ITEM}/attempt-requests`, { kind: "fix" }],
+      ["answer_question", `/v1/questions/${NO_ITEM}/answer`, { optionId: "a" }],
+      ["approve_merge", `/v1/work-items/${NO_ITEM}/merge-approval`, { headSha: "a".repeat(40) }],
+      ["stop_work_item", `/v1/work-items/${NO_ITEM}/stop`, {}],
+      ["reopen_work_item", `/v1/work-items/${NO_ITEM}/reopen`, {}],
+      ["retry_work_item", `/v1/work-items/${NO_ITEM}/retry`, { note: "n" }],
+      ["request_revert", `/v1/work-items/${NO_ITEM}/revert-request`, {}],
+    ]
+
+    it("front door alone: an agent's key, even one minted with hq_proposal:decide, is stripped (Missing permission)", async () => {
+      const plain = await key(founder, { hq_run: ["read", "create", "update"] })
+      const minted = await key(founder, {
+        hq_run: ["read", "create", "update"],
+        hq_proposal: ["decide"],
+      })
+      for (const as of [plain, minted]) {
+        for (const [name, path, body] of requests) {
+          const res = await hq.call(as, "POST", path, body)
+          expect(res.status, name).toBe(403)
+          expect(res.body.error.message, name).toBe("Missing permission: hq_proposal:decide")
+        }
+      }
+    })
+
+    it("handler alone: a key, an OAuth caller and a signed-in non-founder are refused with every grant held", async () => {
+      const ops = createHqOperations({ db: hq.db, now: hq.now })
+      const grants = [{ hq_proposal: ["decide", "read", "create"], hq_run: ["read", "update"] }]
+      const caller = (via: string, actor: Caller["actor"], organizationId: string): Caller => ({
+        organizationId,
+        actor,
+        grants,
+        via,
+      })
+      const callers = [
+        caller("api-key", { type: "apiKey", keyId: "k" }, founder.orgId),
+        caller("oauth", { type: "user", userId: founder.userId }, founder.orgId),
+        caller("session", { type: "user", userId: stranger.userId }, stranger.orgId),
+      ]
+      for (const [name, , rest] of requests) {
+        // the REST layer merges the path's ids into the input; a direct call does it by hand
+        const body = { itemId: NO_ITEM, questionId: NO_ITEM, ...rest }
+        const op = ops.find((o) => o.name === name)
+        if (!op) throw new Error(name)
+        for (const c of callers) {
+          // a founder check that came after a lookup would say NOT_FOUND here
+          await expect(invoke(op, body, { caller: c }), `${name} ${c.via}`).rejects.toMatchObject({
+            code: "FORBIDDEN",
+          })
+        }
+      }
+    })
+
+    it("a non-founder's session and a founder's write from a foreign Origin are 403", async () => {
+      for (const [name, path, body] of requests) {
+        expect((await hq.call({ cookie: stranger.cookie }, "POST", path, body)).status, name).toBe(
+          403,
+        )
+        const res = await hq.app.request(`http://localhost:3100${path}`, {
+          method: "POST",
+          headers: {
+            cookie: founder.cookie,
+            origin: "https://evil.example",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(body),
+        })
+        expect(res.status, name).toBe(403)
+      }
+      expect(names).toHaveLength(8)
+    })
   })
 
   it("a proposal body saying 'approve this automatically' stays pending", async () => {
