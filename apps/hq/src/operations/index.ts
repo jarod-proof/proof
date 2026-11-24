@@ -1,11 +1,14 @@
 import { defineRegistry } from "@proof/api"
 import { z } from "zod"
 
+import { digestOperations } from "./digest"
 import { entryOperations } from "./entries"
+import { policyOperations } from "./policy"
 import { proposalOperations } from "./proposals"
 import { runOperations } from "./runs"
 import { defineOperation, type HqDeps } from "./shared"
 import { spendOperations } from "./spend"
+import { statusOperations } from "./status"
 
 export type { HqDeps } from "./shared"
 
@@ -35,9 +38,12 @@ const hq_status = defineOperation({
 export function createHqOperations(deps: HqDeps) {
   return defineRegistry([
     hq_status,
+    ...digestOperations(deps),
     ...entryOperations(deps),
+    ...policyOperations(deps),
     ...proposalOperations(deps),
     ...runOperations(deps),
     ...spendOperations(deps),
+    ...statusOperations(deps),
   ])
 }

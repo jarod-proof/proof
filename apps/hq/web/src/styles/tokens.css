@@ -1,0 +1,71 @@
+/* hq design tokens (plan I5). Dark only: <html class="dark"> is static in index.html. The names are
+   shadcn's so @proof/ui primitives render in hq colours. Colour appears nowhere else in web/. */
+
+.dark {
+  --background: #0b0d10;
+  --panel: #0f1217;
+  --card: #151a21;
+  --popover: #151a21;
+  --muted: #12161c;
+  --secondary: #12161c;
+  --accent: #1b222c;
+  --border: #232a33;
+  --input: #2f3743;
+  --foreground: #e8eaed;
+  --card-foreground: #e8eaed;
+  --accent-foreground: #e8eaed;
+  --secondary-foreground: #e8eaed;
+  --soft: #c9d0da;
+  --muted-foreground: #a8b1bf;
+  --faint: #8b95a5;
+  --primary: #7ab2ff;
+  --ring: #7ab2ff;
+  --primary-foreground: #0b0d10;
+  --solar-foreground: #0b0d10;
+  --solar: #ffc266;
+  --success: #4fd1c5;
+  --destructive: #ff8f85;
+  --violet: #b79cff;
+  --track: #1f2630;
+  --attention-surface: #171a1e;
+  --attention-border: #3a3320;
+  --ok-surface: #10242a;
+  --ok-border: #1f4a47;
+
+  --sidebar: #0b0d10;
+  --sidebar-foreground: #a8b1bf;
+  --sidebar-primary: #7ab2ff;
+  --sidebar-primary-foreground: #0b0d10;
+  --sidebar-accent: #1b222c;
+  --sidebar-accent-foreground: #e8eaed;
+  --sidebar-border: #232a33;
+  --sidebar-ring: #7ab2ff;
+}
+
+/* Plain @theme (not inline): Tailwind builds utilities from these names and they replace lab-ui's
+   font stacks, so body and font-mono use the bundled fonts. */
+@theme {
+  --radius-shell: 14px;
+  --radius-card: 12px;
+  --radius-control: 10px;
+  --spacing-touch: 44px;
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, Menlo, monospace;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-panel: var(--panel);
+  --color-faint: var(--faint);
+  --color-soft: var(--soft);
+  --color-solar: var(--solar);
+  --color-track: var(--track);
+  --color-violet: var(--violet);
+  --color-attention-surface: var(--attention-surface);
+  --color-attention-border: var(--attention-border);
+  --color-ok-surface: var(--ok-surface);
+  --color-ok-border: var(--ok-border);
+}

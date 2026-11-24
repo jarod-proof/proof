@@ -4,11 +4,11 @@
 // (ERR_MODULE_NOT_FOUND). Here the build script runs as `node`, into an empty directory, and the
 // built function runs as a separate `node` process with an empty environment.
 import { spawnSync } from "node:child_process"
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs"
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs"
 import { builtinModules } from "node:module"
 import { tmpdir } from "node:os"
-import { dirname, join, resolve } from "node:path"
-import { fileURLToPath } from "node:url"
+import { dirname, join, resolve, sep } from "node:path"
+import { fileURLToPath, pathToFileURL } from "node:url"
 
 import { transform } from "esbuild"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
@@ -24,6 +24,45 @@ function readJson(path: string): Record<string, unknown> {
 const CANARIES = {
   DATABASE_URL: "postgres://canary-user:canary-db-password-31337@canary.invalid/canary",
   BETTER_AUTH_SECRET: "canary-auth-secret-31337",
+  // The one name Vite would expose to client code, were `import.meta.env.VITE_*` read anywhere.
+  VITE_CANARY: "canary-vite-31337",
+}
+
+/** The Build Output config the build writes, and what Vercel serves: headers, files, shell, function. */
+const OUTPUT_CONFIG = {
+  version: 3,
+  routes: [
+    {
+      src: "^/app(?:/.*)?$",
+      headers: {
+        "content-security-policy":
+          "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "same-origin",
+      },
+      continue: true,
+    },
+    {
+      src: "^/app/assets/.+$",
+      headers: { "cache-control": "public, max-age=31536000, immutable" },
+      continue: true,
+    },
+    {
+      src: "^/app(?:/(?!assets/).*)?$",
+      headers: { "cache-control": "no-store" },
+      continue: true,
+    },
+    { handle: "filesystem" },
+    { src: "^/app(?:/(?!assets/).*)?$", dest: "/app/index.html" },
+    { src: "/(.*)", dest: "/index" },
+  ],
+}
+
+function filesUnder(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+    entry.isDirectory() ? filesUnder(join(dir, entry.name)) : [join(dir, entry.name)],
+  )
 }
 
 describe("the Vercel function bundle", () => {
@@ -31,6 +70,7 @@ describe("the Vercel function bundle", () => {
   let functionDir = ""
   let bundlePath = ""
   let bundle = ""
+  let inputs: string[] = []
 
   beforeAll(() => {
     // Outside the repository: nothing the bundle needs may come from a node_modules above it.
@@ -44,17 +84,35 @@ describe("the Vercel function bundle", () => {
     functionDir = join(out, "functions", "index.func")
     bundlePath = join(functionDir, "index.mjs")
     bundle = readFileSync(bundlePath, "utf8")
-  }, 120_000)
+    // The same build, called as a function by a second plain node, for what it returns.
+    const second = mkdtempSync(join(tmpdir(), "hq-vercel-inputs-"))
+    try {
+      const called = spawnSync(
+        process.execPath,
+        [
+          "--input-type=module",
+          "-e",
+          `const { buildVercelOutput } = await import(process.argv[1])
+           const { inputs } = await buildVercelOutput(process.argv[2])
+           console.log(JSON.stringify(inputs))`,
+          pathToFileURL(script).href,
+          second,
+        ],
+        { env: { ...CANARIES }, cwd: hqDir, encoding: "utf8" },
+      )
+      expect(called.status, called.stderr).toBe(0)
+      inputs = JSON.parse(called.stdout.trim().split("\n").at(-1) ?? "[]") as string[]
+    } finally {
+      rmSync(second, { recursive: true, force: true })
+    }
+  }, 240_000)
 
   afterAll(() => {
     if (out.startsWith(tmpdir())) rmSync(out, { recursive: true, force: true })
   })
 
-  it("writes a Build Output API (v3) tree with a catch-all route to the function", () => {
-    expect(readJson(join(out, "config.json"))).toEqual({
-      version: 3,
-      routes: [{ src: "/(.*)", dest: "/index" }],
-    })
+  it("writes the Build Output config: app headers, the filesystem, the app shell, then the function", () => {
+    expect(readJson(join(out, "config.json"))).toEqual(OUTPUT_CONFIG)
     expect(readJson(join(functionDir, ".vc-config.json"))).toEqual({
       runtime: expect.stringMatching(/^nodejs\d+\.x$/),
       handler: "index.mjs",
@@ -63,6 +121,56 @@ describe("the Vercel function bundle", () => {
       supportsResponseStreaming: true,
     })
     expect(existsSync(bundlePath)).toBe(true)
+  })
+
+  it("serves the app shell and hashed assets from static/app", () => {
+    const html = readFileSync(join(out, "static", "app", "index.html"), "utf8")
+    expect(html).toContain('<div id="root">')
+    expect(html).toContain('src="/app/assets/')
+    const assets = readdirSync(join(out, "static", "app", "assets"))
+    expect(assets.some((f) => f.endsWith(".js"))).toBe(true)
+    expect(assets.some((f) => f.endsWith(".css"))).toBe(true)
+  })
+
+  it("the built index.html has no inline script and no style attribute", () => {
+    const html = readFileSync(join(out, "static", "app", "index.html"), "utf8")
+    const scripts = [...html.matchAll(/<script\b[^>]*>/gi)].map((m) => m[0])
+    expect(scripts.length).toBeGreaterThan(0)
+    for (const tag of scripts) expect(tag).toMatch(/\bsrc=/)
+    expect(html).not.toMatch(/<script\b(?![^>]*\bsrc=)/i)
+    expect(html).not.toMatch(/\sstyle\s*=/i)
+    expect(html).not.toMatch(/<style\b/i)
+  })
+
+  it("the shell fallback matches deep links and leaves assets, /admin and /v1 to the function", () => {
+    const route = OUTPUT_CONFIG.routes.find((r) => "dest" in r && r.dest === "/app/index.html")
+    const shell = new RegExp((route as { src: string }).src)
+    for (const path of ["/app", "/app/", "/app/digest", "/app/approvals/"]) {
+      expect(shell.test(path), path).toBe(true)
+    }
+    for (const path of ["/app/assets/x.js", "/application", "/admin/proposals", "/v1/status"]) {
+      expect(shell.test(path), path).toBe(false)
+    }
+  })
+
+  it("no environment value reaches any file under static/", () => {
+    const files = filesUnder(join(out, "static"))
+    expect(files.length).toBeGreaterThan(0)
+    for (const file of files) {
+      const text = readFileSync(file, "utf8")
+      for (const secret of Object.values(CANARIES)) expect(text, file).not.toContain(secret)
+    }
+  })
+
+  it("the function bundle takes no web input", () => {
+    expect(inputs.length).toBeGreaterThan(0)
+    // (Paths are relative to the build's working directory, hq's; dependencies may have a web/.)
+    const webDir = join(hqDir, "web") + sep
+    expect(inputs.filter((path) => resolve(hqDir, path).startsWith(webDir))).toEqual([])
+  })
+
+  it("the bundle carries no lab-named identifier", () => {
+    expect(bundle).not.toMatch(/__lab_/)
   })
 
   it("declares a Node runtime at least the root engines", () => {

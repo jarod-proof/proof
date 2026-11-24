@@ -15,6 +15,8 @@ export interface HqDeps {
   db: Database
   /** The clock: timestamps read it, so tests can move time. */
   now: () => Date
+  /** What Slack clicks may grant in a UTC day in all; unset, hq's default. */
+  slackDailyGrantCapUsd?: number
 }
 
 export const entryKind = z.enum(ENTRY_KINDS)

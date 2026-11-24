@@ -81,7 +81,11 @@ export function createHqApp(opts: HqAppOptions) {
   const { auth } = opts
   const baseURL = (opts.baseURL ?? "http://localhost:3100").replace(/\/$/, "")
   const operations: readonly AnyOperation[] = [
-    ...createHqOperations({ db: opts.db, now: opts.now }),
+    ...createHqOperations({
+      db: opts.db,
+      now: opts.now,
+      slackDailyGrantCapUsd: opts.slack?.dailyGrantCapUsd,
+    }),
     ...(opts.extraOperations ?? []),
   ]
   const issuer = `${baseURL}${AUTH_BASE_PATH}`
