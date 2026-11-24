@@ -3,7 +3,12 @@ import { expectNoA11yViolations } from "@proof/ui/a11y"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { createFakeHq, urlOf } from "../test/fake-hq"
-import { digestFixture, factoryStatusFixture, proposalFixture } from "../test/fixtures"
+import {
+  digestFixture,
+  digestPipelineFixture,
+  factoryStatusFixture,
+  proposalFixture,
+} from "../test/fixtures"
 import { renderApp } from "../test/render"
 
 afterEach(() => {
@@ -191,5 +196,36 @@ describe("the Digest screen", () => {
     const app = await renderApp({ path: "/app/digest" })
     await app.findByRole("status", { name: "Digest summary" })
     await expectNoA11yViolations(app.container.innerHTML)
+  })
+})
+
+describe("the Digest screen with the pipeline", () => {
+  it("shows the pipeline's needs, merges and health from get_digest, with one GET and no write", async () => {
+    const hq = createFakeHq({
+      digest: digestFixture({
+        summary: { tone: "quiet", runsFinished: 1, runsFailed: 0, pendingProposals: 1 },
+        pipeline: digestPipelineFixture(),
+      }),
+    })
+    const app = await renderApp({ path: "/app/digest", hq })
+    const banner = await app.findByRole("status", { name: "Digest summary" })
+    // 1 proposal plus the pipeline's 3
+    expect(banner.textContent).toContain("4 need a decision")
+    expect(app.getByRole("region", { name: "What changed in production" }).textContent).toContain(
+      "Merged by the factory (deploy not observed)",
+    )
+    expect(app.getByRole("region", { name: "Factory health" }).textContent).toContain(
+      "Stuck attempts0",
+    )
+    expect(digestCalls(hq)).toHaveLength(1)
+    expect(hq.sent.every((s) => s.method === "GET")).toBe(true)
+  })
+
+  it("a hq without the work tables (pipeline null) shows the Phase 3 Digest", async () => {
+    const hq = createFakeHq({ digest: digestFixture({ pipeline: null }) })
+    const app = await renderApp({ path: "/app/digest", hq })
+    await app.findByRole("status", { name: "Digest summary" })
+    expect(app.queryByText("Stuck attempts")).toBeNull()
+    expect(app.queryByText(/Merged by the factory/)).toBeNull()
   })
 })

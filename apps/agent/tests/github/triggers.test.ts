@@ -44,20 +44,25 @@ describe("the dispatch hooks: no other system's label or branch starts the agent
 
   test("red CI on a deps/* branch starts no fix run, and on an agent/* branch it does", async () => {
     const hooks = await import("#lib/github/hooks.js")
-    expect(hooks.onCheckSuite(ctx, checkSuite("deps/npm-2026-w47"))).toBeNull()
-    expect(hooks.onCheckSuite(ctx, checkSuite("agent/bug-fix-login"))).not.toBeNull()
+    expect(await hooks.onCheckSuite(ctx, checkSuite("deps/npm-2026-w47"))).toBeNull()
+    expect(await hooks.onCheckSuite(ctx, checkSuite("agent/bug-fix-login"))).not.toBeNull()
   })
 
   test("a pull request on a deps/* branch or labeled factory:review gets no summary run", async () => {
     const hooks = await import("#lib/github/hooks.js")
     const plain = { pull_request: { head: { ref: "feature/x" }, labels: [] } }
-    expect(hooks.onPullRequest(ctx, opened(plain))).not.toBeNull()
+    expect(await hooks.onPullRequest(ctx, opened(plain))).not.toBeNull()
     expect(
-      hooks.onPullRequest(ctx, opened({ pull_request: { head: { ref: "deps/npm-2026-w47" } } })),
+      await hooks.onPullRequest(
+        ctx,
+        opened({ pull_request: { head: { ref: "deps/npm-2026-w47" } } }),
+      ),
     ).toBeNull()
-    expect(hooks.onPullRequest(ctx, opened({ head: { ref: "deps/npm-2026-w47" } }))).toBeNull()
     expect(
-      hooks.onPullRequest(
+      await hooks.onPullRequest(ctx, opened({ head: { ref: "deps/npm-2026-w47" } })),
+    ).toBeNull()
+    expect(
+      await hooks.onPullRequest(
         ctx,
         opened({
           pull_request: { head: { ref: "feature/x" }, labels: [{ name: "factory:review" }] },

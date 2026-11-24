@@ -17,6 +17,12 @@ export interface HqDeps {
   now: () => Date
   /** What Slack clicks may grant in a UTC day in all; unset, hq's default. */
   slackDailyGrantCapUsd?: number
+  /**
+   * How an attempt starts: `label` (a founder adds the `agent:build` label; `request_attempt` is
+   * BAD_REQUEST) or `claim` (a founder's request is claimed by the agent). Unset, hq's
+   * `ATTEMPT_DISPATCH_MODE`. The work reads show it; the founder operations obey it.
+   */
+  dispatchMode?: "label" | "claim"
 }
 
 export const entryKind = z.enum(ENTRY_KINDS)

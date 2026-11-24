@@ -208,4 +208,27 @@ describe("ApprovalsPage", () => {
     expect(view.container.querySelector("[style]")).toBeNull()
     await expectNoA11yViolations(view.container.innerHTML)
   })
+
+  it("renders extraSections after Needs you and before Recently decided, and nothing extra without it", () => {
+    const { container, unmount } = page({
+      pending: ready([proposalFixture({ title: "Tone of voice" })]),
+      extraSections: (
+        <section aria-labelledby="extra">
+          <h2 id="extra">Extra section</h2>
+        </section>
+      ),
+    })
+    expect([...container.querySelectorAll("h2")].map((h) => h.id)).toEqual([
+      "needs-you",
+      "extra",
+      "recently-decided",
+    ])
+    unmount()
+    const plain = page()
+    expect([...plain.container.querySelectorAll("h2")].map((h) => h.id)).toEqual([
+      "needs-you",
+      "recently-decided",
+    ])
+    expect(plain.container.textContent).not.toContain("Extra section")
+  })
 })

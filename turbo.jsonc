@@ -85,10 +85,15 @@
     // sdk's schema.test.ts checks the generated client against the API's committed contract. The
     // SDK does not depend on apps/api, so openapi.json is not in its graph.
     // apps/agent builds with `eve build` (through scripts/run.ts, which sets the inert placeholders
-    // eve's compile needs, because turbo strips the environment): its output is .output.
+    // eve's compile needs, because turbo strips the environment). It writes .output locally and the
+    // Build Output API directory .vercel/output when VERCEL is set (the deploy). Both are declared:
+    // on a cache hit turbo restores only what is declared, and a missing .vercel/output fails the
+    // deploy with STATIC_BUILD_NO_OUT_DIR. VERCEL is hashed so the two kinds of build never share a
+    // cache entry.
     "@proof/agent#build": {
       "dependsOn": ["^build"],
-      "outputs": [".output/**"]
+      "env": ["VERCEL"],
+      "outputs": [".output/**", ".vercel/output/**"]
     },
     "@proof/sdk#test": {
       "dependsOn": ["transit"],

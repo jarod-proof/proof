@@ -309,6 +309,11 @@ export const REVIEWER_OUTPUT_SCHEMA = {
       },
       type: "array",
     },
+    head_sha: {
+      description:
+        "The full commit sha you reviewed: the output of `git rev-parse HEAD` in the checkout of the branch you fetched, run by you, or null when you could not read one. Never guess or copy one from a report.",
+      type: ["string", "null"],
+    },
     suggestions: {
       description: "Advisory notes that do not block shipping.",
       items: { type: "string" },
@@ -323,6 +328,13 @@ export const REVIEWER_OUTPUT_SCHEMA = {
       type: "string",
     },
   },
-  required: ["verdict", "criteria_results", "blocking_findings", "suggestions", "summary"],
+  required: [
+    "verdict",
+    "criteria_results",
+    "blocking_findings",
+    "head_sha",
+    "suggestions",
+    "summary",
+  ],
   type: "object",
 } as const

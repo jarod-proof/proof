@@ -14,6 +14,16 @@ import {
   FACTORY_LABEL,
 } from "../constants.js"
 import { stampAutonomous, stampIssueIntake, stampSummary, stampTrusted } from "../trust.js"
+import { hookHq, recordSafely } from "../work/recorder.js"
+import {
+  ciSignal,
+  issueSignal,
+  pullRequestRecord,
+  readIssueFacts,
+  readPrFacts,
+  readSuiteFacts,
+  suiteChecks,
+} from "../work/signals.js"
 import { mentionPattern, resolveBotName } from "./bot-name.js"
 
 /**
@@ -109,7 +119,7 @@ export const FACTORY_INTAKE_TASK = [
   `This issue was handed to the factory with the "${FACTORY_LABEL}" label, and this run is unattended: nobody is watching to answer a question or approve an action, so never attempt an action that needs approval.`,
   "Triage the work item and run it through the pipeline. If it needs clarification, post the questions as a comment on the issue and stop; someone will re-label the issue when they've answered.",
   "Keep the requester in the loop as you go: post a short comment on this issue when triage and each station complete, except the last one. Comments on this issue are the one conversational write this run has; you cannot comment anywhere else.",
-  "Deliver the finished work as a draft pull request. The message you end the run with appears on this issue for you: link the pull request there, and let it stand in for the progress comment for this final step.",
+  "Deliver the finished work as a pull request ready for review. The message you end the run with appears on this issue for you: link the pull request there, and let it stand in for the progress comment for this final step.",
 ].join("\n\n")
 
 /**
@@ -156,9 +166,36 @@ export const PR_SUMMARY_TASK = [
  * fix run, anchored to that pull request. Suites on branches people pushed
  * never dispatch.
  *
+ * @remarks
+ * After the dispatch is decided (unchanged), the suite is also recorded in hq: a failure on the
+ * default branch with no pull request is a `ci_failure` signal, and a completed suite on a factory
+ * branch's pull request updates that pull request's checks. Recording never changes the result and
+ * never throws.
+ *
  * @returns The run to start, or null to acknowledge the event without one.
  */
-export const onCheckSuite = (
+export const onCheckSuite = async (
+  ctx: GitHubInboundContext,
+  suite: GitHubCheckSuiteEvent,
+): Promise<GitHubInboundResult> => {
+  const result = checkSuiteDispatch(ctx, suite)
+  await recordSafely("check_suite", async () => {
+    const hq = hookHq()
+    if (hq === null) {
+      return null
+    }
+    const facts = readSuiteFacts(ctx, suite)
+    const signal = ciSignal(facts)
+    if (signal !== null) {
+      return hq.recordSignal(signal)
+    }
+    const checks = suiteChecks(facts)
+    return checks === null ? null : hq.recordPullRequest(checks)
+  })
+  return result
+}
+
+const checkSuiteDispatch = (
   ctx: GitHubInboundContext,
   suite: GitHubCheckSuiteEvent,
 ): GitHubInboundResult => {
@@ -210,6 +247,12 @@ export const onComment = async (
  * The factory label on an issue: dispatches the unattended pipeline, after
  * verifying that whoever applied the label may triage the repository.
  *
+ * @remarks
+ * The issue is also recorded in hq as a signal when a trusted party is behind it: an issue opened
+ * or reopened by an owner, member or collaborator, or labeled by a verified labeler (the answer
+ * the dispatch already needed, asked once). A stranger's issue on the public repo records nothing.
+ * Recording never changes the result and never throws.
+ *
  * @returns The run to start, or null to acknowledge the event without one.
  */
 export const onIssue = async (
@@ -221,18 +264,26 @@ export const onIssue = async (
   }
   const hasFactoryLabel =
     Array.isArray(labels) && labels.some((entry) => entry?.name === FACTORY_LABEL)
-  if (
-    issue.action !== "labeled" ||
-    !hasFactoryLabel ||
-    ctx.sender.type === "Bot" ||
-    !(await isTrustedLabeler(ctx))
-  ) {
-    return null
-  }
-  return {
-    auth: stampIssueIntake(defaultGitHubAuth(ctx), issue.issueNumber),
-    context: [FACTORY_INTAKE_TASK],
-  }
+  const labeledByTrusted =
+    issue.action === "labeled" &&
+    hasFactoryLabel &&
+    ctx.sender.type !== "Bot" &&
+    (await isTrustedLabeler(ctx))
+  const result: GitHubInboundResult = labeledByTrusted
+    ? {
+        auth: stampIssueIntake(defaultGitHubAuth(ctx), issue.issueNumber),
+        context: [FACTORY_INTAKE_TASK],
+      }
+    : null
+  await recordSafely("issue", async () => {
+    const hq = hookHq()
+    if (hq === null) {
+      return null
+    }
+    const signal = issueSignal(readIssueFacts(ctx, issue, labeledByTrusted))
+    return signal === null ? null : hq.recordSignal(signal)
+  })
+  return result
 }
 
 /**
@@ -246,20 +297,36 @@ export const onIssue = async (
  * is the narrowest one there is (`stampSummary`): it can read and comment
  * on that pull request, and nothing else, whatever the text says.
  *
+ * Every event for one of the factory's own pull requests (any action, bot senders included) is
+ * also recorded in hq, in full, once the dispatch is decided; a fork's `agent/...` branch is not
+ * one of them. Recording never changes the result and never throws.
+ *
  * @returns The run to start, or null to acknowledge the event without one.
  */
-export const onPullRequest = (
+export const onPullRequest = async (
   ctx: GitHubInboundContext,
   pullRequest: GitHubPullRequestEvent,
-): GitHubInboundResult =>
-  pullRequest.action === "opened" &&
-  ctx.sender.type !== "Bot" &&
-  !belongsToAnotherSystem(pullRequest)
-    ? {
-        auth: stampSummary(defaultGitHubAuth(ctx), pullRequest.pullRequestNumber),
-        context: [PR_SUMMARY_TASK],
-      }
-    : null
+): Promise<GitHubInboundResult> => {
+  const result: GitHubInboundResult =
+    pullRequest.action === "opened" &&
+    ctx.sender.type !== "Bot" &&
+    !belongsToAnotherSystem(pullRequest)
+      ? {
+          auth: stampSummary(defaultGitHubAuth(ctx), pullRequest.pullRequestNumber),
+          context: [PR_SUMMARY_TASK],
+        }
+      : null
+  await recordSafely("pull_request", async () => {
+    const hq = hookHq()
+    if (hq === null) {
+      return null
+    }
+    const facts = readPrFacts(ctx, pullRequest)
+    const record = facts === null ? null : pullRequestRecord(facts)
+    return record === null ? null : hq.recordPullRequest(record)
+  })
+  return result
+}
 
 /**
  * A pull request that another system owns: box review's (labeled `factory:review`) or a dependency

@@ -43,6 +43,20 @@
       "when": 1794970894262,
       "tag": "0005_grant_request_amount_max",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795498405576,
+      "tag": "0006_work_pipeline",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795498411231,
+      "tag": "0007_work_events_append_only",
+      "breakpoints": true
     }
   ]
 }

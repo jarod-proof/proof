@@ -27,6 +27,7 @@ describe("Sidebar", () => {
     expect(links).toHaveLength(NAV_ITEMS.length)
     expect([...links].map((a) => a.getAttribute("href"))).toEqual([
       "/app/digest",
+      "/app/work",
       "/app/approvals",
       "/app/runner",
     ])

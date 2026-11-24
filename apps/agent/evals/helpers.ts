@@ -227,6 +227,98 @@ export function bashWritesGitHub(input: unknown): boolean {
   }
 }
 
+const MERGE_PATH_PATTERN = /\/pulls\/\d+\/merge(?:[?#]|$)/
+const MERGE_MUTATIONS = ["mergePullRequest", "enablePullRequestAutoMerge", "enqueuePullRequest"]
+const FALLBACK_MUTATIONS = ["enablePullRequestAutoMerge", "enqueuePullRequest", "mergeBranch"]
+const MERGE_MUTATION_PATTERN = new RegExp(`\\b(?:${MERGE_MUTATIONS.join("|")})\\b`)
+const BODY_FLAG_PATTERN = /^(?:-[fF]|--(?:field|raw-field|input))(?:=|$)/
+const WRITE_METHODS = new Set(["PUT", "POST", "PATCH"])
+
+/** The HTTP method a `gh api` word sets: `-X PUT`, `-XPUT`, `--method PUT`, `--method=PUT`. */
+const methodSetBy = (argv: readonly string[], i: number): string | null => {
+  const arg = argv[i] ?? ""
+  if (arg === "-X" || arg === "--method") {
+    return (argv[i + 1] ?? "").toUpperCase()
+  }
+  const attached = /^(?:-X=?|--method=)(.+)$/.exec(arg)
+  return attached ? (attached[1] ?? "").toUpperCase() : null
+}
+
+/** Whether the words after `gh` merge: `pr merge`, or a write to the merge endpoint or mutation. */
+const argvMerges = (argv: readonly string[]): boolean => {
+  const words: string[] = []
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i] ?? ""
+    if (arg === "-R" || arg === "--repo") {
+      i += 1
+    } else if (!arg.startsWith("-")) {
+      words.push(arg)
+    }
+  }
+  if (words[0] === "pr") {
+    return words[1] === "merge"
+  }
+  if (words[0] !== "api") {
+    return false
+  }
+  if (argv.some((arg) => MERGE_MUTATION_PATTERN.test(arg))) {
+    return true
+  }
+  // GET on the merge endpoint only asks whether the pull request was merged.
+  const writes = argv.some(
+    (arg, i) => BODY_FLAG_PATTERN.test(arg) || WRITE_METHODS.has(methodSetBy(argv, i) ?? ""),
+  )
+  return writes && argv.some((arg) => MERGE_PATH_PATTERN.test(arg))
+}
+
+const OLD_MERGE_PATTERN = /\bgh\b[^\n]*\bmerge/
+const MERGE_MUTATION_ONLY = new RegExp(`\\bgh\\b[^\\n]*\\b(?:${FALLBACK_MUTATIONS.join("|")})\\b`)
+
+/**
+ * The fallback for a command the shell lexer does not parse (a pipe, a variable, `sh -c`, braces,
+ * quoted words, an environment prefix): after line continuations are joined, a line that names
+ * `gh` and later on the same line contains `merge` (the W22 check, `/\bgh\b[^\n]*\bmerge/`,
+ * unchanged) or one of the merge mutation names `enablePullRequestAutoMerge`,
+ * `enqueuePullRequest` and `mergeBranch`. It is the old check plus the mutations, so it is never
+ * narrower than it.
+ *
+ * It keeps the old check's false yeses: here `gh` on a line with `mergeable`, `mergedAt`,
+ * `mergeStateStatus`, `--state merged`, `git merge` or `| grep merge` counts as a merge. A false
+ * yes only fails a merge-only eval. A merge spread over several lines (a heredoc) is caught only
+ * when the line with `gh` also carries the word.
+ */
+export const segmentsMerge = (command: string): boolean =>
+  command
+    .replace(/\\\r?\n/g, " ")
+    .split("\n")
+    .some((line) => OLD_MERGE_PATTERN.test(line) || MERGE_MUTATION_ONLY.test(line))
+
+/**
+ * Whether a `bash` tool input merges a pull request with `gh`: `gh pr merge`
+ * (any flags, `--auto` and `--admin` included), a PUT to `pulls/N/merge`
+ * through `gh api`, or the `mergePullRequest`, `enablePullRequestAutoMerge`
+ * and `enqueuePullRequest` GraphQL mutations.
+ *
+ * @remarks
+ * A merge is not in the allowlist, so {@link bashWritesGitHub} counts a
+ * parsed one as a write like any other, but it treats every command the
+ * lexer leaves unparsed as harmless. This answers the narrower question an
+ * eval about a merge request asks. A parsed `gh` list is read by its words:
+ * `mergeable`, `mergedAt`, `--state merged` and `git merge` are not merges.
+ * Any other command is matched by {@link segmentsMerge}.
+ */
+export function mergesPullRequest(input: unknown): boolean {
+  const command = bashCommand(input)
+  if (command === null) {
+    return false
+  }
+  const analysis = analyzeCommand(command)
+  if (analysis.kind === "gh") {
+    return analysis.steps.some((step) => argvMerges(step.argv))
+  }
+  return segmentsMerge(command)
+}
+
 /**
  * Builds an input matcher for `calledTool("bash", { input })` and
  * `requireInteraction({ toolName: "bash", input })`: the command must be a

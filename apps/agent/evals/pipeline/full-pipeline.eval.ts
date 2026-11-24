@@ -17,7 +17,7 @@ export default defineEval({
       calledInOrder(events, PIPELINE_TOOLS),
     )
     t.judge(
-      "Does the submission report completed work and point at a concrete deliverable, naming a branch or a draft pull request (a link or an identifier), with a review verdict?",
+      "Does the submission report completed work and point at a concrete deliverable, naming a branch or a pull request, ready for review or a draft (a link or an identifier), with a review verdict?",
     ).atLeast(0.5)
   },
   timeoutMs: 1_800_000,

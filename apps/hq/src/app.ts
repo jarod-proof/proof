@@ -47,6 +47,8 @@ export interface HqAppOptions {
   slack?: { signingSecret?: string; teamId?: string; dailyGrantCapUsd?: number }
   /** Public base URL, no trailing slash (OAuth issuer, docs links). Default http://localhost:3100. */
   baseURL?: string
+  /** How an attempt starts, `label` or `claim`; unset, hq's `ATTEMPT_DISPATCH_MODE`. Tests choose. */
+  dispatchMode?: "label" | "claim"
   /** More operations beside hq's own. For tests (a write, to reach the body and origin checks). */
   extraOperations?: readonly AnyOperation[]
 }
@@ -85,6 +87,7 @@ export function createHqApp(opts: HqAppOptions) {
       db: opts.db,
       now: opts.now,
       slackDailyGrantCapUsd: opts.slack?.dailyGrantCapUsd,
+      dispatchMode: opts.dispatchMode,
     }),
     ...(opts.extraOperations ?? []),
   ]

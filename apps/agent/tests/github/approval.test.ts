@@ -5,6 +5,7 @@ import {
   ghEffectDecision,
   labelDecision,
   MAX_GH_STEPS,
+  openPrDecision,
   shellAvailable,
   shellDecision,
   stationPolicy,
@@ -278,6 +279,175 @@ const MATRIX: readonly [what: string, args: string[], expected: Record<CallerCla
     ["pr", "create", "--head", "agent/x", "--title", "T", "--body", "B"],
     {
       anonymous: ASK,
+      autonomous: RUN,
+      schedule: ASK,
+      summary: DENY,
+      ticket: RUN,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a factory branch spelled -H",
+    ["pr", "create", "-H", "agent/x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: RUN,
+      schedule: ASK,
+      summary: DENY,
+      ticket: RUN,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a factory branch spelled --head=",
+    ["pr", "create", "--head=agent/x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: RUN,
+      schedule: ASK,
+      summary: DENY,
+      ticket: RUN,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a branch that is not the factory's",
+    ["pr", "create", "--head", "feature/x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a fork's owner:branch head",
+    ["pr", "create", "--head", "owner:agent/x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from the default branch",
+    ["pr", "create", "--head", "main", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from another case of the prefix",
+    ["pr", "create", "--head", "Agent/x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a branch that only resembles the prefix",
+    ["pr", "create", "--head", "agent-x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from the prefix alone",
+    ["pr", "create", "--head", "agent/", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a parent segment",
+    ["pr", "create", "--head", "agent/../main", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a fork's head spelled --head=",
+    ["pr", "create", "--head=owner:agent/x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft, from a fork's head spelled -H",
+    ["pr", "create", "-H", "owner:agent/x", "--title", "T", "--body", "B"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft and requests a reviewer",
+    ["pr", "create", "--head", "agent/x", "--title", "T", "--body", "B", "--reviewer", "octocat"],
+    {
+      anonymous: ASK,
+      autonomous: DENY,
+      schedule: ASK,
+      summary: DENY,
+      ticket: DENY,
+      trusted: ASK,
+      untrusted: ASK,
+    },
+  ],
+  [
+    "opening a pull request that is not a draft and assigns someone",
+    ["pr", "create", "--head", "agent/x", "--title", "T", "--body", "B", "--assignee", "octocat"],
+    {
+      anonymous: ASK,
       autonomous: DENY,
       schedule: ASK,
       summary: DENY,
@@ -386,6 +556,111 @@ describe("the orchestrator's gh commands: the authorization matrix", () => {
 
   test("shipping waits for a person even when the caller is trusted", () => {
     expect(verdict(decide("trusted", "pr", "ready", "34"))).toBe(ASK)
+  })
+
+  test("an unattended run may open a ready pull request on agent/x and may not mark one ready, merge, or open one from another branch", () => {
+    const OPEN = ["pr", "create", "--head", "agent/x", "--title", "T", "--body", "B"]
+    for (const caller of ["autonomous", "ticket"] as const) {
+      expect(verdict(decide(caller, ...OPEN))).toBe(RUN)
+      // The trust rule: taking one out of draft, merging and merging through
+      // the API are still not its call.
+      expect(verdict(decide(caller, "pr", "ready", "34"))).toBe(DENY)
+      expect(verdict(decide(caller, "pr", "ready", "agent/x"))).toBe(DENY)
+      expect(verdict(decide(caller, "pr", "merge", "34"))).toBe(DENY)
+      expect(verdict(decide(caller, "pr", "merge", "34", "--auto", "--squash"))).toBe(DENY)
+      expect(verdict(decide(caller, "pr", "merge", "agent/x"))).toBe(DENY)
+      expect(verdict(decide(caller, "api", "repos/acme/widgets/pulls/34/merge", "-X", "PUT"))).toBe(
+        DENY,
+      )
+      // Another repository is refused, in any spelling of --repo.
+      for (const repo of [["--repo", "evil/other"], ["--repo=evil/other"], ["-R", "evil/other"]]) {
+        expect(verdict(decide(caller, ...OPEN, ...repo))).toBe(DENY)
+        expect(reasonOf(decide(caller, ...OPEN, ...repo))).toMatch(/only works on/)
+      }
+      // Another branch, a fork's, or a request for people is ship, and ship is denied.
+      for (const head of ["feature/x", "owner:agent/x", "main", "Agent/x", "agent-x"]) {
+        expect(
+          verdict(decide(caller, "pr", "create", "--head", head, "--title", "T", "--body", "B")),
+        ).toBe(DENY)
+      }
+      for (const people of [
+        ["--reviewer", "octocat"],
+        ["--assignee", "octocat"],
+      ]) {
+        expect(verdict(decide(caller, ...OPEN, ...people))).toBe(DENY)
+      }
+      // The ship gate still says why, and still says a person decides.
+      expect(reasonOf(decide(caller, "pr", "ready", "34"))).toMatch(/person/)
+      expect(reasonOf(decide(caller, "pr", "ready", "34"))).toMatch(
+        /may open a pull request ready for review/,
+      )
+    }
+  })
+
+  test("openPrDecision on its own: only the unattended principal runs, a summary run is denied, everyone else is held to the ship gate", () => {
+    for (const caller of CALLER_CLASSES) {
+      expect([caller, verdict(openPrDecision(CALLERS[caller]))]).toEqual([
+        caller,
+        { autonomous: RUN, ticket: RUN, summary: DENY }[caller as string] ?? ASK,
+      ])
+    }
+    expect(verdict(openPrDecision(null))).toBe(ASK)
+  })
+
+  test("a list is held to its strictest command: opening a pull request cannot carry a ready or a merge with it", () => {
+    const OPEN = "gh pr create --head agent/x --title T --body B"
+    expect(verdict(decideCommand("orchestrator", "autonomous", OPEN))).toBe(RUN)
+    for (const caller of ["autonomous", "ticket"] as const) {
+      for (const tail of [
+        "gh pr ready 34",
+        "gh pr merge 34",
+        "gh pr create --head main --title T --body B",
+        "gh pr create --head owner:agent/x --title T --body B",
+      ]) {
+        expect(verdict(decideCommand("orchestrator", caller, `${OPEN} && ${tail}`))).toBe(DENY)
+        expect(verdict(decideCommand("orchestrator", caller, `${tail} && ${OPEN}`))).toBe(DENY)
+      }
+    }
+  })
+
+  test("a station never opens a pull request, whoever asked and whatever the head", () => {
+    for (const role of STATIONS) {
+      for (const caller of CALLER_CLASSES) {
+        expect(
+          verdict(decideCommand(role, caller, "gh pr create --head agent/x --title T --body B")),
+        ).toBe(DENY)
+      }
+    }
+  })
+
+  test("the caller taking the turn decides, not the one who started the session", () => {
+    const OPEN = { command: "gh pr create --head agent/x --title T --body B" }
+    for (const [startedBy, turnOf, expected] of [
+      ["untrusted", "autonomous", RUN],
+      ["trusted", "autonomous", RUN],
+      ["autonomous", "trusted", ASK],
+      ["autonomous", "untrusted", ASK],
+      ["trusted", "summary", DENY],
+    ] as const) {
+      expect([
+        startedBy,
+        turnOf,
+        verdict(bashPolicy("orchestrator")(continuedSession(startedBy, turnOf, OPEN))),
+      ]).toEqual([startedBy, turnOf, expected])
+    }
+  })
+
+  test("a forged trusted attribute on the unattended principal cannot mark ready or merge, and opens only from a factory branch", () => {
+    const forged = {
+      ...CALLERS.autonomous,
+      attributes: { ...CALLERS.autonomous.attributes, trusted: "true" },
+    }
+    const policy = bashPolicy("orchestrator")
+    const ask = (command: string) => verdict(policy(approvalContext(forged, { command })))
+    expect(ask("gh pr create --head agent/x --title T --body B")).toBe(RUN)
+    expect(ask("gh pr create --head feature/x --title T --body B")).toBe(DENY)
+    expect(ask("gh pr ready 34")).toBe(DENY)
+    expect(ask("gh pr merge 34")).toBe(DENY)
   })
 
   test("a denial says why, and names the thread an unattended run may use", () => {
@@ -552,6 +827,21 @@ const EFFECTS: {
         ticket: RUN,
         trusted: RUN,
         untrusted: RUN,
+      },
+    ],
+  ],
+  "open-pr": [
+    [
+      "a pull request ready for review, from a factory branch",
+      { kind: "open-pr" },
+      {
+        anonymous: ASK,
+        autonomous: RUN,
+        schedule: ASK,
+        summary: DENY,
+        ticket: RUN,
+        trusted: ASK,
+        untrusted: ASK,
       },
     ],
   ],
@@ -1436,7 +1726,17 @@ describe("the matrix covers every effect the parser can produce", () => {
       seen.add(parsed.ok ? parsed.invocation.effect.kind : "forbidden")
     }
     expect([...seen].sort()).toEqual(
-      ["comment", "draft-pr", "forbidden", "label", "read", "ship", "state", "write"].sort(),
+      [
+        "comment",
+        "draft-pr",
+        "forbidden",
+        "label",
+        "open-pr",
+        "read",
+        "ship",
+        "state",
+        "write",
+      ].sort(),
     )
     // The same kinds the effect table is typed to hold, so a new kind
     // needs a matrix row as well as a row there.

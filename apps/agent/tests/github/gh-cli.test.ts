@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import {
   bodiesToFiles,
   GH_COMMAND_FLAG_KINDS,
@@ -155,10 +155,292 @@ describe("parseGh: writes are classified by what they can do", () => {
     ).toEqual({ kind: "draft-pr" })
   })
 
-  test("a pull request that is not a draft is the ship effect", () => {
+  test("a non-draft pull request from a factory branch is the open-pr effect", () => {
     expect(effectOf("pr", "create", "--head", "agent/x", "--title", "T", "--body", "B")).toEqual({
+      kind: "open-pr",
+    })
+    expect(
+      effectOf(
+        "pr",
+        "create",
+        "--head",
+        "agent/bug-fix-login",
+        "--base",
+        "main",
+        "--title",
+        "Fix login",
+        "--body",
+        "Closes #12",
+      ),
+    ).toEqual({ kind: "open-pr" })
+  })
+
+  test.each<[string, string[]]>([
+    ["--head agent/x", ["--head", "agent/x"]],
+    ["--head=agent/x", ["--head=agent/x"]],
+    ["-H agent/x", ["-H", "agent/x"]],
+    ["a nested factory branch", ["--head", "agent/feat/login-fix"]],
+  ])("the open-pr effect reads the head from %s", (_spelling, head) => {
+    expect(effectOf("pr", "create", ...head, "--title", "T", "--body", "B")).toEqual({
+      kind: "open-pr",
+    })
+    // The flags in another order are the same command.
+    expect(effectOf("pr", "create", "--body", "B", "--title", "T", ...head)).toEqual({
+      kind: "open-pr",
+    })
+  })
+
+  // The head decides it, and only a factory branch qualifies: a branch that
+  // merely contains or resembles the prefix, an owner:branch head from a
+  // fork, another case, the default branch and anything with a character a
+  // shell would read are still the ship effect.
+  test.each([
+    ["a branch that is not the factory's", "feature/x"],
+    ["the default branch", "main"],
+    ["master", "master"],
+    ["a fork's owner:branch head", "owner:agent/x"],
+    ["a fork owner whose name is the prefix", "agent:agent/x"],
+    ["a branch that only contains the prefix", "x/agent/x"],
+    ["a branch that ends in the prefix", "feature-agent/x"],
+    ["a branch with the prefix's name but no slash", "agent-x"],
+    ["the prefix alone", "agent/"],
+    ["a parent segment", "agent/.."],
+    ["a parent segment in the middle", "agent/../main"],
+    ["a parent segment after a name", "agent/x/../../main"],
+    ["a double slash", "agent//x"],
+    ["a trailing slash", "agent/x/"],
+    ["another case", "Agent/x"],
+    ["upper case", "AGENT/x"],
+    ["a ref path", "refs/heads/agent/x"],
+    ["a space", "agent/x y"],
+    ["a leading space", " agent/x"],
+    ["a trailing space", "agent/x "],
+    ["a newline", "agent/x\nmain"],
+    ["a double quote", 'agent/x"y'],
+    ["a single quote", "agent/x'y"],
+    ["a semicolon", "agent/x;main"],
+    ["a command substitution", "agent/$(id)"],
+    ["a backtick", "agent/`id`"],
+    ["a pipe", "agent/x|y"],
+    ["an ampersand", "agent/x&y"],
+    ["a backslash", "agent\\x"],
+    ["an empty head", ""],
+    ["a head that is a flag", "--title"],
+  ])("a non-draft pull request from %s (%j) is still ship", (_what, head) => {
+    expect(effectOf("pr", "create", "--head", head, "--title", "T", "--body", "B")).toEqual({
       kind: "ship",
     })
+  })
+
+  test.each([
+    ["--head=feature/x", ["--head=feature/x"]],
+    ["--head=owner:agent/x", ["--head=owner:agent/x"]],
+    ["--head=Agent/x", ["--head=Agent/x"]],
+    ["-H feature/x", ["-H", "feature/x"]],
+    ["-H owner:agent/x", ["-H", "owner:agent/x"]],
+  ])("the other spellings of the head are held to the same rule: %s is ship", (_s, head) => {
+    expect(effectOf("pr", "create", ...head, "--title", "T", "--body", "B")).toEqual({
+      kind: "ship",
+    })
+  })
+
+  test("a second --head, in any spelling, is refused, so the one that is read is the one that runs", () => {
+    for (const heads of [
+      ["--head", "agent/x", "--head", "main"],
+      ["--head", "main", "--head", "agent/x"],
+      ["--head=agent/x", "--head=main"],
+      ["-H", "agent/x", "--head", "main"],
+      ["--head", "agent/x", "-H", "agent/y"],
+    ]) {
+      expect(refusalOf("pr", "create", ...heads, "--title", "T", "--body", "B")).toMatch(
+        /pass --head once/,
+      )
+    }
+  })
+
+  test("a head glued to its short flag, or a cluster, is refused rather than guessed at", () => {
+    for (const head of ["-Hagent/x", "-dHagent/x"]) {
+      expect(refusalOf("pr", "create", head, "--title", "T", "--body", "B")).toMatch(
+        /does not accept/,
+      )
+    }
+  })
+
+  test("a boolean --draft with a value is refused, so a draft-looking command cannot run as a ready one", () => {
+    expect(
+      refusalOf(
+        "pr",
+        "create",
+        "--draft=false",
+        "--head",
+        "agent/x",
+        "--title",
+        "T",
+        "--body",
+        "B",
+      ),
+    ).toMatch(/does not accept/)
+  })
+
+  test("a non-draft that requests reviewers or assignees is not open-pr: it stays ship, so no cell moves", () => {
+    for (const people of [
+      ["--reviewer", "octocat"],
+      ["-r", "octocat"],
+      ["--assignee", "octocat"],
+      ["-a", "octocat"],
+      ["--reviewer=octocat"],
+    ]) {
+      expect(
+        effectOf("pr", "create", "--head", "agent/x", "--title", "T", "--body", "B", ...people),
+      ).toEqual({ kind: "ship" })
+      expect(
+        effectOf("pr", "create", "--head", "feature/x", "--title", "T", "--body", "B", ...people),
+      ).toEqual({ kind: "ship" })
+    }
+  })
+
+  test("a draft is the draft rule whatever its head: a factory head does not make it open-pr", () => {
+    expect(
+      effectOf("pr", "create", "--draft", "--head", "feature/x", "--title", "T", "--body", "B"),
+    ).toEqual({ kind: "draft-pr" })
+    expect(
+      effectOf("pr", "create", "-d", "--head", "agent/x", "--title", "T", "--body", "B"),
+    ).toEqual({ kind: "draft-pr" })
+  })
+
+  test("gh pr merge, gh pr merge --auto and gh pr ready are not open-pr (forbidden, forbidden, ship)", () => {
+    expect(parseGh(["pr", "merge", "34"]).ok).toBe(false)
+    expect(parseGh(["pr", "merge", "34", "--auto", "--squash"]).ok).toBe(false)
+    expect(parseGh(["pr", "merge", "--head", "agent/x"]).ok).toBe(false)
+    expect(effectOf("pr", "ready", "34")).toEqual({ kind: "ship" })
+    expect(effectOf("pr", "ready", "agent/x")).toEqual({ kind: "ship" })
+  })
+
+  test("a merge through gh api is refused for any method, path, field, input file and GraphQL", () => {
+    for (const args of [
+      ["api", "repos/acme/widgets/pulls/34/merge", "-X", "PUT"],
+      ["api", "repos/acme/widgets/pulls/34/merge", "--method", "PUT"],
+      ["api", "repos/acme/widgets/pulls/34", "-X", "PATCH"],
+      ["api", "repos/acme/widgets/pulls", "-X", "POST"],
+      // A field makes gh send a body (and turns a GET into a POST): there is no field flag at all.
+      ["api", "repos/acme/widgets/pulls/34/merge", "-f", "merge_method=squash"],
+      ["api", "repos/acme/widgets/pulls/34/merge", "-F", "merge_method=squash"],
+      ["api", "repos/acme/widgets/pulls/34/merge", "--field", "merge_method=squash"],
+      ["api", "repos/acme/widgets/pulls/34/merge", "--raw-field", "merge_method=squash"],
+      ["api", "repos/acme/widgets/pulls/34/merge", "--input", "body.json"],
+      [
+        "api",
+        "graphql",
+        "-f",
+        "query=mutation { mergePullRequest(input: {}) { clientMutationId } }",
+      ],
+      ["api", "graphql", "-F", "query=@merge.graphql"],
+      ["api", "graphql"],
+    ]) {
+      expect([args, parseGh(args).ok]).toEqual([args, false])
+    }
+  })
+
+  test("a pull request for another repository is refused, in every spelling of --repo, for the one command that runs for an unattended run", () => {
+    const create = ["pr", "create", "--head", "agent/x", "--title", "T", "--body", "B"]
+    for (const repo of [
+      ["--repo", "evil/other"],
+      ["--repo=evil/other"],
+      ["-R", "evil/other"],
+      ["--repo", "evil/other/extra"],
+    ]) {
+      expect(refusalOf(...create, ...repo)).toMatch(/only works on/)
+      // A leading flag, before the command path, is held to the same rule.
+      expect(refusalOf(...repo, ...create)).toMatch(/only works on/)
+    }
+    // The factory's own repository is accepted, stripped, and changes nothing about the effect.
+    for (const repo of [
+      ["--repo", "acme/widgets"],
+      ["-R", "ACME/Widgets"],
+    ]) {
+      expect(effectOf(...create, ...repo)).toEqual({ kind: "open-pr" })
+    }
+  })
+
+  test("with no factory branch prefix, nothing is a factory branch (the check fails closed)", async () => {
+    vi.stubEnv("FACTORY_BRANCH_PREFIX", "")
+    vi.resetModules()
+    try {
+      const fresh = await import("#lib/github/cli.js")
+      for (const head of ["x", "feature/x", "agent/x", "main"]) {
+        const result = fresh.parseGh([
+          "pr",
+          "create",
+          "--head",
+          head,
+          "--title",
+          "T",
+          "--body",
+          "B",
+        ])
+        expect(result.ok && result.invocation.effect).toEqual({ kind: "ship" })
+      }
+    } finally {
+      vi.unstubAllEnvs()
+      vi.resetModules()
+    }
+  })
+
+  test("a custom factory branch prefix moves the check with it", async () => {
+    vi.stubEnv("FACTORY_BRANCH_PREFIX", "bot/")
+    vi.resetModules()
+    try {
+      const fresh = await import("#lib/github/cli.js")
+      const effect = (head: string) => {
+        const result = fresh.parseGh([
+          "pr",
+          "create",
+          "--head",
+          head,
+          "--title",
+          "T",
+          "--body",
+          "B",
+        ])
+        return result.ok && result.invocation.effect
+      }
+      expect(effect("bot/x")).toEqual({ kind: "open-pr" })
+      expect(effect("agent/x")).toEqual({ kind: "ship" })
+    } finally {
+      vi.unstubAllEnvs()
+      vi.resetModules()
+    }
+  })
+
+  // A prefix that does not end in a separator: the branch named exactly the prefix is a valid
+  // branch name, so the length check is what keeps it from being a factory branch.
+  test("with a prefix that ends in a letter, the branch that is exactly the prefix is not a factory branch", async () => {
+    vi.stubEnv("FACTORY_BRANCH_PREFIX", "bot")
+    vi.resetModules()
+    try {
+      const fresh = await import("#lib/github/cli.js")
+      const effect = (head: string) => {
+        const result = fresh.parseGh([
+          "pr",
+          "create",
+          "--head",
+          head,
+          "--title",
+          "T",
+          "--body",
+          "B",
+        ])
+        return result.ok && result.invocation.effect
+      }
+      expect(effect("bot")).toEqual({ kind: "ship" })
+      expect(effect("bot-x")).toEqual({ kind: "open-pr" })
+      expect(effect("bot/x")).toEqual({ kind: "open-pr" })
+      expect(effect("Bot")).toEqual({ kind: "ship" })
+      expect(effect("agent/x")).toEqual({ kind: "ship" })
+    } finally {
+      vi.unstubAllEnvs()
+      vi.resetModules()
+    }
   })
 
   test("a draft that requests reviewers or assignees is a write, since it notifies people", () => {

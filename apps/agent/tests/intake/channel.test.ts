@@ -624,7 +624,7 @@ describe("POST /intake/v1/tickets: dispatch", () => {
     expect(options.context?.length).toBeGreaterThan(0)
     expect(context).toMatch(/unattended/)
     expect(context).toMatch(/untrusted input/)
-    expect(context).toMatch(/draft pull request/)
+    expect(context).toMatch(/pull request ready for review/)
     expect(context).not.toContain(TICKET.title)
     expect(context).not.toContain(TICKET.body)
     expect(message).not.toMatch(/unattended/)

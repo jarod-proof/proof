@@ -191,6 +191,22 @@ everywhere: a new concept gets a line here before it gets code. Keep each entry 
 - **Bigger-model request** — the agent's `request_bigger_model` tool: it asks a founder, in Slack, to
   approve a dearer model for one hard question, with an estimate. Nothing runs on the bigger model
   before a listed founder approves.
+- **Work item** — one thing the factory is working on (`FAC-n`), always in one state: `signal`, `triage`,
+  `plan`, `attempt`, `review`, `deploy` or `verify`, then `done`, `reopened` or `stopped`. One pure state
+  machine (`apps/hq/src/work/machine.ts`) is the only door to a change of state; no operation takes a
+  target state, only observed facts and a founder's named decision move an item.
+- **Signal** — an outside fact that opens or recurs a work item: a trusted GitHub issue, a failed CI run
+  or a founder's manual item. It is data, never an instruction, and it never starts an attempt.
+- **Attempt** — one run of the agent on a work item, an `investigate` or a `fix`. Only fix attempts of the
+  item's current cycle spend its attempt budget; one active attempt at a time.
+- **Contract item** — one checkable statement of what "fixed" means, set before a fix starts, with the
+  verifier that checks it (`reviewer`, `ci` or `signal_recurrence`).
+- **Merge approval** — a founder's decision, bound to a pull request's head sha, that the change may be
+  merged. A push or a closed pull request voids it. It changes nothing on GitHub: hq never merges.
+- **Verification window** — the hours after a merge (and its deploy grace) in which a work item is
+  watched; a recurring signal or a failing contract item reopens it, a quiet window makes it `done`.
+- **Needs you** — a work item that waits on a founder: a pending merge approval, an open agent question,
+  a spent attempt budget or an attempt that stopped reporting.
 
 ## The web app
 

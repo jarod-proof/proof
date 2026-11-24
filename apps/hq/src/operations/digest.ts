@@ -6,6 +6,7 @@ import { unitsToUsd } from "../data/money"
 import { previousDay } from "../data/spend"
 import { SPEND_SOURCES } from "../db/schema"
 import { defineOperation, entryKind, type HqDeps, isoDate } from "./shared"
+import { digestPipeline } from "./work-schemas"
 
 const HOUR_MS = 3_600_000
 /** The longest window the digest reads. */
@@ -36,7 +37,9 @@ export function digestOperations(deps: HqDeps) {
       "yesterday (UTC), as the nightly digest counts it. A since older than 7 days is moved up " +
       "to 7 days before now; a since in the future is BAD_REQUEST. The window is [since, until), " +
       "and until is hq's clock. Box runs are never counted as finished, failed or stuck: they do " +
-      "not report an end. Product health and deploys are not connected.",
+      "not report an end. Product health and deploys are not connected. pipeline counts the work " +
+      "items' own history in the window (opened, resolved when the verification window passed, " +
+      "reopened) and lists what waits for a founder now; it is null before hq's work tables exist.",
     permissions: { hq_run: ["read"], hq_proposal: ["read"], hq_spend: ["read"] },
     input: z.object({
       since: z
@@ -50,7 +53,9 @@ export function digestOperations(deps: HqDeps) {
       until: isoDate,
       hours: z.number().int().describe("The window's length, rounded to whole hours"),
       summary: z.object({
-        tone: z.enum(["quiet", "attention"]).describe("attention when a run failed or is stuck"),
+        tone: z
+          .enum(["quiet", "attention"])
+          .describe("attention when a run failed or is stuck, or an attempt is stuck"),
         runsFinished: z.number().int().describe("Eve and sandbox runs that ended in the window"),
         runsFailed: z.number().int(),
         pendingProposals: z.number().int().describe("Every pending proposal, whenever proposed"),
@@ -89,6 +94,13 @@ export function digestOperations(deps: HqDeps) {
       }),
       productHealth: z.object({ connected: z.literal(false) }),
       deploys: z.object({ connected: z.literal(false) }),
+      pipeline: digestPipeline
+        .nullable()
+        .describe(
+          "The work pipeline over the same window: items opened, resolved and reopened, stuck " +
+            "attempts, what waits for a founder now, merged pull requests and the pipeline's " +
+            "events. Null when hq's work tables do not exist yet.",
+        ),
     }),
     hints: { readOnly: true, idempotent: true },
     examples: [{ input: {} }],
@@ -102,14 +114,16 @@ export function digestOperations(deps: HqDeps) {
       }
       const since = new Date(Math.max(requested.getTime(), until.getTime() - MAX_WINDOW_MS))
       const digest = await readDigest(db, { since, until })
-      const { summary, health } = digest
+      const { summary, health, pipeline } = digest
       return {
         since: since.toISOString(),
         until: until.toISOString(),
         hours: Math.round((until.getTime() - since.getTime()) / HOUR_MS),
         summary: {
           tone:
-            summary.runsFailed === 0 && health.stuckRuns === 0
+            summary.runsFailed === 0 &&
+            health.stuckRuns === 0 &&
+            (pipeline?.stuckAttempts ?? 0) === 0
               ? ("quiet" as const)
               : ("attention" as const),
           ...summary,
@@ -137,6 +151,12 @@ export function digestOperations(deps: HqDeps) {
         },
         productHealth: { connected: false as const },
         deploys: { connected: false as const },
+        pipeline: pipeline && {
+          ...pipeline,
+          needsYou: pipeline.needsYou.map((n) => ({ ...n, since: n.since.toISOString() })),
+          merged: pipeline.merged.map((m) => ({ ...m, at: m.at.toISOString() })),
+          events: pipeline.events.map((e) => ({ ...e, at: e.at.toISOString() })),
+        },
       }
     },
   })

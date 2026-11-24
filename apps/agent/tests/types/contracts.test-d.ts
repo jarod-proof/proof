@@ -50,15 +50,23 @@ type Accepted = Extract<Parsed, { ok: true }>
 type Refused = Extract<Parsed, { ok: false }>
 
 describe("gh allowlist contracts", () => {
-  test("GhEffect has exactly eight kinds", () => {
+  test("GhEffect has exactly nine kinds", () => {
     expectTypeOf<GhEffect["kind"]>().toEqualTypeOf<
-      "read" | "label" | "comment" | "state" | "draft-pr" | "write" | "ship" | "forbidden"
+      | "read"
+      | "label"
+      | "comment"
+      | "state"
+      | "draft-pr"
+      | "open-pr"
+      | "write"
+      | "ship"
+      | "forbidden"
     >()
   })
 
   test("a validated invocation can never carry the forbidden effect", () => {
     expectTypeOf<GhInvocation["effect"]["kind"]>().toEqualTypeOf<
-      "read" | "label" | "comment" | "state" | "draft-pr" | "write" | "ship"
+      "read" | "label" | "comment" | "state" | "draft-pr" | "open-pr" | "write" | "ship"
     >()
     expectTypeOf<GhInvocation["effect"]>().toEqualTypeOf<Exclude<GhEffect, { kind: "forbidden" }>>()
     expectTypeOf<Extract<GhInvocation["effect"], { kind: "forbidden" }>>().toBeNever()

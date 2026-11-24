@@ -1,9 +1,19 @@
+import { sql } from "drizzle-orm"
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 
 import { createHqHarness, type TestPerson } from "../app.test.helpers"
-import { type Runner, type RunOutcome, proposals, runs, spend } from "../db/schema"
+import { resetWork, seedItem, seedPullRequest } from "../data/work.test.helpers"
+import {
+  agentQuestions,
+  mergeApprovals,
+  type Runner,
+  type RunOutcome,
+  proposals,
+  runs,
+  spend,
+} from "../db/schema"
 
 const BASE = "http://localhost:3100"
 const NOW = new Date("2026-11-17T12:00:00Z")
@@ -16,6 +26,12 @@ interface StatusJson {
   pendingProposals: number
   runners: { runner: string; lastStartedAt: string | null; lastOutcome: string | null }[]
   allowance: Record<string, unknown>
+  work: {
+    inFlight: number
+    needsYou: number
+    pendingMergeApprovals: number
+    openQuestions: number
+  } | null
 }
 
 // get_factory_status over the real app on PGlite, with the clock fixed at 2026-11-17T12:00:00Z.
@@ -126,7 +142,13 @@ describe("get_factory_status (PGlite)", () => {
     await addRun({ runner: "eve", startedAt: at(-HOUR) })
     await addRun({ runner: "box", startedAt: at(-HOUR) })
     const body = await ok()
-    expect(Object.keys(body).sort()).toEqual(["allowance", "now", "pendingProposals", "runners"])
+    expect(Object.keys(body).sort()).toEqual([
+      "allowance",
+      "now",
+      "pendingProposals",
+      "runners",
+      "work",
+    ])
     for (const r of body.runners) {
       expect(Object.keys(r).sort()).toEqual(["lastOutcome", "lastStartedAt", "runner"])
     }
@@ -172,6 +194,96 @@ describe("get_factory_status (PGlite)", () => {
     })
   })
 
+  it("get_factory_status.work counts in-flight, needsYou, pendingMergeApprovals and openQuestions and still has every Phase 3 field", async () => {
+    await resetWork(hq.db)
+    expect((await ok()).work).toEqual({
+      inFlight: 0,
+      needsYou: 0,
+      pendingMergeApprovals: 0,
+      openQuestions: 0,
+    })
+    const sha = "a".repeat(40)
+    // A: in review with a pending merge approval AND an open question (one card, two needs)
+    const a = await seedItem(hq.db, { state: "review", title: "A" })
+    const pr = await seedPullRequest(hq.db, a.id, { state: "open" })
+    await hq.db.insert(mergeApprovals).values({
+      id: crypto.randomUUID(),
+      itemId: a.id,
+      pullRequestId: pr.id,
+      headSha: sha,
+      status: "pending",
+      requestedAt: NOW,
+    })
+    const question = (itemId: string, status: "open" | "withdrawn" = "open") =>
+      hq.db.insert(agentQuestions).values({
+        id: crypto.randomUUID(),
+        itemId,
+        prompt: "Which?",
+        options: [
+          { id: "a", label: "A" },
+          { id: "b", label: "B" },
+        ],
+        status,
+        createdAt: NOW,
+      })
+    await question(a.id)
+    // B: in plan with an open question
+    const b = await seedItem(hq.db, { state: "plan", title: "B" })
+    await question(b.id)
+    // C: nothing waits; D: done; E: stopped with a question that is not open any more
+    await seedItem(hq.db, { state: "triage", title: "C" })
+    await seedItem(hq.db, { state: "done", title: "D" })
+    const e = await seedItem(hq.db, { state: "stopped", title: "E" })
+    await question(e.id, "withdrawn")
+
+    const body = await ok()
+    expect(body.work).toEqual({
+      inFlight: 3,
+      needsYou: 2,
+      pendingMergeApprovals: 1,
+      openQuestions: 2,
+    })
+    // every Phase 3 field is still there
+    expect(Object.keys(body).sort()).toEqual([
+      "allowance",
+      "now",
+      "pendingProposals",
+      "runners",
+      "work",
+    ])
+    expect(body.runners.map((r) => r.runner)).toEqual(["eve", "sandbox", "box"])
+    expect(Object.keys(body.allowance).sort()).toEqual([
+      "capUsd",
+      "day",
+      "grantedUsd",
+      "remainingUsd",
+      "reservedUsd",
+      "spentUsd",
+    ])
+    // the badge's number is the board's own: one source
+    const board = await hq.call(founder, "GET", "/v1/work/board")
+    expect((board.body as unknown as { stats: { needsYou: number } }).stats.needsYou).toBe(
+      body.work?.needsYou,
+    )
+    await resetWork(hq.db)
+  })
+
+  it("a pending approval on a pull request that is no longer open or no longer the item's current one is not counted", async () => {
+    await resetWork(hq.db)
+    const item = await seedItem(hq.db, { state: "review" })
+    const pr = await seedPullRequest(hq.db, item.id, { state: "closed" })
+    await hq.db.insert(mergeApprovals).values({
+      id: crypto.randomUUID(),
+      itemId: item.id,
+      pullRequestId: pr.id,
+      headSha: "a".repeat(40),
+      status: "pending",
+      requestedAt: NOW,
+    })
+    expect((await ok()).work?.pendingMergeApprovals).toBe(0)
+    await resetWork(hq.db)
+  })
+
   it("a key with hq_run:read and hq_proposal:read but not hq_spend:read gets 403", async () => {
     const all = { hq_run: ["read"], hq_proposal: ["read"], hq_spend: ["read"] }
     for (const missing of Object.keys(all)) {
@@ -210,5 +322,56 @@ describe("get_factory_status (PGlite)", () => {
     const { tools } = await client.listTools()
     expect(tools.map((t) => t.name)).toContain("get_factory_status")
     await client.close()
+  })
+})
+
+// An hq deployed before step 05 has no work tables: the older screens must keep working.
+describe("get_factory_status without the work tables (PGlite)", () => {
+  it("with the work tables dropped, get_factory_status answers 200 with work null and every Phase 3 field intact", async () => {
+    const hq = await createHqHarness({ founderEmails: ["founder@example.com"], now: () => NOW })
+    try {
+      const founder = await hq.signUp("founder@example.com")
+      const before = await hq.app.request(`${BASE}/v1/factory/status`, {
+        headers: { origin: BASE, cookie: founder.cookie },
+      })
+      const withTables = (await before.json()) as StatusJson
+      expect(withTables.work).toEqual({
+        inFlight: 0,
+        needsYou: 0,
+        pendingMergeApprovals: 0,
+        openQuestions: 0,
+      })
+      for (const table of [
+        "work_item_events",
+        "verification_windows",
+        "merge_approvals",
+        "agent_questions",
+        "contract_items",
+        "pull_requests",
+        "attempts",
+        "signals",
+        "work_items",
+      ]) {
+        await hq.db.execute(sql.raw(`drop table "hq"."${table}" cascade`))
+      }
+      const res = await hq.app.request(`${BASE}/v1/factory/status`, {
+        headers: { origin: BASE, cookie: founder.cookie },
+      })
+      expect(res.status).toBe(200)
+      const body = (await res.json()) as StatusJson
+      expect(body.work).toBeNull()
+      const { work: _gone, ...rest } = body
+      const { work: _was, ...restBefore } = withTables
+      expect(rest).toEqual(restBefore)
+      expect(Object.keys(body).sort()).toEqual([
+        "allowance",
+        "now",
+        "pendingProposals",
+        "runners",
+        "work",
+      ])
+    } finally {
+      await hq.close()
+    }
   })
 })

@@ -3,10 +3,13 @@ import { useRef, useState } from "react"
 
 import { HqError } from "../api/errors"
 import { hqKeys } from "../api/query-keys"
-import type { Proposal } from "../api/schemas"
+import type { NeedsYou, Proposal, WorkBoard } from "../api/schemas"
 import { ProposalCard } from "../components/proposal-card"
 import { errorMessage } from "../components/states"
+import { needKey, type NeedsYouActions } from "../components/needs-you-card"
+import { WorkNeedsSection } from "../components/work-needs-section"
 import { useHq } from "../lib/use-hq"
+import { useOneWrite } from "../lib/use-one-write"
 import { ApprovalsPage, type Load, type Notice } from "../pages/approvals-page"
 
 const PENDING_PAGE_SIZE = 25
@@ -99,23 +102,81 @@ function DecidableCard({
   )
 }
 
+function failure(query: {
+  error: unknown
+  refetch(): unknown
+}): Extract<Load<never>, { status: "error" }> {
+  const error =
+    query.error instanceof HqError
+      ? query.error
+      : new HqError({ kind: "server", status: 0, message: "unexpected" })
+  return { status: "error", error, onRetry: () => void query.refetch() }
+}
+
 function toLoad<T>(
   query: { isPending: boolean; isError: boolean; error: unknown; refetch(): unknown },
   items: () => T,
 ): Load<T> {
-  if (query.isError) {
-    const error =
-      query.error instanceof HqError
-        ? query.error
-        : new HqError({ kind: "server", status: 0, message: "unexpected" })
-    return { status: "error", error, onRetry: () => void query.refetch() }
-  }
+  if (query.isError) return failure(query)
   return query.isPending ? { status: "loading" } : { status: "ready", items: items() }
 }
 
-/** The Approvals screen: the pending proposals, and the last decided ones. */
+/**
+ * The pipeline's needs-you cards and their writes. Every write is sent from a click only, once,
+ * never retried and one at a time for the whole section (`useOneWrite`: a synchronous lock, held
+ * until the board has been read again). hq decides each one; a 409 and a 403 keep hq's words.
+ * Proposals decide on their own cards, as in Phase 3; the two do not share a lock.
+ */
+function usePipeline() {
+  const { client, queryClient } = useHq()
+  const { pending, errors, notice, write } = useOneWrite({ queryClient })
+  const board = useQuery({
+    queryKey: hqKeys.workBoard(),
+    queryFn: () => client.getWorkBoard(),
+  })
+  const needs: NeedsYou[] = board.data?.needsYou ?? []
+  const actions: NeedsYouActions = {
+    pending,
+    errors,
+    onApproveMerge: (need) => {
+      const merge = need.merge
+      if (!merge) return
+      void write(needKey(need), async () => {
+        const reply = await client.approveMerge({ itemId: need.itemId, headSha: merge.headSha })
+        return `Merge approved for ${need.displayId} at ${reply.headSha.slice(0, 7)}. Nothing was merged: merge it on GitHub.`
+      })
+    },
+    onAnswer: (questionId, optionId) => {
+      const need = needs.find((n) => n.question?.questionId === questionId)
+      if (!need) return
+      void write(needKey(need), async () => {
+        await client.answerQuestion({ questionId, optionId })
+        return `Answer sent for ${need.displayId}.`
+      })
+    },
+    onRetry: (itemId, note) => {
+      const need = needs.find((n) => n.itemId === itemId && n.kind === "attempt_budget")
+      if (!need) return
+      void write(needKey(need), async () => {
+        await client.retryWorkItem({ itemId, note })
+        return `One more fix attempt allowed for ${need.displayId}. None was started.`
+      })
+    },
+  }
+  // A refetch that failed keeps the last good board on screen; only a first failure is an error.
+  const load: Load<WorkBoard> =
+    board.data !== undefined
+      ? { status: "ready", items: board.data }
+      : board.isError
+        ? failure(board)
+        : { status: "loading" }
+  return { load, actions, notice }
+}
+
+/** The Approvals screen: the pending proposals, the pipeline's needs, and the last decided ones. */
 export function Approvals() {
   const { client } = useHq()
+  const pipeline = usePipeline()
   const [notices, setNotices] = useState<Record<string, Notice>>({})
   const dropNotice = (id: string) =>
     setNotices((current) => {
@@ -176,6 +237,13 @@ export function Approvals() {
       hasMore={pending.hasNextPage}
       loadingMore={pending.isFetchingNextPage}
       onLoadMore={() => void pending.fetchNextPage()}
+      extraSections={
+        <WorkNeedsSection
+          load={pipeline.load}
+          actions={pipeline.actions}
+          notice={pipeline.notice}
+        />
+      }
     />
   )
 }

@@ -37,6 +37,7 @@ describe("the orchestrator's tools", () => {
   test("are exactly the routing and triage surface, a shell for git and gh, and the bigger-model request", () => {
     expect(discovery.tools).toEqual(
       [
+        "ask_founder",
         "bash",
         "diagnose_ci_failure",
         "glob",

@@ -38,6 +38,11 @@ export interface ApprovalsPageProps {
   hasMore: boolean
   loadingMore: boolean
   onLoadMore(): void
+  /**
+   * More sections, shown after Needs you and before Recently decided (the pipeline's, Phase 4).
+   * Optional and additive: without it the page is the Phase 3 page.
+   */
+  extraSections?: ReactNode
 }
 
 /** `2026-11-17 12:30 UTC`: a fixed zone, so the screen reads the same everywhere. */
@@ -93,6 +98,7 @@ export function ApprovalsPage({
   hasMore,
   loadingMore,
   onLoadMore,
+  extraSections,
 }: ApprovalsPageProps) {
   // A notice whose proposal has a card or a decided row is shown there; any other would vanish
   // with its card, so it is shown here until dismissed.
@@ -173,6 +179,8 @@ export function ApprovalsPage({
           </Button>
         ) : null}
       </section>
+
+      {extraSections}
 
       <section aria-labelledby="recently-decided" className="flex min-w-0 flex-col gap-3">
         <h2 id="recently-decided" className="m-0 text-base font-semibold text-foreground">
