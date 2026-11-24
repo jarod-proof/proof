@@ -1,2 +1,3 @@
 # The Build Output API tree scripts/build-vercel.mjs writes.
 /.vercel/
+/web/dist/

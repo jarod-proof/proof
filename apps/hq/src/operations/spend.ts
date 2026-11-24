@@ -8,6 +8,7 @@ import {
 } from "../data/grant-requests"
 import { DAILY_CAP, toPositiveUnits, toUnits, unitsToUsd } from "../data/money"
 import {
+  type Allowance,
   grantSpend,
   previousDay,
   readAllowance,
@@ -23,6 +24,25 @@ import { authorOf, defineOperation, type HqDeps, requireFounder } from "./shared
 const usd = z.number().min(0).max(1000)
 const model = z.string().trim().min(1).max(200)
 const runId = z.string().max(200).optional().describe("The run this belongs to (from record_run)")
+
+/** The allowance as get_spend_allowance and get_factory_status report it, in dollars. */
+export const allowanceOutput = z.object({
+  day: z.string().describe("The UTC day, YYYY-MM-DD"),
+  spentUsd: z.number(),
+  reservedUsd: z.number(),
+  capUsd: z.number(),
+  grantedUsd: z.number(),
+  remainingUsd: z.number().describe("Never below 0"),
+})
+
+export const toAllowanceReply = (a: Allowance): z.infer<typeof allowanceOutput> => ({
+  day: a.day,
+  spentUsd: unitsToUsd(a.spent),
+  reservedUsd: unitsToUsd(a.reserved),
+  capUsd: unitsToUsd(DAILY_CAP),
+  grantedUsd: unitsToUsd(a.granted),
+  remainingUsd: unitsToUsd(Math.max(0, a.remaining)),
+})
 
 export function spendOperations(deps: HqDeps) {
   const { db, now } = deps
@@ -140,27 +160,10 @@ export function spendOperations(deps: HqDeps) {
       "Reserving is what enforces the cap; this only reports it.",
     permissions: { hq_spend: ["read"] },
     input: z.object({ source: z.literal("eve").default("eve") }),
-    output: z.object({
-      day: z.string().describe("The UTC day, YYYY-MM-DD"),
-      spentUsd: z.number(),
-      reservedUsd: z.number(),
-      capUsd: z.number(),
-      grantedUsd: z.number(),
-      remainingUsd: z.number().describe("Never below 0"),
-    }),
+    output: allowanceOutput,
     hints: { readOnly: true, idempotent: true },
     examples: [{ input: {} }],
-    handler: async () => {
-      const a = await readAllowance(db, now())
-      return {
-        day: a.day,
-        spentUsd: unitsToUsd(a.spent),
-        reservedUsd: unitsToUsd(a.reserved),
-        capUsd: unitsToUsd(DAILY_CAP),
-        grantedUsd: unitsToUsd(a.granted),
-        remainingUsd: unitsToUsd(Math.max(0, a.remaining)),
-      }
-    },
+    handler: async () => toAllowanceReply(await readAllowance(db, now())),
   })
 
   const get_spend_summary = defineOperation({

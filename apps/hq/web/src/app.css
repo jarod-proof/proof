@@ -1,0 +1,7 @@
+@import "@proof/ui/styles.css";
+@import "./styles/tokens.css";
+@source "../../../../packages/ui/src/components/ui";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+/* Token classes the markup will use; listed so the build always emits them. */
+@source inline("min-h-touch rounded-shell rounded-card rounded-control font-sans font-mono");

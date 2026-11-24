@@ -2,6 +2,9 @@ import { createHmac } from "node:crypto"
 import { mkdirSync, statSync, unlinkSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
+import type { Browser, Cookie } from "@e2e-dev/web"
+import type { App, Locator, Screen } from "e2e"
+import { expect } from "e2e"
 
 import { uniqueId } from "../support/unique"
 
@@ -23,6 +26,25 @@ import { uniqueId } from "../support/unique"
 // be the same URL as HQ_BASE_URL (the proposals journey drives hq's /admin pages in a browser).
 // It declares two targets (desktop, phone): `--target desktop` keeps it to one. A journey run twice
 // in one run (two targets, or a retry) is refused by `claimRun` below, before it writes anything.
+//
+// SIGN-INS. hq limits sign-ins to 5 per minute and counts the ones that succeed too (HTTP 429 with
+// `x-retry-after`). One run of the nine journeys makes these, in any order:
+//   founderClient()                       1  memoised for the worker (see there): brain, proposals,
+//                                            slack, spend, app-approvals, app-digest and app-runner
+//                                            all share it
+//   app-shell (the app's sign-in form)    2  one wrong password, one right
+//   proposals (browser, /admin/login)     1
+//   app-approvals, app-digest, app-runner 0  each starts from the founder's session cookie in the
+//                                            browser (openAppAsFounder), which founderClient holds
+//   review                                0
+// That is 4, under the limit of 5, so a run does not have to wait. Two runs less than a minute
+// apart add up. If a browser did not accept the injected cookie, openAppAsFounder falls back to
+// signInThroughApp in each of the three app journeys: up to 9 more submits (3 journeys, 3 tries
+// each), usually 3, and the run is then slower. signInFounder and signInThroughApp wait out a 429
+// for the time hq names; the proposals journey's /admin/login sign-in (Phase 1, unchanged) does
+// NOT, so a run that exceeds the limit can still fail there, and which journey meets the 429 first
+// is the runner's order, not fixed. The three app journeys never sign out: their cookie is the
+// session founderClient keeps; only app-shell (which signs in for itself) signs out.
 //
 //   FACTORY_ACCEPTANCE=1   the switch: without it the journeys skip, so a plain `pnpm e2e` never
 //                          touches a real org (they spend, grant and open pull requests)
@@ -74,6 +96,44 @@ export function need(name: string): string {
 
 /** hq's base URL without a trailing slash. */
 export const hqBase = (): string => need("HQ_BASE_URL").replace(/\/+$/, "")
+
+/** The hq app's base URL: `<hq>/app`, no trailing slash. */
+export const appBase = (): string => `${hqBase()}/app`
+
+const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"])
+
+/**
+ * Throws unless hq's URL is https (or http on this machine, for a local stack): the founder's
+ * password and session must not cross a network in clear.
+ */
+export function assertSecureHq(): void {
+  const url = new URL(hqBase())
+  const local = url.protocol === "http:" && LOOPBACK_HOSTS.has(url.hostname)
+  if (url.protocol !== "https:" && !local) {
+    throw new Error(`HQ_BASE_URL must be https (http only on localhost), not ${url.origin}`)
+  }
+}
+
+/**
+ * Throws unless the browser's app is the org's hq (E2E_BASE_URL on the same origin as
+ * HQ_BASE_URL) and that origin is secure. Called before a session is handed to the browser and
+ * before a password is typed; signInThroughApp also checks the page it is typing into.
+ */
+export function assertAppIsHq(app: App): void {
+  if (!app.baseUrl || new URL(app.baseUrl).origin !== new URL(hqBase()).origin) {
+    throw new Error("E2E_BASE_URL must be the org's hq (the same URL as HQ_BASE_URL)")
+  }
+  assertSecureHq()
+}
+
+/** Throws unless the page the browser shows is on hq's origin (a redirect elsewhere is caught). */
+export async function assertPageIsOnHq(browser: Browser): Promise<URL> {
+  const page = new URL(await browser.url())
+  if (page.origin !== new URL(hqBase()).origin) {
+    throw new Error(`the browser is on ${page.origin}, not on hq: refusing to go on`)
+  }
+  return page
+}
 
 /** A suffix for this run's data: `acceptance-<time and random>`, lowercase, slug-safe. */
 export const runTag = (): string =>
@@ -181,7 +241,8 @@ export const cookieOf = (res: Response): string =>
  * with `x-retry-after` seconds), and the journeys sign in several times in a row, so a 429 waits
  * the time it names and tries again, for up to a minute.
  */
-async function signInFounder(): Promise<string> {
+async function signInFounder(): Promise<string[]> {
+  assertSecureHq()
   const base = hqBase()
   const body = JSON.stringify({
     email: need("FOUNDER_EMAIL"),
@@ -194,7 +255,7 @@ async function signInFounder(): Promise<string> {
       headers: { "content-type": "application/json", origin: new URL(base).origin },
       body,
     })
-    if (res.status === 200) return cookieOf(res)
+    if (res.status === 200) return res.headers.getSetCookie()
     if (res.status !== 429 || Date.now() > giveUp) {
       throw new Error(`the founder could not sign in to hq: HTTP ${res.status}`)
     }
@@ -203,21 +264,202 @@ async function signInFounder(): Promise<string> {
   }
 }
 
-/**
- * hq as the founder: a session from the email sign-in, sent with hq's own origin (a signed-in
- * write must come from a trusted origin, and hq trusts its configured base URL).
- */
-export async function founderClient() {
-  const headers = { cookie: await signInFounder(), origin: new URL(hqBase()).origin }
+const SAME_SITE: Record<string, "Strict" | "Lax" | "None"> = {
+  strict: "Strict",
+  lax: "Lax",
+  none: "None",
+}
+
+/** One `Set-Cookie` header as a cookie for the browser, on hq's origin; null for one hq clears. */
+function browserCookie(setCookie: string): Cookie | null {
+  const [pair = "", ...attributes] = setCookie.split(";").map((part) => part.trim())
+  const eq = pair.indexOf("=")
+  if (eq < 1) return null
+  const cookie: {
+    name: string
+    value: string
+    url: string
+    httpOnly?: boolean
+    secure?: boolean
+    sameSite?: "Strict" | "Lax" | "None"
+    expires?: number
+  } = { name: pair.slice(0, eq), value: pair.slice(eq + 1), url: hqBase() }
+  for (const attribute of attributes) {
+    const at = attribute.indexOf("=")
+    const key = (at < 0 ? attribute : attribute.slice(0, at)).toLowerCase()
+    const value = at < 0 ? "" : attribute.slice(at + 1)
+    if (key === "httponly") cookie.httpOnly = true
+    else if (key === "secure") cookie.secure = true
+    else if (key === "samesite") {
+      const same = SAME_SITE[value.toLowerCase()]
+      if (same) cookie.sameSite = same
+    } else if (key === "max-age") {
+      const seconds = Number(value)
+      if (!Number.isFinite(seconds) || seconds <= 0) return null
+      cookie.expires = Math.floor(Date.now() / 1000) + seconds
+    }
+  }
+  // A cookie named `__Secure-...` is refused by a browser unless it is marked Secure.
+  if (cookie.name.startsWith("__Secure-") || cookie.name.startsWith("__Host-")) cookie.secure = true
+  return cookie
+}
+
+/** What `founderClient()` gives: hq as the founder, and the same session for a browser. */
+export interface FounderClient {
+  /** The id hq records as `decidedBy` when this founder decides a proposal. */
+  userId: string
+  /** The session's cookies for `browser.setCookies`, whatever names hq's better-auth gave them. */
+  cookies: Cookie[]
+  get: (path: string) => Promise<Reply>
+  post: (path: string, body: unknown) => Promise<Reply>
+}
+
+async function makeFounderClient(): Promise<FounderClient> {
+  const setCookies = await signInFounder()
+  const headers = {
+    cookie: setCookies.map((c) => c.split(";")[0]).join("; "),
+    origin: new URL(hqBase()).origin,
+  }
   // Who hq says this session is: the id it records as `decidedBy` when this founder decides.
   const session = await send("GET", "/api/auth/get-session", headers)
   const userId = (session.json.user as { id?: string } | undefined)?.id
   if (!userId) throw new Error("hq's get-session did not name the signed-in founder")
   return {
     userId,
+    cookies: setCookies.map(browserCookie).filter((cookie): cookie is Cookie => cookie !== null),
     get: (path: string) => send("GET", path, headers),
     post: (path: string, body: unknown) => send("POST", path, headers, body),
   }
+}
+
+const FOUNDER_MEMO = Symbol.for("factory.acceptance.founderClient")
+
+/**
+ * hq as the founder: a session from the email sign-in, sent with hq's own origin (a signed-in
+ * write must come from a trusted origin, and hq trusts its configured base URL).
+ *
+ * Memoised, so a run signs in once however many journeys ask: hq limits sign-ins to 5 per minute
+ * (see SIGN-INS above). The worker process runs every file of a `--workers 1` run, so the one
+ * promise is kept on `globalThis` (it survives a module being loaded again) and is dropped when
+ * the sign-in fails, so the next journey tries again rather than reusing a failure.
+ */
+export function founderClient(): Promise<FounderClient> {
+  const memo = globalThis as { [FOUNDER_MEMO]?: Promise<FounderClient> }
+  memo[FOUNDER_MEMO] ??= makeFounderClient().catch((error: unknown) => {
+    delete memo[FOUNDER_MEMO]
+    throw error
+  })
+  return memo[FOUNDER_MEMO]
+}
+
+/**
+ * Types the founder's credentials into the app's sign-in form (already on screen) and waits until
+ * the form is gone. Before every fill it checks that the page is hq's own `/app/sign-in` (not a
+ * page a redirect led to). A 429 shows "Too many attempts. Try again in N seconds." in the form:
+ * the wait for those N seconds is an `expect.poll` on the clock (its timeout is the wait), then the
+ * form is submitted again, up to three times in all. A wrong password or any other error in the
+ * form throws. The journey must run with `trace: "off"` and `video: "off"`: the password is typed.
+ */
+export async function signInThroughApp(screen: Screen, app: App, browser: Browser): Promise<void> {
+  assertAppIsHq(app)
+  const email = screen.getByLabel("Email")
+  const alert = screen.getByRole("alert")
+  const limited = alert.filter({ hasText: "Too many attempts" })
+  // The form must be on screen first: a form that has not rendered yet also reads as "hidden".
+  await expect(email).toBeVisible()
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const page = await assertPageIsOnHq(browser)
+    if (!page.pathname.startsWith("/app/sign-in")) {
+      throw new Error(`refusing to type the password on ${page.pathname}: not hq's app sign-in`)
+    }
+    await email.fill(need("FOUNDER_EMAIL"))
+    await screen.getByLabel("Password").fill(need("HQ_FOUNDER_PASSWORD"))
+    await screen.getByRole("button", "Sign in").tap()
+    // Signed in (the form is gone), or the form says why not.
+    await expect
+      .poll(async () => (await email.isHidden()) || (await alert.isVisible()), { timeout: 20_000 })
+      .toBe(true)
+    if (await email.isHidden()) return
+    if (!(await limited.isVisible())) {
+      throw new Error(`the sign-in form refused the founder: ${await alert.textContent()}`)
+    }
+    const shown = /(\d+) seconds?/.exec((await limited.textContent()) ?? "")
+    const seconds = shown ? Number(shown[1]) : 5
+    const until = Date.now() + seconds * 1000
+    await expect
+      .poll(() => Date.now() >= until, { timeout: seconds * 1000 + 5000, interval: 500 })
+      .toBe(true)
+  }
+  throw new Error("the app's sign-in form kept answering 'Too many attempts'")
+}
+
+/**
+ * Opens a page of the app (`path` is inside it, such as "/approvals") signed in as the founder
+ * without typing the password: the session founderClient() made is put in the browser as cookies.
+ * It waits for the app's navigation. If the form is what shows (the browser did not take the
+ * cookie), it falls back to the app's own sign-in form. Never click Sign out in a journey that
+ * used this: that ends the session every other journey shares.
+ */
+export async function openAppAsFounder(
+  app: App,
+  browser: Browser,
+  screen: Screen,
+  path: string,
+): Promise<void> {
+  assertAppIsHq(app)
+  const founder = await founderClient()
+  await browser.setCookies(founder.cookies)
+  await app.open(`/app${path}`)
+  await assertPageIsOnHq(browser)
+  // Either the app drew its navigation (signed in) or its sign-in form. A locator `or` is not used:
+  // e2e 0.22 cannot combine a label query with a role query.
+  const email = screen.getByLabel("Email")
+  const nav = screen.getByRole("navigation", "Primary")
+  await expect
+    .poll(async () => (await nav.isVisible()) || (await email.isVisible()), { timeout: 20_000 })
+    .toBe(true)
+  await assertPageIsOnHq(browser)
+  if (await email.isVisible()) await signInThroughApp(screen, app, browser)
+}
+
+/**
+ * Runs `look` (what the page shows) between two reads of hq and says whether hq held still.
+ * Journeys compare a screen with hq's own numbers; on a live org a run can finish or a proposal
+ * can arrive between the page's fetch and the journey's, so they use this with
+ * `expectPageToAgreeWithHq`.
+ */
+export async function readAround<H, S>(
+  read: () => Promise<H>,
+  look: () => Promise<S>,
+): Promise<{ hq: H; seen: S; held: boolean }> {
+  const before = await read()
+  const seen = await look()
+  const after = await read()
+  return { hq: before, seen, held: JSON.stringify(before) === JSON.stringify(after) }
+}
+
+/**
+ * Retries `check` until it returns "" (the page and hq agree), for up to 90 seconds. A check that
+ * returns text means they differ (or hq moved while it read): the page is reloaded, so it asks hq
+ * again, and `check` runs again. The last difference is the failure message.
+ */
+export async function expectPageToAgreeWithHq(
+  browser: Browser,
+  ready: Locator,
+  check: () => Promise<string>,
+): Promise<void> {
+  await expect
+    .poll(
+      async () => {
+        const difference = await check()
+        if (difference === "") return ""
+        await browser.reload()
+        await expect(ready).toBeVisible()
+        return difference
+      },
+      { timeout: 90_000, interval: 1000 },
+    )
+    .toBe("")
 }
 
 /** The proposal a list reply holds, by id. */

@@ -16,7 +16,7 @@
 // this e2e stack does: the limits themselves are untouched, in hq and in production. A run needs
 // well under the limits (about four sign-ins and one sign-up); a new journey that signs in more
 // has to share them.
-import { spawn } from "node:child_process"
+import { spawn, spawnSync } from "node:child_process"
 import { createRequire } from "node:module"
 import { createServer } from "node:net"
 
@@ -29,6 +29,10 @@ const password = process.env.E2E_HQ_FOUNDER_PASSWORD
 const database = process.env.HQ_DATABASE_URL
 // Seeding and clearing write to this database: only a throwaway one (e2e-hq-guard.mjs).
 if (database) assertDisposableDatabase(database)
+
+// The app is served from web/dist (src/server.ts), so build it before hq starts.
+const build = spawnSync("pnpm", ["--filter", "@proof/hq", "build:web"], { stdio: "inherit" })
+if (build.status !== 0) throw new Error("building the hq web app failed")
 
 /** hq on `at`, in its own process group so the whole `pnpm` -> `tsx` -> node chain stops together. */
 function startHq(at) {

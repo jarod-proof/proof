@@ -1,6 +1,6 @@
 import type { Caller } from "@proof/api"
 import { type Database, member, user } from "@proof/db"
-import { and, eq, inArray, or, sql } from "drizzle-orm"
+import { and, count, eq, inArray, or, sql } from "drizzle-orm"
 
 import { founders } from "../db/schema"
 
@@ -271,6 +271,16 @@ export async function isFounder(db: Database, userId: string): Promise<boolean> 
     .innerJoin(user, eq(user.id, founders.userId))
     .where(and(eq(founders.userId, userId), sql`${user.banned} is not true`))
   return row !== undefined
+}
+
+/** How many founders hq has: the rows of the table whose account exists and is not banned. */
+export async function countFounders(db: Database): Promise<number> {
+  const [row] = await db
+    .select({ n: count() })
+    .from(founders)
+    .innerJoin(user, eq(user.id, founders.userId))
+    .where(sql`${user.banned} is not true`)
+  return Number(row?.n ?? 0)
 }
 
 /** The founder a Slack user is, or null: the mapping a click is decided under. */
