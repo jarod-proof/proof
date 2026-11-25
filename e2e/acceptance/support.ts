@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto"
+import { createHash, createHmac } from "node:crypto"
 import { mkdirSync, statSync, unlinkSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
@@ -28,24 +28,28 @@ import { workRepoOf } from "./work-repo"
 // It declares two targets (desktop, phone): `--target desktop` keeps it to one. A journey run twice
 // in one run (two targets, or a retry) is refused by `claimRun` below, before it writes anything.
 //
-// SIGN-INS. hq limits sign-ins to 5 per minute and counts the ones that succeed too (HTTP 429 with
-// `x-retry-after`). One run of the nine journeys makes these, in any order:
+// SIGN-INS. hq limits sign-ins to 5 per minute and counts the ones that succeed too (HTTP 429
+// with `x-retry-after`). One run of the twelve journeys makes these, in any order:
 //   founderClient()                       1  memoised for the worker (see there): brain, proposals,
-//                                            slack, spend, app-approvals, app-digest and app-runner
-//                                            all share it
+//                                            slack, spend, app-approvals, app-digest, app-runner
+//                                            and the three work journeys all share it
 //   app-shell (the app's sign-in form)    2  one wrong password, one right
 //   proposals (browser, /admin/login)     1
-//   app-approvals, app-digest, app-runner 0  each starts from the founder's session cookie in the
+//   app-approvals, app-digest, app-runner,
+//   work-pipeline, work-decisions,
+//   work-reopen                           0  each starts from the founder's session cookie in the
 //                                            browser (openAppAsFounder), which founderClient holds
 //   review                                0
-// That is 4, under the limit of 5, so a run does not have to wait. Two runs less than a minute
-// apart add up. If a browser did not accept the injected cookie, openAppAsFounder falls back to
-// signInThroughApp in each of the three app journeys: up to 9 more submits (3 journeys, 3 tries
-// each), usually 3, and the run is then slower. signInFounder and signInThroughApp wait out a 429
-// for the time hq names; the proposals journey's /admin/login sign-in (Phase 1, unchanged) does
-// NOT, so a run that exceeds the limit can still fail there, and which journey meets the 429 first
-// is the runner's order, not fixed. The three app journeys never sign out: their cookie is the
-// session founderClient keeps; only app-shell (which signs in for itself) signs out.
+// That is 4, under the limit of 5, so a run does not have to wait (the three work journeys add
+// none: they run as the agent's key, which signs nothing in, and as that one founder session).
+// Two runs less than a minute apart add up. If a browser did not accept the injected cookie,
+// openAppAsFounder falls back to signInThroughApp in each of the six app journeys: up to 18 more
+// submits (6 journeys, 3 tries each), usually 6, and the run is then slower. signInFounder and
+// signInThroughApp wait out a 429 for the time hq names; the proposals journey's /admin/login
+// sign-in (Phase 1, unchanged) does NOT, so a run that exceeds the limit can still fail there, and
+// which journey meets the 429 first is the runner's order, not fixed. The six app journeys never
+// sign out: their cookie is the session founderClient keeps; only app-shell (which signs in for
+// itself) signs out.
 //
 //   FACTORY_ACCEPTANCE=1   the switch: without it the journeys skip, so a plain `pnpm e2e` never
 //                          touches a real org (they spend, grant and open pull requests)
@@ -535,4 +539,381 @@ export async function slackClick(
   })
   const json = (await res.json().catch(() => ({}))) as { text?: string }
   return { status: res.status, text: json.text ?? "" }
+}
+
+// ---------------------------------------------------------------------------------------------
+// The work pipeline journeys (work-pipeline, work-decisions, work-reopen): hq's work items on a
+// synthetic repository, recorded by a stand-in for the agent's pipeline.
+// ---------------------------------------------------------------------------------------------
+
+/** The client of hq's agent key the stand-in needs: `agentClient()` gives it, a test may fake it. */
+export type AgentApi = Pick<ReturnType<typeof agentClient>, "get" | "post">
+
+/** What a founder's read of one work item says (the fields the journeys look at). */
+export interface WorkItemFacts {
+  id: string
+  displayId: string
+  title: string
+  state: string
+  cycle: number
+  attention: string | null
+  card: { label: string; detail: string }
+  attempts: { used: number; limit: number | null; running: boolean }
+  attemptList: {
+    id: string
+    number: number
+    kind: string
+    status: string
+    result: string | null
+    branch: string | null
+    reviewer: { verdict: string; headSha?: string } | null
+  }[]
+  contract: { text: string; verifier: { kind: string } }[]
+  questions: {
+    id: string
+    status: string
+    answeredOptionId: string | null
+    answeredBy: string | null
+  }[]
+  pullRequest: {
+    number: number
+    url: string
+    state: string
+    headSha: string
+    mergedAt: string | null
+  } | null
+  mergeApproval: { status: string; headSha: string; decidedBy: string | null } | null
+  signal: { occurrences: number } | null
+}
+
+/** One work item as a founder (or any caller that may read) sees it: 200 or an error naming why. */
+export async function workItemOf(
+  reader: { get: (path: string) => Promise<Reply> },
+  itemId: string,
+): Promise<WorkItemFacts> {
+  const reply = await reader.get(`/v1/work-items/${itemId}`)
+  if (reply.status !== 200) {
+    throw new Error(`reading work item ${itemId}: hq answered ${reply.status} ${errorCode(reply)}`)
+  }
+  return reply.json as unknown as WorkItemFacts
+}
+
+/** What a work item the stand-in recorded is called, and where its pull request lives. */
+export interface FakeWork {
+  itemId: string
+  displayId: string
+  repo: string
+  issue: number
+  title: string
+  /** The pull request number: the issue's own, so one repo never holds two with one number. */
+  number: number
+  branch: string
+  url: string
+  /** The head the pull request is at (a push gives the next `FakeWork` a new one). */
+  headSha: string
+}
+
+/** What `ask` leaves open for a founder. */
+export interface FakeQuestion extends FakeWork {
+  questionId: string
+  options: { id: string; label: string }[]
+  defaultOptionId: string
+}
+
+/** A commit id that depends on its seed: 40 hex digits. */
+const commitOf = (seed: string): string => createHash("sha1").update(seed).digest("hex")
+
+function replyText(reply: Reply): string {
+  const error = reply.json.error as { code?: string; message?: string } | undefined
+  return `${reply.status} ${error?.code ?? ""} ${error?.message ?? ""}`.trim()
+}
+
+/**
+ * The journeys' stand-in for the agent's pipeline: no model, no GitHub, nothing on the agent's
+ * side. It calls hq with the agent's key (REST), in the order the Foreman stations record: the
+ * signal, an investigation (`start_attempt`, `set_contract`, `finish_attempt investigated`), a fix
+ * (`start_attempt`, `heartbeat_attempt` with the branch and the files, `record_pull_request` open
+ * on the synthetic repo from `workRepo()`, `finish_attempt approved` with a reviewer verdict that
+ * names the head it read). That is two attempts, and hq then waits for a founder to approve the
+ * merge. The key can record these facts and nothing else: it cannot decide anything.
+ *
+ * Every step is one call that must answer 200 (the error carries hq's code and message, never the
+ * key), so a journey fails where hq refused, not later. `touched` lists the ids of the items it
+ * made, for `endWork`.
+ */
+export function fakeAgent(agent: AgentApi) {
+  const touched: string[] = []
+
+  const send = async (path: string, body: unknown, what: string): Promise<Reply> => {
+    const reply = await agent.post(path, body)
+    if (reply.status !== 200) throw new Error(`${what}: hq answered ${replyText(reply)}`)
+    return reply
+  }
+
+  const workOf = (
+    made: { itemId: string; displayId: string },
+    spec: { repo: string; issue: number; title: string },
+  ): FakeWork => ({
+    itemId: made.itemId,
+    displayId: made.displayId,
+    repo: spec.repo,
+    issue: spec.issue,
+    title: spec.title,
+    number: spec.issue,
+    branch: `factory/acceptance-${spec.issue}`,
+    url: `https://github.com/${spec.repo}/pull/${spec.issue}`,
+    headSha: commitOf(`${spec.repo}#${spec.issue}:head:1`),
+  })
+
+  /** `record_pull_request`: the whole set, as the agent sends it on every event. */
+  const recordPullRequest = (work: FakeWork, extra: Record<string, unknown>) =>
+    send(
+      "/v1/pull-requests",
+      {
+        itemId: work.itemId,
+        branch: work.branch,
+        number: work.number,
+        url: work.url,
+        base: "main",
+        headSha: work.headSha,
+        isDraft: false,
+        state: "open",
+        additions: 12,
+        deletions: 3,
+        files: 2,
+        checks: [{ name: "build", state: "passed" }],
+        ...extra,
+      },
+      "record_pull_request",
+    )
+
+  const startAttempt = async (work: FakeWork, kind: "investigate" | "fix", ref: string) => {
+    const started = await send(
+      `/v1/work-items/${work.itemId}/attempts`,
+      {
+        kind,
+        externalRef: `${work.branch}:${ref}`,
+        // The first fix records the agent's limit, once. 3 is the agent's MAX_ATTEMPTS_PER_ITEM
+        // (apps/agent/agent/lib/constants.ts, lab): the one source of the number, which a template
+        // cannot import. The journeys need room for the second fix of `reReview`, never more.
+        ...(ref === "fix" ? { attemptLimit: 3 } : {}),
+      },
+      `start_attempt ${kind}`,
+    )
+    return started.json.id as string
+  }
+
+  /** `record_signal`: a GitHub issue of the synthetic repo; the same `issue` and `occurrence` is a redelivery. */
+  async function signal(spec: {
+    repo: string
+    issue: number
+    title: string
+    /** Which report of the issue: a different one is a new signal with the same dedupe key. */
+    occurrence?: string
+  }): Promise<FakeWork & { outcome: string }> {
+    const dedupeKey = `github-issue:${spec.repo}#${spec.issue}`
+    const reply = await send(
+      "/v1/signals",
+      {
+        source: "github_issue",
+        externalId: `${dedupeKey}:${spec.occurrence ?? "opened"}`,
+        dedupeKey,
+        repo: spec.repo,
+        title: spec.title,
+        summary: `${spec.title}.`,
+        url: `https://github.com/${spec.repo}/issues/${spec.issue}`,
+        payload: { body: "Made by the acceptance run, on a repository that does not exist." },
+      },
+      "record_signal",
+    )
+    const made = {
+      itemId: reply.json.itemId as string,
+      displayId: reply.json.displayId as string,
+    }
+    if (!touched.includes(made.itemId)) touched.push(made.itemId)
+    return { ...workOf(made, spec), outcome: reply.json.outcome as string }
+  }
+
+  /** The investigation: start, the contract the fix will be held to, finish `investigated`. */
+  async function investigate(work: FakeWork): Promise<void> {
+    const attemptId = await startAttempt(work, "investigate", "investigate")
+    await send(
+      `/v1/work-items/${work.itemId}/contract`,
+      {
+        items: [
+          { text: "The reported flow works again", verifier: { kind: "reviewer" } },
+          { text: "The checks of the pull request pass", verifier: { kind: "ci" } },
+        ],
+      },
+      "set_contract",
+    )
+    await send(
+      `/v1/attempts/${attemptId}/finish`,
+      {
+        result: "investigated",
+        note: "Reproduced it and found the cause.",
+        files: ["src/acceptance/flow.ts"],
+      },
+      "finish_attempt investigated",
+    )
+  }
+
+  /** A fix that reaches review: the branch, the pull request, an approving reviewer at `work.headSha`. */
+  async function fix(work: FakeWork, ref = "fix"): Promise<void> {
+    const attemptId = await startAttempt(work, "fix", ref)
+    await send(
+      `/v1/attempts/${attemptId}/heartbeat`,
+      {
+        branch: work.branch,
+        files: ["src/acceptance/flow.ts", "src/acceptance/flow.test.ts"],
+        note: "The change and a test for it are on the branch.",
+      },
+      "heartbeat_attempt",
+    )
+    await recordPullRequest(work, {})
+    await send(
+      `/v1/attempts/${attemptId}/finish`,
+      {
+        result: "approved",
+        note: "The fix is in the pull request.",
+        reviewer: {
+          verdict: "approve",
+          summary: "The guard is right and tested.",
+          headSha: work.headSha,
+        },
+      },
+      "finish_attempt approved",
+    )
+  }
+
+  return {
+    /** The ids of the items this stand-in made, in order. */
+    touched,
+    signal,
+    investigate,
+    fix,
+
+    /** A signal taken through to an open pull request and a pending merge approval (two attempts). */
+    async toReview(spec: { repo: string; issue: number; title: string }): Promise<FakeWork> {
+      const work = await signal(spec)
+      await investigate(work)
+      await fix(work)
+      return work
+    },
+
+    /**
+     * A signal an investigation asked a founder about and ended `needs_answer`: the item waits for
+     * an answer. It records one open question with two options and a recommended default.
+     */
+    async ask(spec: { repo: string; issue: number; title: string }): Promise<FakeQuestion> {
+      const work = await signal(spec)
+      const attemptId = await startAttempt(work, "investigate", "investigate")
+      const options = [
+        { id: "patch", label: "Patch the guard" },
+        { id: "rewrite", label: "Rewrite the flow" },
+      ]
+      const asked = await send(
+        `/v1/work-items/${work.itemId}/questions`,
+        {
+          prompt: "Patch the guard, or rewrite the flow?",
+          options,
+          defaultOptionId: "patch",
+          attemptId,
+        },
+        "ask_question",
+      )
+      await send(
+        `/v1/attempts/${attemptId}/finish`,
+        { result: "needs_answer", note: "Waiting for a founder." },
+        "finish_attempt needs_answer",
+      )
+      return { ...work, questionId: asked.json.id as string, options, defaultOptionId: "patch" }
+    },
+
+    /**
+     * A retry after a founder's card was loaded: a second fix pushes a new head (hq voids the
+     * approval bound to the old one) and its reviewer approves that head, so the approval a
+     * founder can give now is for the new head. Returns the work at the new head.
+     */
+    async reReview(work: FakeWork): Promise<FakeWork> {
+      const next = { ...work, headSha: commitOf(`${work.repo}#${work.number}:head:2`) }
+      await fix(next, "fix-2")
+      return next
+    },
+
+    /** `record_pull_request` merged: hq stamps the merge with its own clock (`mergedAt` is not sent). */
+    async merge(work: FakeWork): Promise<void> {
+      await recordPullRequest(work, { state: "merged", mergedBy: "acceptance" })
+    },
+
+    /** `run_verification_sweep`: the reply, whatever its status. */
+    sweep: (): Promise<Reply> => agent.post("/v1/work/verification-sweep", {}),
+  }
+}
+
+/**
+ * Ends a work journey: stops every item it made, through the founder (a founder's decision: the
+ * agent's key cannot), so the board stays clean, then raises what went wrong. `journeyError` is
+ * the journey's own failure, kept so a failing cleanup cannot hide it (it is thrown first, with
+ * the cleanup's trouble named beside it). A reopened item can only be stopped once hq has
+ * retriaged it, so one sweep runs first when any is reopened; an item that is done or stopped
+ * already is left alone. Every read and every stop is tried for its own item and a failure goes
+ * into the problems it reports, so one item hq will not read or stop never leaves a later one on
+ * the board. Call it after the journey's own try/catch, never from a `finally`.
+ */
+export async function endWork(
+  founder: Pick<FounderClient, "get" | "post">,
+  itemIds: readonly string[],
+  journeyError: { error: unknown } | null,
+): Promise<void> {
+  const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error))
+  const problems: string[] = []
+  const causes: unknown[] = []
+  const failed = (what: string, error: unknown) => {
+    problems.push(`${what}: ${messageOf(error)}`)
+    causes.push(error)
+  }
+
+  let reopened = false
+  for (const id of itemIds) {
+    try {
+      if ((await workItemOf(founder, id)).state === "reopened") reopened = true
+    } catch (error) {
+      failed(`reading ${id}`, error)
+    }
+  }
+  if (reopened) {
+    try {
+      const sweep = await founder.post("/v1/work/verification-sweep", {})
+      if (sweep.status !== 200) problems.push(`the sweep answered ${sweep.status}`)
+    } catch (error) {
+      failed("the sweep", error)
+    }
+  }
+  for (const id of itemIds) {
+    try {
+      const state = (await workItemOf(founder, id)).state
+      if (state === "done" || state === "stopped") continue
+      const stopped = await founder.post(`/v1/work-items/${id}/stop`, {})
+      if (stopped.status !== 200) {
+        problems.push(`stopping ${id} (${state}) answered ${stopped.status} ${errorCode(stopped)}`)
+      }
+    } catch (error) {
+      failed(`stopping ${id}`, error)
+    }
+  }
+
+  if (problems.length === 0) {
+    if (journeyError) throw journeyError.error
+    return
+  }
+  const cleanup = `the journey left work behind: ${problems.join("; ")}`
+  if (journeyError) {
+    throw new AggregateError(
+      [journeyError.error, ...causes],
+      `${messageOf(journeyError.error)} (and the cleanup failed too: ${cleanup})`,
+      { cause: journeyError.error },
+    )
+  }
+  throw new AggregateError(causes, cleanup, causes.length > 0 ? { cause: causes[0] } : undefined)
 }
